@@ -124,6 +124,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
+  var AUDIO_VERSION = "20261117-14";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -140,7 +141,8 @@
         window.ZH_VOICE_MAPS && window.ZH_VOICE_MAPS[state.zhVoice]) {
       src = window.ZH_VOICE_MAPS[state.zhVoice][key] || src;
     }
-    return src;
+    if (!src) return src;
+    return src + (src.indexOf("?") >= 0 ? "&" : "?") + "v=" + AUDIO_VERSION;
   }
 
   function say(key, text, lang, slow) {
