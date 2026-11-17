@@ -202,6 +202,11 @@ window.TEXTBOOK_UNITS = [
           { en: "Ten little cats in a row!", zh: "十只小猫排成一排！" }
         ],
         words: [
+          { w: "one", zh: "一", ipa: "/wʌn/" },
+          { w: "two", zh: "二", ipa: "/tuː/" },
+          { w: "three", zh: "三", ipa: "/θriː/" },
+          { w: "four", zh: "四", ipa: "/fɔː/" },
+          { w: "five", zh: "五", ipa: "/faɪv/" },
           { w: "little", zh: "小的", ipa: "/ˈlɪtl/" },
           { w: "black", zh: "黑色", ipa: "/blæk/" },
           { w: "cats", zh: "猫（复数）", ipa: "/kæts/" },
@@ -221,6 +226,11 @@ window.TEXTBOOK_UNITS = [
           { en: "Nine, ten. Start again.", zh: "九、十。重新开始。" }
         ],
         words: [
+          { w: "six", zh: "六", ipa: "/sɪks/" },
+          { w: "seven", zh: "七", ipa: "/ˈsevn/" },
+          { w: "eight", zh: "八", ipa: "/eɪt/" },
+          { w: "nine", zh: "九", ipa: "/naɪn/" },
+          { w: "ten", zh: "十", ipa: "/ten/" },
           { w: "door", zh: "门", ipa: "/dɔː/" },
           { w: "tie", zh: "系", ipa: "/taɪ/" },
           { w: "shoe", zh: "鞋", ipa: "/ʃuː/" },
@@ -240,7 +250,11 @@ window.TEXTBOOK_UNITS = [
         ],
         words: [
           { w: "how many", zh: "多少", ipa: "/haʊ ˈmeni/" },
-          { w: "dogs", zh: "狗（复数）", ipa: "/dɒɡz/" }
+          { w: "dogs", zh: "狗（复数）", ipa: "/dɒɡz/" },
+          { w: "dog", zh: "狗", ipa: "/dɒɡ/" },
+          { w: "teddy bear", zh: "泰迪熊", ipa: "/ˈtedi beə/" },
+          { w: "cat", zh: "猫", ipa: "/kæt/" },
+          { w: "doll", zh: "娃娃", ipa: "/dɒl/" }
         ]
       },
       {
@@ -312,6 +326,7 @@ window.TEXTBOOK_UNITS = [
         words: [
           { w: "like", zh: "喜欢", ipa: "/laɪk/" },
           { w: "pink", zh: "粉色", ipa: "/pɪŋk/" },
+          { w: "black", zh: "黑色", ipa: "/blæk/" },
           { w: "cool", zh: "酷", ipa: "/kuːl/" }
         ]
       },
