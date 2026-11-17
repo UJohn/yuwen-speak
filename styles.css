@@ -1246,6 +1246,11 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   color: #3E8A72;
 }
 .slow-btn .icon { width: 16px; height: 16px; }
+.slow2-btn {
+  border-color: #A9D6C6;
+  background: #E8F8F2;
+  color: #2E7A62;
+}
 .word-btn {
   display: inline-flex;
   align-items: center;
@@ -2024,6 +2029,13 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   color: var(--ink);
   overflow-wrap: anywhere;
 }
+.tb-sheet-ipa {
+  margin: 0 0 2px;
+  color: var(--ink-3);
+  font-family: var(--py);
+  font-size: 13px;
+  line-height: 1.35;
+}
 .tb-sheet-zhrow {
   display: flex;
   align-items: center;
@@ -2049,11 +2061,15 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 .tb-sheet-zhrow .icon { width: 16px; height: 16px; }
 .tb-sheet-actions {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-top: 7px;
 }
 .tb-sheet-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   min-height: 46px;
   padding: 0 10px;
   border: 1.5px solid #F3CAD2;
@@ -2064,12 +2080,22 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   font-weight: 600;
   cursor: pointer;
 }
-.tb-sheet-actions button:nth-child(2) {
+.tb-sheet-actions button .icon,
+.speak-actions .icon,
+.tb-mini .icon,
+.zh-btn .icon,
+.tip-btn .icon {
+  flex: none;
+  margin: 0;
+  vertical-align: middle;
+}
+.tb-sheet-actions button:nth-child(2),
+.tb-sheet-actions button:nth-child(3) {
   border-color: #BFE5DA;
   background: #F2FBF8;
   color: #3E806B;
 }
-.tb-sheet-actions button:nth-child(3) {
+.tb-sheet-actions button:nth-child(4) {
   border-color: #E7D8F4;
   background: #F8F3FE;
   color: #6E5194;
@@ -2939,6 +2965,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 }
 
 @media (max-width: 599px) {
+  .tb-sheet-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .voice-float.on-textbook,
   .voice-float.on-speak {
     top: 78px;

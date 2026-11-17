@@ -60,8 +60,8 @@ window.TEXTBOOK_UNITS = [
         sub: "听一听，说一说",
         art: "greet",
         lines: [
-          { en: "Hi, my name is Andy.", zh: "嗨，我叫安迪。" },
-          { en: "Hello, my name is Amy.", zh: "你好，我叫艾米。" }
+          { en: "Hi, my name is Chen Jiamin.", zh: "嗨，我叫陈家敏。" },
+          { en: "Hello, my name is Julia.", zh: "你好，我叫朱莉娅。" }
         ],
         words: [
           { w: "my", zh: "我的", ipa: "/maɪ/" },
@@ -336,16 +336,18 @@ window.TEXTBOOK_UNITS = [
         art: "rainbow",
         lines: [
           { en: "Balloons!", zh: "气球！" },
+          { en: "I like the balloons!", zh: "我喜欢这些气球！" },
           { en: "I like the green one.", zh: "我喜欢绿色的那个。" },
           { en: "I like the pink one.", zh: "我喜欢粉色的那个。" },
-          { en: "I like the yellow one too.", zh: "我也喜欢黄色的那个。" },
           { en: "I like the purple one.", zh: "我喜欢紫色的那个。" },
+          { en: "I like the yellow one.", zh: "我喜欢黄色的那个。" },
+          { en: "I like the yellow one too.", zh: "我也喜欢黄色的那个。" },
           { en: "Give it to me.", zh: "把它给我。" },
+          { en: "Help!", zh: "救命！" },
+          { en: "Oh no!", zh: "哦不！" },
           { en: "Are you OK?", zh: "你还好吗？" },
           { en: "I'm OK.", zh: "我没事。" },
-          { en: "Sorry, Bobby.", zh: "对不起，波比。" },
-          { en: "Help!", zh: "救命！" },
-          { en: "Oh no!", zh: "哦不！" }
+          { en: "Sorry, Bobby.", zh: "对不起，波比。" }
         ],
         words: [
           { w: "balloons", zh: "气球", ipa: "/bəˈluːnz/" },

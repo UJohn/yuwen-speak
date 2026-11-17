@@ -28,7 +28,7 @@
 
   function blankState() {
     return {
-      schema: 2, stars: 0, sound: true, speak: true, volume: 1, slowRate: 0.72, enVoice: "sonia", zhVoice: "xiaoxiao", tbImages: true, tbGap: 1000,
+      schema: 2, stars: 0, sound: true, speak: true, volume: 1, slowRate: 0.72, enVoice: "sonia", zhVoice: "xiaoxiao", tbImages: true, tbGap: 200,
       days: {}, chars: {}, read: {}, today: { date: "", count: 0 }
     };
   }
@@ -53,7 +53,7 @@
         enVoice: ["sonia", "libby", "maisie"].indexOf(data.enVoice) >= 0 ? data.enVoice : "sonia",
         zhVoice: ["xiaoxiao", "xiaoyi"].indexOf(data.zhVoice) >= 0 ? data.zhVoice : "xiaoxiao",
         tbImages: data.schema === 2 ? data.tbImages !== false : true,
-        tbGap: [200, 400, 600, 800, 1000].indexOf(data.tbGap) >= 0 ? data.tbGap : 1000,
+        tbGap: [200, 100, 50, 0].indexOf(data.tbGap) >= 0 ? data.tbGap : 200,
         days: data.days && typeof data.days === "object" ? data.days : {},
         chars: data.chars && typeof data.chars === "object" ? data.chars : {},
         read: data.read && typeof data.read === "object" ? data.read : {},
@@ -154,7 +154,7 @@
         audioEl.pause();
         audioEl.src = src;
         audioEl.currentTime = 0;
-        audioEl.playbackRate = slow ? (state.slowRate || 0.72) : 1;
+        audioEl.playbackRate = slow === 2 ? 0.5 : (slow ? (state.slowRate || 0.72) : 1);
         try { audioEl.preservesPitch = true; audioEl.webkitPreservesPitch = true; } catch (e) {}
         var pr = audioEl.play();
         if (pr && pr.catch) pr.catch(function () {});
@@ -237,7 +237,7 @@
       var span = spans[i];
       if (span) span.classList.add("on");
       var word = words[i++];
-      var src = resolveAudioSrc("w:" + word.toLowerCase());
+      var src = resolveAudioSrc(spokenWordKey(word));
       if (!src) {
         setTimeout(next, tbGapMs());
         return;
@@ -1563,6 +1563,11 @@
     return "tbw:" + String(word || "").toLowerCase();
   }
 
+  function spokenWordKey(word) {
+    var low = String(word || "").toLowerCase();
+    return low === "a" ? "w:a-article" : "w:" + low;
+  }
+
   function tbWordZhKey(word) {
     return "tbwzh:" + String(word || "").toLowerCase();
   }
@@ -2107,6 +2112,8 @@
   var tbPageIdx = 0;
   var tbLastLine = 0;
   var tbSheetLine = -1;
+  var tbSheetMode = "line";
+  var tbSheetWord = null;
   var tbImagesReady = false;
 
   function probeTextbookImages() {
@@ -2172,6 +2179,13 @@
     stopTextbookSequence();
     stopTbWordSequence();
     var idx = tbPageIdx;
+    var unitIdx = TB.indexOf(u);
+    var hasPrevUnit = unitIdx > 0;
+    var hasNextUnit = unitIdx >= 0 && unitIdx < TB.length - 1;
+    var atVeryStart = idx === 0 && !hasPrevUnit;
+    var atVeryEnd = idx >= u.pages.length - 1 && !hasNextUnit;
+    var prevLabel = idx === 0 && hasPrevUnit ? "← 上一单元" : "← 上一页";
+    var nextLabel = idx >= u.pages.length - 1 && hasNextUnit ? "下一单元 →" : "下一页 →";
     var hasBook = !!(state.tbImages && TB_IMG[page.id]);
     var done = !!state.read["tb-page:" + page.id];
     var lines = page.lines.map(function (line, i) {
@@ -2219,9 +2233,9 @@
               (done ? "再读一遍" : "我读完了 +1 ★") + "</button>" +
           "</div>" +
           '<div class="tb-pager">' +
-            '<button type="button" data-tb-nav="prev"' + (idx === 0 ? " disabled" : "") + ">← 上一页</button>" +
+            '<button type="button" data-tb-nav="prev"' + (atVeryStart ? " disabled" : "") + ">" + prevLabel + "</button>" +
             '<span class="tb-dots">' + dots + "</span>" +
-            '<button type="button" data-tb-nav="next"' + (idx >= u.pages.length - 1 ? " disabled" : "") + ">下一页 →</button>" +
+            '<button type="button" data-tb-nav="next"' + (atVeryEnd ? " disabled" : "") + ">" + nextLabel + "</button>" +
           "</div>" +
           '<details class="tb-line-index">' +
             '<summary>句子清单 · 也可以点这里读</summary>' +
@@ -2271,14 +2285,6 @@
         (b[0] * 100).toFixed(2) + "%;top:" + (b[1] * 100).toFixed(2) +
         "%;width:" + (b[2] * 100).toFixed(2) + "%;height:" + (b[3] * 100).toFixed(2) + '%"></button>';
     });
-    (meta.textBoxes || []).forEach(function (item) {
-      var key = item[0], b = item.slice(1);
-      if (!TB_TEXT[key]) return;
-      if (meta.boxes.some(function (line) { return line && overlap(line, b) > 0.35; })) return;
-      hots += '<button class="tb-hot is-text" type="button" data-tb-text="' + escapeHTML(key) + '" aria-label="朗读 ' +
-        escapeHTML(TB_TEXT[key]) + '" style="left:' + (b[0] * 100).toFixed(2) + "%;top:" + (b[1] * 100).toFixed(2) +
-        "%;width:" + (b[2] * 100).toFixed(2) + "%;height:" + (b[3] * 100).toFixed(2) + '%"></button>';
-    });
     return '<div class="tb-book"><img class="tb-book-img" src="' + escapeHTML(meta.img) + '" alt="' +
       escapeHTML(u.unit + " " + page.section + " 课本页") + '">' +
       '<div class="tb-book-hots">' + hots + "</div>" +
@@ -2298,6 +2304,8 @@
     var sheet = $("#tbSheet");
     if (sheet) sheet.hidden = true;
     tbSheetLine = -1;
+    tbSheetMode = "line";
+    tbSheetWord = null;
     var screen = $("#s-textbook");
     if (screen) screen.classList.remove("sheet-open");
   }
@@ -2307,8 +2315,13 @@
     var sheet = $("#tbSheet");
     if (!line || !sheet) return;
     tbSheetLine = i;
+    tbSheetMode = "line";
+    tbSheetWord = null;
     $("#tbSheetChip").textContent = (i + 1) + " / " + page.lines.length;
     $("#tbSheetEn").textContent = line.en;
+    $("#tbSheetIpa").hidden = true;
+    $("#tbSheetWordBtn").hidden = false;
+    $$("#tbSheet [data-tb-sheet-nav]").forEach(function (b) { b.hidden = false; });
     $("#tbSheetZh").textContent = line.zh || "";
     $("#tbSheet").hidden = false;
     var screen = $("#s-textbook");
@@ -2320,6 +2333,25 @@
         try { hot.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" }); } catch (err) {}
       }, 60);
     }
+  }
+
+  function openTbWordSheet(word) {
+    var sheet = $("#tbSheet");
+    if (!word || !sheet) return;
+    tbSheetMode = "word";
+    tbSheetWord = word;
+    tbSheetLine = -1;
+    $("#tbSheetChip").textContent = "单词";
+    $("#tbSheetEn").textContent = word.w;
+    $("#tbSheetIpa").textContent = word.ipa || "";
+    $("#tbSheetIpa").hidden = !word.ipa;
+    $("#tbSheetZh").textContent = word.zh || "";
+    $("#tbSheetWordBtn").hidden = !/[\s-]/.test(word.w);
+    $$("#tbSheet [data-tb-sheet-nav]").forEach(function (b) { b.hidden = true; });
+    $("#tbSheet").hidden = false;
+    var screen = $("#s-textbook");
+    if (screen) screen.classList.add("sheet-open");
+    syncVoiceFloat();
   }
 
   function syncVoiceFloat() {
@@ -2353,7 +2385,7 @@
       gapBox.hidden = !showGap;
       if (showGap) {
         var gapSel = $("#voiceGapSel");
-        if (gapSel) gapSel.value = String(state.tbGap || 1000);
+        if (gapSel) gapSel.value = String(state.tbGap || 200);
       }
     }
   }
@@ -2386,7 +2418,7 @@
 
   function tbGapMs() {
     var v = state.tbGap;
-    return [200, 400, 600, 800, 1000].indexOf(v) >= 0 ? v : 1000;
+    return [200, 100, 50, 0].indexOf(v) >= 0 ? v : 200;
   }
 
   function stopTbWordSequence() {
@@ -2443,7 +2475,7 @@
       var span = spans[i];
       if (span) span.classList.add("on");
       var word = words[i++];
-      var src = resolveAudioSrc("w:" + word.toLowerCase());
+      var src = resolveAudioSrc(spokenWordKey(word));
       if (!src) {
         setTimeout(next, tbGapMs());
         return;
@@ -2457,6 +2489,60 @@
       a.onerror = function () { if (token === tbWordToken) setTimeout(next, tbGapMs()); };
       var p = a.play();
       if (p && p.catch) p.catch(function () { if (token === tbWordToken) setTimeout(next, tbGapMs()); });
+    }
+    next();
+  }
+
+  function playTbSheetWord(slow) {
+    if (tbSheetMode !== "word" || !tbSheetWord) return;
+    say(tbWordKey(tbSheetWord.w), tbSheetWord.w, "en-GB", slow);
+  }
+
+  function playTbSheetWordByWord(gapMs) {
+    if (tbSheetMode !== "word" || !tbSheetWord || !state.speak) return;
+    stopTextbookSequence();
+    stopTbWordSequence();
+    pausePlayback();
+    var text = String(tbSheetWord.w || "").replace(/[’‘]/g, "'");
+    var parts = text.match(/[A-Za-z']+|[^A-Za-z']+/g) || [];
+    var words = [];
+    var html = "";
+    parts.forEach(function (part) {
+      if (/^[A-Za-z']+$/.test(part)) {
+        words.push(part);
+        html += '<span class="w-token" data-w="' + (words.length - 1) + '">' + escapeHTML(part) + "</span>";
+      } else {
+        html += escapeHTML(part);
+      }
+    });
+    var enEl = $("#tbSheetEn");
+    tbWordEl = enEl;
+    tbWordPlain = enEl.textContent;
+    enEl.innerHTML = html;
+    var spans = $$(".w-token", enEl);
+    var token = ++tbWordToken;
+    var i = 0;
+    function next() {
+      if (token !== tbWordToken) return;
+      spans.forEach(function (el) { el.classList.remove("on"); });
+      if (i >= words.length) {
+        if (tbWordEl) tbWordEl.textContent = tbWordPlain;
+        tbWordEl = null;
+        return;
+      }
+      var span = spans[i];
+      if (span) span.classList.add("on");
+      var word = words[i++];
+      var src = resolveAudioSrc(spokenWordKey(word));
+      if (!src) { setTimeout(next, gapMs); return; }
+      var a = new Audio(src);
+      a.volume = state.volume;
+      try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
+      tbWordAudio = a;
+      a.onended = function () { if (token === tbWordToken) setTimeout(next, gapMs); };
+      a.onerror = function () { if (token === tbWordToken) setTimeout(next, gapMs); };
+      var p = a.play();
+      if (p && p.catch) p.catch(function () { if (token === tbWordToken) setTimeout(next, gapMs); });
     }
     next();
   }
@@ -2480,7 +2566,25 @@
     var u = tbUnit();
     if (!u) return;
     var next = tbPageIdx + delta;
-    if (next < 0 || next >= u.pages.length) return;
+    var unitIdx = TB.indexOf(u);
+    if (next < 0) {
+      if (unitIdx <= 0) return;
+      tbUnitId = TB[unitIdx - 1].id;
+      tbPageIdx = TB[unitIdx - 1].pages.length - 1;
+      renderTbTabs();
+      renderTbPage();
+      sfx("tap");
+      return;
+    }
+    if (next >= u.pages.length) {
+      if (unitIdx < 0 || unitIdx >= TB.length - 1) return;
+      tbUnitId = TB[unitIdx + 1].id;
+      tbPageIdx = 0;
+      renderTbTabs();
+      renderTbPage();
+      sfx("tap");
+      return;
+    }
     tbPageIdx = next;
     renderTbPage();
     sfx("tap");
@@ -2626,6 +2730,7 @@
     $("#speakText").classList.toggle("len-xl", !isEn && tlen >= 12);
     var words = isEn ? item.text.trim().split(/\s+/).length : 0;
     $("#wordBtn").hidden = !(isEn && words >= 2);
+    $("#slow2Btn").hidden = !isEn;
     $("#speakText").classList.toggle("len-en-m", isEn && words >= 4);
     $("#speakText").classList.toggle("len-en-l", isEn && words >= 7);
     $("#speakPyRow").hidden = !single;
@@ -2665,7 +2770,7 @@
     stopWordSequence();
     var item = speakState.entries[speakState.idx].item;
     say(speakState.entries[speakState.idx].id, item.text, speakState.lang, slow);
-    var btn = slow ? $("#slowBtn") : $("#listenBtn");
+    var btn = slow === 2 ? $("#slow2Btn") : (slow ? $("#slowBtn") : $("#listenBtn"));
     btn.classList.add("playing");
     setTimeout(function () { btn.classList.remove("playing"); }, 1200);
   }
@@ -2999,15 +3104,39 @@
         return;
       }
       var sheetListen = t.closest("[data-tb-sheet-listen]");
-      if (sheetListen) { playLine(page, activeLine); return; }
+      if (sheetListen) {
+        if (tbSheetMode === "word") playTbSheetWord(false);
+        else playLine(page, activeLine);
+        return;
+      }
       var sheetSlow = t.closest("[data-tb-sheet-slow]");
-      if (sheetSlow) { playLine(page, activeLine, false, true); return; }
+      if (sheetSlow) {
+        if (tbSheetMode === "word") playTbSheetWord(true);
+        else playLine(page, activeLine, false, true);
+        return;
+      }
+      var sheetSlow2 = t.closest("[data-tb-sheet-slow2]");
+      if (sheetSlow2) {
+        if (tbSheetMode === "word") playTbSheetWord(2);
+        else playLine(page, activeLine, false, 2);
+        return;
+      }
       var sheetWord = t.closest("[data-tb-sheet-word]");
-      if (sheetWord) { sfx("tap"); playTbWordByWord(page, activeLine, tbGapMs()); return; }
+      if (sheetWord) {
+        sfx("tap");
+        if (tbSheetMode === "word") playTbSheetWordByWord(tbGapMs());
+        else playTbWordByWord(page, activeLine, tbGapMs());
+        return;
+      }
       var sheetZh = t.closest("[data-tb-sheet-zh]");
       if (sheetZh) {
-        var sl = page.lines[activeLine];
-        if (sl) { sfx("tap"); say(tbLineZhKey(page, activeLine), sl.zh, "zh-CN"); }
+        if (tbSheetMode === "word" && tbSheetWord) {
+          sfx("tap");
+          say(tbWordZhKey(tbSheetWord.w), tbSheetWord.zh, "zh-CN");
+        } else {
+          var sl = page.lines[activeLine];
+          if (sl) { sfx("tap"); say(tbLineZhKey(page, activeLine), sl.zh, "zh-CN"); }
+        }
         return;
       }
       var slowBtn = t.closest("[data-tb-slow]");
@@ -3029,13 +3158,13 @@
       var word = t.closest("[data-tb-word]");
       if (word) {
         var w = page.words.filter(function (x) { return x.w === word.dataset.tbWord; })[0];
-        if (w) { sfx("tap"); playTextbookWord(w.w, w.w, w.zh, false); }
+        if (w) { sfx("tap"); openTbWordSheet(w); playTextbookWord(w.w, w.w, w.zh, false); }
         return;
       }
       var wzh = t.closest("[data-tb-word-zh]");
       if (wzh) {
         var wz = page.words.filter(function (x) { return x.w === wzh.dataset.tbWordZh; })[0];
-        if (wz) { sfx("tap"); playTextbookWord(wz.w, wz.w, wz.zh, true); }
+        if (wz) { sfx("tap"); openTbWordSheet(wz); playTextbookWord(wz.w, wz.w, wz.zh, true); }
         return;
       }
       var tbt = t.closest("[data-tb-text]");
@@ -3116,7 +3245,7 @@
     });
     $("#voiceGapSel").addEventListener("change", function (ev) {
       var v = parseInt(ev.target.value, 10);
-      if ([200, 400, 600, 800, 1000].indexOf(v) >= 0) {
+      if ([200, 100, 50, 0].indexOf(v) >= 0) {
         state.tbGap = v;
         save();
       }
@@ -3124,6 +3253,10 @@
     $("#slowBtn").addEventListener("click", function () {
       sfx("tap");
       playCurrent(true);
+    });
+    $("#slow2Btn").addEventListener("click", function () {
+      sfx("tap");
+      playCurrent(2);
     });
     $("#tipBtn").addEventListener("click", function () {
       var item = currentItem();

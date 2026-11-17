@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="一年级小书房">
 <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=20261117-10">
+  <link rel="manifest" href="manifest.webmanifest?v=20261117-11">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261117-10">
+  <link rel="stylesheet" href="styles.css?v=20261117-11">
 </head>
 <body>
 
@@ -257,6 +257,9 @@
         <button class="slow-btn" id="slowBtn" type="button">
           <i class="icon icon-volume"></i>慢速
         </button>
+        <button class="slow-btn slow2-btn" id="slow2Btn" type="button" hidden>
+          <i class="icon icon-volume"></i>慢速×2
+        </button>
       </div>
     </div>
 
@@ -393,6 +396,7 @@
       </div>
     </div>
     <p class="tb-sheet-en" id="tbSheetEn"></p>
+    <p class="tb-sheet-ipa" id="tbSheetIpa" hidden></p>
     <div class="tb-sheet-zhrow">
       <span id="tbSheetZh"></span>
       <button type="button" data-tb-sheet-zh aria-label="听中文解释">
@@ -406,7 +410,10 @@
       <button type="button" data-tb-sheet-slow>
         <i class="icon icon-volume"></i>慢速
       </button>
-      <button type="button" data-tb-sheet-word>
+      <button type="button" data-tb-sheet-slow2>
+        <i class="icon icon-volume"></i>慢速×2
+      </button>
+      <button type="button" data-tb-sheet-word id="tbSheetWordBtn">
         <i class="icon icon-volume"></i>逐词
       </button>
     </div>
@@ -499,27 +506,26 @@
   <div class="voice-gap" id="voiceGapBox" hidden>
     <span>逐词间隔</span>
     <select id="voiceGapSel" aria-label="逐词间隔">
-      <option value="200">0.2 秒</option>
-      <option value="400">0.4 秒</option>
-      <option value="600">0.6 秒</option>
-      <option value="800">0.8 秒</option>
-      <option value="1000" selected>1 秒</option>
+      <option value="200" selected>200ms</option>
+      <option value="100">100ms</option>
+      <option value="50">50ms</option>
+      <option value="0">0ms</option>
     </select>
   </div>
 </div>
 
-<script src="assets/pinyin-pro.js?v=20261117-10"></script>
-<script src="data.js?v=20261117-10"></script>
-<script src="data-extra.js?v=20261117-10"></script>
-<script src="data-reading.js?v=20261117-10"></script>
-<script src="data-textbook.js?v=20261117-10"></script>
-<script src="data-textbook-images.js?v=20261117-10"></script>
-<script src="data-drill.js?v=20261117-10"></script>
-<script src="assets/en-ipa.js?v=20261117-10"></script>
-<script src="assets/audio-manifest.js?v=20261117-10"></script>
-<script src="assets/voice-libby.js?v=20261117-10"></script>
-<script src="assets/voice-maisie.js?v=20261117-10"></script>
-<script src="assets/voice-zh-xiaoyi.js?v=20261117-10"></script>
-<script src="app.js?v=20261117-10"></script>
+<script src="assets/pinyin-pro.js?v=20261117-11"></script>
+<script src="data.js?v=20261117-11"></script>
+<script src="data-extra.js?v=20261117-11"></script>
+<script src="data-reading.js?v=20261117-11"></script>
+<script src="data-textbook.js?v=20261117-11"></script>
+<script src="data-textbook-images.js?v=20261117-11"></script>
+<script src="data-drill.js?v=20261117-11"></script>
+<script src="assets/en-ipa.js?v=20261117-11"></script>
+<script src="assets/audio-manifest.js?v=20261117-11"></script>
+<script src="assets/voice-libby.js?v=20261117-11"></script>
+<script src="assets/voice-maisie.js?v=20261117-11"></script>
+<script src="assets/voice-zh-xiaoyi.js?v=20261117-11"></script>
+<script src="app.js?v=20261117-11"></script>
 </body>
 </html>

@@ -570,7 +570,9 @@ window.SPEAK_DECKS = [
       { "text": "Sam", "zh": "山姆" },
       { "text": "Ben", "zh": "本" },
       { "text": "Sue", "zh": "苏" },
-      { "text": "Jim", "zh": "吉姆" }
+      { "text": "Jim", "zh": "吉姆" },
+      { "text": "Chen Jiamin", "zh": "陈家敏" },
+      { "text": "Julia", "zh": "朱莉娅" }
         ]
       }
     ]
