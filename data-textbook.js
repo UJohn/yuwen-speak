@@ -134,7 +134,9 @@ window.TEXTBOOK_UNITS = [
           { w: "who", zh: "谁", ipa: "/huː/" },
           { w: "took", zh: "拿走（过去式）", ipa: "/tʊk/" },
           { w: "book", zh: "书", ipa: "/bʊk/" },
+          { w: "pencil", zh: "铅笔", ipa: "/ˈpensl/" },
           { w: "bag", zh: "书包", ipa: "/bæɡ/" },
+          { w: "ruler", zh: "尺子", ipa: "/ˈruːlə/" },
           { w: "from", zh: "从", ipa: "/frɒm/" }
         ]
       },

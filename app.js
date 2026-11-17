@@ -1545,6 +1545,9 @@
   var TB_IMG = window.TEXTBOOK_IMAGES || {};
   var TB_TEXT = window.TEXTBOOK_TEXT || {};
   var DRILL_SAY = window.DRILL_SAY || {};
+  var SPECIAL_TB_WORDS = {
+    "piggy bank": { w: "Piggy Bank", zh: "单词银行", ipa: "/ˈpɪɡi bæŋk/" }
+  };
 
   function isEnglishSentence(text) {
     var t = String(text || "").trim();
@@ -1566,6 +1569,10 @@
   function spokenWordKey(word) {
     var low = String(word || "").toLowerCase();
     return low === "a" ? "w:a-article" : "w:" + low;
+  }
+
+  function spokenTextKey(word) {
+    return String(word || "").toLowerCase() === "piggy bank" ? "w:piggy-bank" : tbWordKey(word);
   }
 
   function tbWordZhKey(word) {
@@ -2278,12 +2285,16 @@
         "%;width:" + (b[2] * 100).toFixed(2) + "%;height:" + (b[3] * 100).toFixed(2) + '%"></button>';
     });
     Object.keys(meta.wordBoxes || {}).forEach(function (word) {
-      var b = meta.wordBoxes[word];
-      if (!b) return;
-      if (meta.boxes.some(function (line) { return line && overlap(line, b) > 0.35; })) return;
-      hots += '<button class="tb-hot is-word" type="button" data-tb-word="' + escapeHTML(word) + '" aria-label="读单词 ' + escapeHTML(word) + '" style="left:' +
-        (b[0] * 100).toFixed(2) + "%;top:" + (b[1] * 100).toFixed(2) +
-        "%;width:" + (b[2] * 100).toFixed(2) + "%;height:" + (b[3] * 100).toFixed(2) + '%"></button>';
+      var raw = meta.wordBoxes[word];
+      if (!raw) return;
+      var list = Array.isArray(raw[0]) ? raw : [raw];
+      list.forEach(function (b) {
+        if (!b) return;
+        if (meta.boxes.some(function (line) { return line && overlap(line, b) > 0.35; })) return;
+        hots += '<button class="tb-hot is-word" type="button" data-tb-word="' + escapeHTML(word) + '" aria-label="读单词 ' + escapeHTML(word) + '" style="left:' +
+          (b[0] * 100).toFixed(2) + "%;top:" + (b[1] * 100).toFixed(2) +
+          "%;width:" + (b[2] * 100).toFixed(2) + "%;height:" + (b[3] * 100).toFixed(2) + '%"></button>';
+      });
     });
     return '<div class="tb-book"><img class="tb-book-img" src="' + escapeHTML(meta.img) + '" alt="' +
       escapeHTML(u.unit + " " + page.section + " 课本页") + '">' +
@@ -2352,6 +2363,16 @@
     var screen = $("#s-textbook");
     if (screen) screen.classList.add("sheet-open");
     syncVoiceFloat();
+    var hots = $$("#tbPage .tb-hot.is-word");
+    var hot = null;
+    for (var i = 0; i < hots.length; i++) {
+      if (hots[i].dataset.tbWord === word.w) { hot = hots[i]; break; }
+    }
+    if (hot) {
+      setTimeout(function () {
+        try { hot.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" }); } catch (err) {}
+      }, 60);
+    }
   }
 
   function syncVoiceFloat() {
@@ -2408,7 +2429,7 @@
 
   function playTextbookWord(word, text, zh, isZh) {
     if (isZh) say(tbWordZhKey(word), zh, "zh-CN");
-    else say(tbWordKey(word), text, "en-GB");
+    else say(spokenTextKey(word), text, "en-GB");
   }
 
   var tbWordAudio = null;
@@ -2495,7 +2516,7 @@
 
   function playTbSheetWord(slow) {
     if (tbSheetMode !== "word" || !tbSheetWord) return;
-    say(tbWordKey(tbSheetWord.w), tbSheetWord.w, "en-GB", slow);
+    say(spokenTextKey(tbSheetWord.w), tbSheetWord.w, "en-GB", slow);
   }
 
   function playTbSheetWordByWord(gapMs) {
@@ -3157,13 +3178,15 @@
       }
       var word = t.closest("[data-tb-word]");
       if (word) {
-        var w = page.words.filter(function (x) { return x.w === word.dataset.tbWord; })[0];
+        var w = page.words.filter(function (x) { return x.w === word.dataset.tbWord; })[0] ||
+          SPECIAL_TB_WORDS[word.dataset.tbWord];
         if (w) { sfx("tap"); openTbWordSheet(w); playTextbookWord(w.w, w.w, w.zh, false); }
         return;
       }
       var wzh = t.closest("[data-tb-word-zh]");
       if (wzh) {
-        var wz = page.words.filter(function (x) { return x.w === wzh.dataset.tbWordZh; })[0];
+        var wz = page.words.filter(function (x) { return x.w === wzh.dataset.tbWordZh; })[0] ||
+          SPECIAL_TB_WORDS[wzh.dataset.tbWordZh];
         if (wz) { sfx("tap"); openTbWordSheet(wz); playTextbookWord(wz.w, wz.w, wz.zh, true); }
         return;
       }
