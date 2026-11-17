@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>一年级小书房 · 语文英语跟读</title>
+<meta name="theme-color" content="#FFF8F0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="一年级小书房">
+<meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest?v=20261117-10">
+  <link rel="icon" href="assets/img/icon-192.png">
+<link rel="apple-touch-icon" href="assets/img/icon-180.png">
+  <link rel="stylesheet" href="styles.css?v=20261117-10">
+</head>
+<body>
+
+<div class="paper-grain" aria-hidden="true"></div>
+
+<div class="app" id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">书</span>
+      <div class="brand-text">
+        <h1>一年级小书房</h1>
+        <p>语文 · 英语 · 每天 5 分钟</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="star-chip" id="starChip" type="button" aria-label="我的星星">
+        <img src="assets/img/star.png" alt="">
+        <b id="starCount">0</b>
+      </button>
+      <button class="icon-btn" id="soundBtn" type="button" aria-label="声音开关">
+        <i class="icon icon-volume"></i>
+      </button>
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="家长设置">
+        <i class="icon icon-settings"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">一年级上册 · 每天读 5 分钟</span>
+        <h2>语文和英语，<span class="marker">每天读一点</span></h2>
+        <p class="hero-sub">先听女声读一遍，再大声跟读。读完回放自己的声音，<br>马上知道哪里没读准。写字可以打印，读书只能读出声。</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="startRead" type="button">
+            开始今天的跟读
+            <i class="icon icon-chevron"></i>
+          </button>
+          <button class="btn btn-ghost" id="gotoChinese" type="button">语文课本</button>
+          <button class="btn btn-ghost" id="gotoEnglish" type="button">英语课本</button>
+        </div>
+        <div class="hero-progress" id="heroProgress"></div>
+      </div>
+      <div class="hero-art">
+        <div class="hero-blob"></div>
+        <div class="mascot-frame">
+          <img src="assets/img/mascot-girl.png" alt="小书童">
+        </div>
+        <div class="speech" id="mascotLine">我先读，你跟着我读～</div>
+      </div>
+    </section>
+
+    <section class="today-line" id="todayLine"></section>
+
+    <section class="reading" id="reading">
+      <div class="section-head">
+        <h3>读一读</h3>
+        <p>语文和英语，各选一课</p>
+      </div>
+      <div class="read-grid" id="readGrid"></div>
+      <div class="read-stats" id="readStats"></div>
+    </section>
+
+    <section class="week">
+      <div class="section-head">
+        <h3>练一练</h3>
+        <p>先读，再打印一张空白字帖</p>
+      </div>
+      <div class="game-grid" id="gameGrid"></div>
+      <div class="print-row">
+        <button class="btn btn-soft" id="printBtn" type="button">
+          <i class="icon icon-pencil"></i>打印空白田字格
+        </button>
+        <p class="print-note">A4 空白田字格，写今天在课本里读到的字。</p>
+      </div>
+    </section>
+
+    <section class="parent-note">
+      <div class="note-tape" aria-hidden="true"></div>
+      <h3>给家长的三句话</h3>
+      <ol>
+        <li><b>语文和英语，读都是硬功夫。</b>每天各读 5 分钟，比抄十遍字有用。写字可以打印，读必须读出声。</li>
+        <li><b>打分只看“读对没读对”。</b>用的是浏览器语音识别，判断字音和单词是否对上，不评价口音好坏；听不清时多读一遍就好。</li>
+        <li><b>英语先跟课本单元走。</b>单词、句型都来自课本目录和词汇表；插图是原创绘制，没有扫描课本原图。写字仍放到纸上。</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>一年级上册 · 语文（人教部编版） + 英语（广州版英语口语） · 笔顺依据《现代汉语通用字笔顺规范》</p>
+  </footer>
+</div>
+
+<!-- ============================================================ 拼音找朋友 -->
+<section class="screen" id="s-pinyin" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>拼音找朋友</h2>
+      <p>先点上面的拼音，再点下面的字</p>
+    </div>
+    <div class="round-dots" id="pinyinDots"></div>
+  </div>
+
+  <div class="match-wrap">
+    <div class="tray-label">读一读，它是谁？</div>
+    <div class="pinyin-tray" id="pinyinTray"></div>
+    <div class="tray-label">点一个字，和它做朋友</div>
+    <div class="char-grid" id="charGrid"></div>
+  </div>
+
+  <div class="toast" id="pinyinToast" aria-live="polite"></div>
+</section>
+
+<!-- ============================================================ 认字小侦探 -->
+<section class="screen" id="s-read" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>认字小侦探</h2>
+      <p>看清字形，再选答案</p>
+    </div>
+    <div class="round-dots" id="readDots"></div>
+  </div>
+
+  <div class="read-wrap">
+    <div class="question-card">
+      <button class="icon-btn speak" id="speakQuestion" type="button" aria-label="读题">
+        <i class="icon icon-sound"></i>
+      </button>
+      <p class="question" id="questionText"></p>
+    </div>
+    <div class="option-grid" id="optionGrid"></div>
+    <p class="read-why" id="readWhy"></p>
+  </div>
+</section>
+
+<!-- ============================================================ 听音选拼音 -->
+<section class="screen" id="s-pinyin-quiz" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>听音选拼音</h2>
+      <p>听标准音，在时间内选出正确拼音</p>
+    </div>
+    <div class="round-dots" id="pqDots"></div>
+  </div>
+  <div class="quiz-wrap">
+    <div class="quiz-card" id="pqCard">
+      <div class="quiz-meta"><span id="pqCounter">1 / 10</span><span class="quiz-timer" id="pqTimer">8 秒</span></div>
+      <button class="quiz-speaker" id="pqSpeaker" type="button"><i class="icon icon-volume"></i>再听一遍</button>
+      <p class="quiz-prompt">听一听，它是哪个拼音？</p>
+      <div class="quiz-options pq-options" id="pqOptions"></div>
+      <div class="quiz-feedback" id="pqFeedback" hidden></div>
+      <button class="btn btn-primary quiz-next" id="pqNext" type="button" hidden>下一个</button>
+    </div>
+    <div class="quiz-result" id="pqResult" hidden></div>
+  </div>
+</section>
+
+<!-- ============================================================ 声调小侦探 -->
+<section class="screen" id="s-tone-quiz" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>声调小侦探</h2>
+      <p>看拼音，判断它是第几声</p>
+    </div>
+    <div class="round-dots" id="tqDots"></div>
+  </div>
+  <div class="quiz-wrap">
+    <div class="quiz-card" id="tqCard">
+      <div class="quiz-meta"><span id="tqCounter">1 / 10</span><span class="quiz-timer">看声调</span></div>
+      <p class="quiz-prompt">这个拼音是第几声？</p>
+      <div class="tq-pinyin" id="tqPinyin">mǎ</div>
+      <div class="quiz-options tone-options" id="tqOptions"></div>
+      <div class="quiz-feedback" id="tqFeedback" hidden></div>
+      <button class="btn btn-ghost quiz-play" id="tqPlay" type="button" hidden>
+        <i class="icon icon-volume"></i>听这个音
+      </button>
+      <button class="btn btn-primary quiz-next" id="tqNext" type="button" hidden>下一个</button>
+    </div>
+    <div class="quiz-result" id="tqResult" hidden></div>
+  </div>
+</section>
+
+<!-- ============================================================ 跟读打分 -->
+<section class="screen" id="s-speak" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2 id="speakTitle">跟读</h2>
+      <p id="speakSubTitle">听一遍，再跟着读</p>
+    </div>
+    <div class="round-dots" id="speakDots"></div>
+  </div>
+
+  <div class="speak-wrap">
+    <div class="speak-card" id="speakCard">
+      <div class="speak-topline">
+        <span class="speak-chip" id="speakChip">1 / 20</span>
+      </div>
+      <img class="word-img" id="speakImg" alt="" hidden>
+      <span class="color-chip" id="speakColor" hidden aria-hidden="true"></span>
+      <div class="py-above" id="speakPyRow" hidden>
+        <span id="speakPy"></span>
+      </div>
+      <div class="speak-text" id="speakText">一</div>
+      <div class="speak-ipa" id="speakIpa" hidden></div>
+      <div class="speak-zh-row" id="speakZhRow" hidden>
+        <span class="speak-sub" id="speakSub"></span>
+        <button class="zh-btn" id="zhBtn" type="button" aria-label="读中文意思">
+          <i class="icon icon-volume"></i>
+        </button>
+      </div>
+      <div class="tip-row" id="tipRow" hidden>
+        <button class="tip-btn" id="tipBtn" type="button" aria-label="读提示">
+          <i class="icon icon-volume"></i>
+        </button>
+        <p class="speak-tip" id="speakTip"></p>
+      </div>
+      <div class="speak-actions">
+        <button class="word-btn" id="wordBtn" type="button" hidden>
+          <i class="icon icon-volume"></i>逐词
+        </button>
+        <button class="listen-btn" id="listenBtn" type="button">
+          <i class="icon icon-volume"></i>听一遍
+        </button>
+        <button class="slow-btn" id="slowBtn" type="button">
+          <i class="icon icon-volume"></i>慢速
+        </button>
+      </div>
+    </div>
+
+    <div class="speak-bottom">
+      <button class="card-nav prev" id="cardPrev" type="button" aria-label="上一个">
+        <i class="icon icon-back"></i>
+      </button>
+      <div class="mic-zone" id="micZone">
+        <button class="mic-btn" id="micBtn" type="button" aria-label="开始跟读">
+          <i class="icon icon-mic"></i>
+        </button>
+        <p class="mic-hint" id="micHint">轮到你啦，点一下话筒</p>
+        <p class="mic-sub" id="micSub">读完会自动停下来</p>
+      </div>
+      <button class="card-nav next" id="cardNext" type="button" aria-label="下一个">
+        <i class="icon icon-chevron"></i>
+      </button>
+    </div>
+
+    <div class="result-panel" id="resultPanel" hidden>
+      <div class="playback" id="playbackBox" hidden>
+        <button class="play-mine" id="playMine" type="button" aria-label="回放我的朗读">
+          <i class="icon icon-play"></i>
+        </button>
+        <div class="playback-info">
+          <b>听听我读的</b>
+          <span id="playHint">先听一遍自己的声音，再打分</span>
+        </div>
+        <button class="model-btn" id="playModel" type="button" aria-label="听标准音">
+          <i class="icon icon-volume"></i>标准音
+        </button>
+      </div>
+      <button class="btn btn-primary score-btn" id="scoreBtn" type="button" hidden>看看评分</button>
+      <div id="scoreReveal" hidden>
+        <div class="result-stars" id="resultStars"></div>
+        <p class="result-title" id="resultTitle"></p>
+        <p class="result-heard" id="resultHeard"></p>
+        <div class="result-actions">
+          <button class="btn btn-soft" id="retryBtn" type="button">
+            <i class="icon icon-refresh"></i>再读一次
+          </button>
+          <button class="btn btn-primary" id="nextSpeakBtn" type="button">下一个</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 英语单元 -->
+<section class="screen" id="s-units" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2 id="unitsTitle">语文课本</h2>
+      <p id="unitsSubTitle">人教部编版一年级上册 · 选一个单元</p>
+    </div>
+  </div>
+  <div class="subject-tabs" id="subjectTabs" role="tablist" aria-label="选择科目">
+    <button type="button" data-subject="zh" role="tab">语文</button>
+    <button type="button" data-subject="en" role="tab">英语</button>
+  </div>
+  <div class="unit-list" id="unitList"></div>
+</section>
+
+<!-- ============================================================ 拼音综合认读 -->
+<section class="screen" id="s-pinyin-drill" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>拼音认读</h2>
+      <p>先选声调，再点拼音听发音</p>
+    </div>
+  </div>
+  <div class="drill-tonebar" id="drillTonebar">
+    <button type="button" data-drill-tone="1" class="on">第一声</button>
+    <button type="button" data-drill-tone="2">第二声</button>
+    <button type="button" data-drill-tone="3">第三声</button>
+    <button type="button" data-drill-tone="4">第四声</button>
+  </div>
+  <div class="drill-wrap">
+    <div class="drill-legend">
+      <b>声调图例</b>
+      <span>第一声 高平</span><span>第二声 上扬</span><span>第三声 先降后升</span><span>第四声 下降</span>
+      <p>声母统一读第一声呼读音，如 bō、pō、mō、fō；韵母和整体认读按上面选中的声调读。点拼音可以反复听。</p>
+    </div>
+    <div id="drillGroups"></div>
+  </div>
+</section>
+
+<!-- ============================================================ 选一个 -->
+<section class="screen" id="s-pick" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2 id="pickTitle">选一个</h2>
+      <p id="pickSub">点一个开始读</p>
+    </div>
+    <button class="pick-start" id="pickStart" type="button">从头开始</button>
+  </div>
+  <div class="pick-grid" id="pickGrid"></div>
+</section>
+
+<!-- ============================================================ 英语读课文 -->
+<section class="screen" id="s-textbook" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>英语读课文</h2>
+      <p>点句子听英语，点小喇叭听中文解释</p>
+    </div>
+    <button class="tb-image-toggle" id="tbImageToggle" type="button" aria-pressed="false" hidden>课本图</button>
+  </div>
+  <div class="tb-tabs" id="tbTabs" role="tablist" aria-label="选择英语单元"></div>
+  <div class="tb-page" id="tbPage"></div>
+  <div class="toast tb-toast" id="tbToast" aria-live="polite"></div>
+</section>
+
+<div class="tb-sheet" id="tbSheet" hidden aria-live="polite">
+    <span class="tb-sheet-handle" aria-hidden="true"></span>
+    <div class="tb-sheet-top">
+      <span class="tb-sheet-chip" id="tbSheetChip">1 / 1</span>
+      <div class="tb-sheet-nav">
+        <button type="button" data-tb-sheet-nav="prev" aria-label="上一句">‹</button>
+        <button type="button" data-tb-sheet-nav="next" aria-label="下一句">›</button>
+        <button type="button" data-tb-sheet-close aria-label="关闭朗读卡">×</button>
+      </div>
+    </div>
+    <p class="tb-sheet-en" id="tbSheetEn"></p>
+    <div class="tb-sheet-zhrow">
+      <span id="tbSheetZh"></span>
+      <button type="button" data-tb-sheet-zh aria-label="听中文解释">
+        <i class="icon icon-volume"></i>
+      </button>
+    </div>
+    <div class="tb-sheet-actions">
+      <button type="button" data-tb-sheet-listen>
+        <i class="icon icon-volume"></i>听一遍
+      </button>
+      <button type="button" data-tb-sheet-slow>
+        <i class="icon icon-volume"></i>慢速
+      </button>
+      <button type="button" data-tb-sheet-word>
+        <i class="icon icon-volume"></i>逐词
+      </button>
+    </div>
+</div>
+
+<!-- ============================================================ 完成庆祝 -->
+<div class="celebrate" id="celebrate" hidden>
+  <canvas id="confetti"></canvas>
+  <div class="celebrate-card">
+    <img class="celebrate-star" src="assets/img/star.png" alt="">
+    <h2 id="celebrateTitle">太棒啦！</h2>
+    <p id="celebrateText"></p>
+    <div class="earned" id="celebrateStars"></div>
+    <div class="celebrate-actions">
+      <button class="btn btn-primary" id="celebrateNext" type="button">下一关</button>
+      <button class="btn btn-ghost" id="celebrateHome" type="button">回小书房</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ 家长设置 -->
+<div class="modal" id="settingsModal" hidden>
+  <div class="modal-card">
+    <button class="icon-btn modal-close" id="modalClose" type="button" aria-label="关闭">
+      <i class="icon icon-x"></i>
+    </button>
+    <h2>家长设置</h2>
+    <p class="modal-sub">星星、进度、音量、音色、慢速档位都会自动保存在本机浏览器；换设备或清缓存会清空。</p>
+    <div class="setting-row">
+      <div>
+        <b>提示音</b>
+        <span>答对、答错时的小声音</span>
+      </div>
+      <button class="switch" id="soundSwitch" type="button" role="switch" aria-checked="true"><span></span></button>
+    </div>
+    <div class="setting-row">
+      <div>
+        <b>朗读</b>
+        <span>点小喇叭，用普通话或英语读题、读字</span>
+      </div>
+      <button class="switch" id="speakSwitch" type="button" role="switch" aria-checked="true"><span></span></button>
+    </div>
+    <div class="setting-block">
+      <b>语音音量</b>
+      <div class="volume-row">
+        <input type="range" id="volumeRange" min="20" max="100" step="5" value="100" aria-label="语音音量">
+        <span id="volumeValue">100%</span>
+        <button class="mini-test" id="volumeTest" type="button">试听</button>
+      </div>
+    </div>
+    <div class="setting-block">
+      <b>慢速档位</b>
+      <div class="seg-row" id="slowSeg">
+        <button type="button" data-rate="0.6">很慢 0.6×</button>
+        <button type="button" data-rate="0.72">慢 0.72×</button>
+        <button type="button" data-rate="0.85">稍慢 0.85×</button>
+      </div>
+    </div>
+    <div class="setting-block">
+      <b>中文音色</b>
+      <div class="seg-row" id="zhVoiceSeg">
+        <button type="button" data-zh-voice="xiaoxiao">晓晓</button>
+        <button type="button" data-zh-voice="xiaoyi">晓伊</button>
+      </div>
+      <button class="mini-test voice-test" id="zhVoiceTest" type="button">试听中文音色</button>
+    </div>
+    <div class="setting-block">
+      <b>英语音色</b>
+      <div class="seg-row" id="voiceSeg">
+        <button type="button" data-voice="sonia">Sonia</button>
+        <button type="button" data-voice="libby">Libby</button>
+        <button type="button" data-voice="maisie">Maisie</button>
+      </div>
+      <button class="mini-test voice-test" id="voiceTest" type="button">试听英语音色</button>
+    </div>
+    <div class="setting-block">
+      <b>这周怎么练</b>
+      <p>一天两小关，读完再做一张字帖，约 10 分钟。跟读先听标准音，读完点话筒结束；写字放到纸上。</p>
+    </div>
+    <button class="btn btn-danger" id="resetBtn" type="button">清空所有记录，重新开始</button>
+  </div>
+</div>
+
+<div class="print-sheet" id="printSheet" aria-hidden="true"></div>
+<audio id="myVoice" hidden></audio>
+
+<div class="voice-float" id="voiceFloat" hidden aria-label="切换音色">
+  <span>音色</span>
+  <div id="voiceFloatBtns"></div>
+  <div class="voice-gap" id="voiceGapBox" hidden>
+    <span>逐词间隔</span>
+    <select id="voiceGapSel" aria-label="逐词间隔">
+      <option value="200">0.2 秒</option>
+      <option value="400">0.4 秒</option>
+      <option value="600">0.6 秒</option>
+      <option value="800">0.8 秒</option>
+      <option value="1000" selected>1 秒</option>
+    </select>
+  </div>
+</div>
+
+<script src="assets/pinyin-pro.js?v=20261117-10"></script>
+<script src="data.js?v=20261117-10"></script>
+<script src="data-extra.js?v=20261117-10"></script>
+<script src="data-reading.js?v=20261117-10"></script>
+<script src="data-textbook.js?v=20261117-10"></script>
+<script src="data-textbook-images.js?v=20261117-10"></script>
+<script src="data-drill.js?v=20261117-10"></script>
+<script src="assets/en-ipa.js?v=20261117-10"></script>
+<script src="assets/audio-manifest.js?v=20261117-10"></script>
+<script src="assets/voice-libby.js?v=20261117-10"></script>
+<script src="assets/voice-maisie.js?v=20261117-10"></script>
+<script src="assets/voice-zh-xiaoyi.js?v=20261117-10"></script>
+<script src="app.js?v=20261117-10"></script>
+</body>
+</html>
