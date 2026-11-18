@@ -552,8 +552,7 @@
     if (!grid) return;
     grid.innerHTML = "";
     [
-      { id: "alphabet", mark: "A", title: "英语字母表", sub: "26 个字母 · 听音选字母", art: "A a  ·  B b  ·  C c" },
-      { id: "ipa", mark: "/iː/", title: "国际音标", sub: "44 个音标 · 听例词选音标", art: "see · sit · cat · book" }
+      { id: "alphabet", mark: "A", title: "英语字母表", sub: "26 个字母 · 听音选字母", art: "A a  ·  B b  ·  C c" }
     ].forEach(function (tool) {
       var b = document.createElement("button");
       b.type = "button";
@@ -564,8 +563,7 @@
         '<span class="tool-go"><i class="icon icon-chevron"></i></span>';
       b.addEventListener("click", function () {
         sfx("tap");
-        if (tool.id === "alphabet") openAlphabet();
-        else openIpa();
+        openAlphabet();
       });
       grid.appendChild(b);
     });
@@ -626,47 +624,37 @@
     return "10 题";
   }
 
+  function makeGameCard(kind, meta, day, ds, extra) {
+    var card = document.createElement("button");
+    card.type = "button";
+    card.className = "game-card" + (extra ? " extra-game" : "");
+    card.dataset.game = kind;
+    card.innerHTML =
+      (ds[kind]
+        ? '<span class="g-done"><i class="icon icon-check"></i></span>'
+        : '<span class="g-count">' + (extra ? "10 题" : gameCount(kind, day)) + "</span>") +
+      '<span class="g-tag">' + meta.tag + "</span>" +
+      "<h4>" + meta.name + "</h4>" +
+      '<p class="g-sub">' + meta.sub + "</p>" +
+      gameArt(kind);
+    card.addEventListener("click", function () {
+      flowQueue = null;
+      openGame(kind, currentDay);
+    });
+    return card;
+  }
+
   function renderGameGrid() {
     var grid = $("#gameGrid");
+    if (!grid) return;
     var day = dayByNo(currentDay);
     var ds = state.days[currentDay] || {};
     grid.innerHTML = "";
     GAME_ORDER.forEach(function (kind) {
-      var meta = GAME_META[kind];
-      var card = document.createElement("button");
-      card.type = "button";
-      card.className = "game-card";
-      card.dataset.game = kind;
-      card.innerHTML =
-        (ds[kind]
-          ? '<span class="g-done"><i class="icon icon-check"></i></span>'
-          : '<span class="g-count">' + gameCount(kind, day) + "</span>") +
-        '<span class="g-tag">' + meta.tag + "</span>" +
-        "<h4>" + meta.name + "</h4>" +
-        '<p class="g-sub">' + meta.sub + "</p>" +
-        gameArt(kind);
-      card.addEventListener("click", function () {
-        flowQueue = null;
-        openGame(kind, currentDay);
-      });
-      grid.appendChild(card);
+      grid.appendChild(makeGameCard(kind, GAME_META[kind], day, ds, false));
     });
     EXTRA_GAMES.forEach(function (meta) {
-      var card = document.createElement("button");
-      card.type = "button";
-      card.className = "game-card extra-game";
-      card.dataset.game = meta.kind;
-      card.innerHTML =
-        '<span class="g-count">10 题</span>' +
-        '<span class="g-tag">' + meta.tag + "</span>" +
-        "<h4>" + meta.name + "</h4>" +
-        '<p class="g-sub">' + meta.sub + "</p>" +
-        gameArt(meta.kind);
-      card.addEventListener("click", function () {
-        flowQueue = null;
-        openGame(meta.kind, currentDay);
-      });
-      grid.appendChild(card);
+      grid.appendChild(makeGameCard(meta.kind, meta, day, ds, true));
     });
   }
 
@@ -2559,40 +2547,99 @@
     var decks = subjectDecks(subject.id);
     if (!decks.length) return;
     showScreen("s-units");
-    $("#unitsTitle").textContent = subject.name + "课本";
-    $("#unitsSubTitle").textContent = subject.id === "en"
-      ? "广州版英语口语一年级第一册 · 选一个单元"
-      : "人教部编版一年级上册 · 选一个单元";
-    $$("#subjectTabs button").forEach(function (b) {
-      var on = b.dataset.subject === subject.id;
-      b.classList.toggle("on", on);
-      b.setAttribute("aria-selected", String(on));
+    var isEn = subject.id === "en";
+    var screen = $("#s-units");
+    screen.classList.toggle("theme-zh", !isEn);
+    screen.classList.toggle("theme-en", isEn);
+    $("#unitsTitle").textContent = isEn ? "英语小课堂" : "语文小课堂";
+    $("#unitsSubTitle").textContent = isEn
+      ? "课本、字母、单词、句子和跟读"
+      : "课本、拼音、识字、阅读和闯关练习";
+    var entries = allReadingEntries().filter(function (e) {
+      return (e.deck && e.deck.subject) === subject.id;
     });
+    var done = entries.filter(function (e) { return readDone(e) > 0; }).length;
+    var hero = $("#subjectHero");
+    if (hero) {
+      hero.innerHTML =
+        '<div class="subject-hero ' + (isEn ? "is-en" : "is-zh") + '">' +
+          '<div class="subject-hero-copy">' +
+            '<span class="subject-kicker">' + (isEn ? "ENGLISH · 英语" : "CHINESE · 语文") + "</span>" +
+            "<h2>" + (isEn ? "先听懂，再勇敢开口" : "把课本读熟，字词就会了") + "</h2>" +
+            "<p>" + (isEn
+              ? "从课本单元开始，也可以直接读课文、练单词和句子。"
+              : "从课本单元开始，拼音、识字、阅读和小游戏都在下面。") + "</p>" +
+          "</div>" +
+          '<div class="subject-hero-side">' +
+            '<span class="subject-big-mark">' + (isEn ? "A" : "语") + "</span>" +
+            '<span class="subject-progress">已读 <b>' + done + "</b> / " + entries.length + " 个</span>" +
+          "</div>" +
+        "</div>";
+    }
     var list = $("#unitList");
     list.innerHTML = "";
+    function addSection(title, note, className) {
+      var section = document.createElement("section");
+      section.className = "subject-section " + (className || "");
+      section.innerHTML =
+        '<div class="subject-section-head"><h3>' + escapeHTML(title) + "</h3>" +
+        "<p>" + escapeHTML(note) + "</p></div>" +
+        '<div class="subject-card-grid"></div>';
+      list.appendChild(section);
+      return section.querySelector(".subject-card-grid");
+    }
+    var unitGrid = addSection(
+      isEn ? "课本单元" : "按课本单元",
+      isEn ? "6 个单元 + 2 个复习 + 英文名，全部平铺" : "8 个单元，点开就能读",
+      "subject-units"
+    );
     decks.forEach(function (deck) {
       if (!deck.units) return;
-      addUnitGroup(list, subject.id === "en" ? "课本单元与复习" : "按课本单元", subject.id === "en"
-        ? "6 个单元 · 2 个复习 · 英文名"
-        : "8 个单元 · 与课本目录同步");
-      deck.units.forEach(function (u) { list.appendChild(unitCard(u, subject.id)); });
+      deck.units.forEach(function (u) { unitGrid.appendChild(unitCard(u, subject.id)); });
     });
-    if (subject.id === "en" && TB.length) {
-      addUnitGroup(list, "读课文", "点句子听读 · 6 个单元 · 24 页");
-      list.appendChild(textbookEntryCard());
-    }
-    if (subject.id === "zh") {
-      addUnitGroup(list, "拼音综合", "声调 + 声母 + 韵母 + 整体认读");
-      list.appendChild(pinyinDrillCard());
-    }
+    if (isEn && TB.length) unitGrid.appendChild(textbookEntryCard());
+
     var drillIds = { "zh-tones": 1, "zh-initials": 1, "zh-finals": 1, "zh-whole": 1 };
     var extras = decks.filter(function (d) { return !d.units && !drillIds[d.id]; });
+    if (!isEn) {
+      var phonicsGrid = addSection("拼音与识字", "声调、声母、韵母、整体认读和字词练习", "subject-phonics");
+      phonicsGrid.appendChild(pinyinDrillCard());
+    }
     if (extras.length) {
-      addUnitGroup(list, "专项练习", subject.id === "en" ? "单词、句子，随时加练" : "拼音、声调、声母、韵母、整体认读，随时加练");
-      var deckGrid = document.createElement("div");
-      deckGrid.className = "deck-grid";
-      extras.forEach(function (d) { deckGrid.appendChild(deckCard(d)); });
-      list.appendChild(deckGrid);
+      var practiceGrid = addSection(
+        isEn ? "专项练习" : "阅读与专项",
+        isEn ? "单词、句子和陌生单词本，随时加练" : "拼音、词语、句子和小游戏，随时加练",
+        "subject-practice"
+      );
+      extras.forEach(function (d) { practiceGrid.appendChild(deckCard(d)); });
+    }
+    if (!isEn) {
+      var gameGrid = addSection("闯关小游戏", "拼音找朋友、认字小侦探和听音小游戏", "subject-games");
+      var gameDay = dayByNo(currentDay);
+      var gameDone = state.days[currentDay] || {};
+      GAME_ORDER.forEach(function (kind) {
+        gameGrid.appendChild(makeGameCard(kind, GAME_META[kind], gameDay, gameDone, false));
+      });
+      EXTRA_GAMES.forEach(function (meta) {
+        gameGrid.appendChild(makeGameCard(meta.kind, meta, gameDay, gameDone, true));
+      });
+    }
+    if (isEn) {
+      var toolsGrid = addSection("英语工具", "字母表保留，点击就能听", "subject-tools");
+      var alpha = document.createElement("button");
+      alpha.type = "button";
+      alpha.className = "unit-card alphabet-entry";
+      alpha.innerHTML =
+        '<span class="unit-no">A</span>' +
+        '<span class="unit-info"><b>英语字母表</b>' +
+        "<span>26 个字母 · 听音选字母</span>" +
+        "<em>Aa · Bb · Cc · …</em></span>" +
+        '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
+      alpha.addEventListener("click", function () {
+        sfx("tap");
+        openAlphabet();
+      });
+      toolsGrid.appendChild(alpha);
     }
   }
 
@@ -3947,6 +3994,13 @@
       });
     });
 
+    $$("[data-open-subject]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        sfx("tap");
+        openSubject(b.dataset.openSubject);
+      });
+    });
+
     var gotoChinese = $("#gotoChinese");
     if (gotoChinese) gotoChinese.addEventListener("click", function () {
       sfx("tap");
@@ -4192,7 +4246,6 @@
     });
     $("#bqNext").addEventListener("click", nextBlendQuiz);
     $("#alphabetQuizStart").addEventListener("click", function () { startEnglishQuiz("alphabet"); });
-    $("#ipaQuizStart").addEventListener("click", function () { startEnglishQuiz("ipa"); });
     $("#eqSpeaker").addEventListener("click", function () {
       if (!eqState) return;
       enQuizSpeak(eqState.items[eqState.idx]);

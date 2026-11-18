@@ -13,7 +13,7 @@
   <link rel="manifest" href="manifest.webmanifest?v=20261117-18">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261118-20">
+  <link rel="stylesheet" href="styles.css?v=20261118-23">
 </head>
 <body>
 
@@ -43,14 +43,44 @@
     </div>
   </header>
 
-  <nav class="home-tabs" id="homeTabs" role="tablist" aria-label="学习区域">
+  <nav class="home-tabs legacy-home" id="homeTabs" role="tablist" aria-label="学习区域" hidden>
     <button type="button" data-home-tab="zh" class="on">语文课</button>
     <button type="button" data-home-tab="en">英语课</button>
     <button type="button" data-home-tab="practice">闯关练习</button>
   </nav>
 
   <main>
-    <section class="hero">
+    <section class="home-pick" id="homePick">
+      <div class="home-pick-copy">
+        <span class="eyebrow">一年级上册 · 今天读哪一科？</span>
+        <h2>欢迎回到<span class="marker">小书房</span></h2>
+        <p>语文和英语分开进入，课本、拼音、识字、阅读和跟读练习都在里面。</p>
+      </div>
+      <div class="home-pick-grid">
+        <button class="subject-choice subject-choice-zh" type="button" data-open-subject="zh">
+          <span class="choice-doodle" aria-hidden="true">✎</span>
+          <span class="choice-kicker">CHINESE · 语文</span>
+          <strong>语文小课堂</strong>
+          <span class="choice-desc">课本跟读 · 拼音 · 识字 · 阅读 · 闯关</span>
+          <span class="choice-foot">进去读一读 <i class="icon icon-chevron"></i></span>
+          <span class="choice-mark" aria-hidden="true">语</span>
+        </button>
+        <button class="subject-choice subject-choice-en" type="button" data-open-subject="en">
+          <span class="choice-doodle" aria-hidden="true">★</span>
+          <span class="choice-kicker">ENGLISH · 英语</span>
+          <strong>英语小课堂</strong>
+          <span class="choice-desc">课本跟读 · 字母 · 单词 · 句子 · 口语</span>
+          <span class="choice-foot">进去读一读 <i class="icon icon-chevron"></i></span>
+          <span class="choice-mark" aria-hidden="true">A</span>
+        </button>
+      </div>
+      <div class="home-pick-note">
+        <img src="assets/img/star.webp" alt="">
+        <span>每天 5 分钟，先听再读；读错了也没关系，慢慢来。</span>
+      </div>
+    </section>
+
+    <section class="hero legacy-home">
       <div class="hero-copy">
         <span class="eyebrow">一年级上册 · 每天读 5 分钟</span>
         <h2>语文和英语，<span class="marker">每天读一点</span></h2>
@@ -72,9 +102,9 @@
       </div>
     </section>
 
-    <section class="today-line" id="todayLine"></section>
+    <section class="today-line legacy-home" id="todayLine"></section>
 
-    <section class="reading" id="reading">
+    <section class="reading legacy-home" id="reading">
       <div class="section-head">
         <h3 id="readingTitle">语文阅读</h3>
         <p id="readingSub">课本、拼音、词语、句子</p>
@@ -83,7 +113,7 @@
       <div class="read-stats" id="readStats"></div>
     </section>
 
-    <section class="english-tools" id="englishTools" hidden>
+    <section class="english-tools legacy-home" id="englishTools" hidden>
       <div class="section-head">
         <h3>英语工具</h3>
         <p>字母表 · 国际音标 · 听音练习</p>
@@ -91,7 +121,7 @@
       <div class="tool-grid" id="englishToolGrid"></div>
     </section>
 
-    <section class="week" id="practiceSection" hidden>
+    <section class="week legacy-home" id="practiceSection" hidden>
       <div class="section-head">
         <h3>闯关练习</h3>
         <p>拼音、识字和听音小游戏</p>
@@ -105,7 +135,7 @@
       </div>
     </section>
 
-    <section class="parent-note">
+    <section class="parent-note legacy-home">
       <div class="note-tape" aria-hidden="true"></div>
       <h3>给家长的三句话</h3>
       <ol>
@@ -279,25 +309,6 @@
   </div>
 </section>
 
-<!-- ============================================================ 国际音标 -->
-<section class="screen" id="s-ipa" hidden>
-  <div class="screen-top">
-    <button class="icon-btn back" type="button" data-back aria-label="返回">
-      <i class="icon icon-back"></i>
-    </button>
-    <div class="screen-title">
-      <h2>国际音标</h2>
-      <p>点音标听例词，再玩听例词选音标</p>
-    </div>
-  </div>
-  <div class="ipa-wrap">
-    <div id="ipaGrid"></div>
-    <button class="btn btn-primary alpha-quiz-btn" id="ipaQuizStart" type="button">
-      开始听例词选音标
-    </button>
-  </div>
-</section>
-
 <!-- ============================================================ 英语小测 -->
 <section class="screen" id="s-en-quiz" hidden>
   <div class="screen-top">
@@ -434,10 +445,7 @@
       <p id="unitsSubTitle">人教部编版一年级上册 · 选一个单元</p>
     </div>
   </div>
-  <div class="subject-tabs" id="subjectTabs" role="tablist" aria-label="选择科目">
-    <button type="button" data-subject="zh" role="tab">语文课</button>
-    <button type="button" data-subject="en" role="tab">英语课</button>
-  </div>
+  <div id="subjectHero"></div>
   <div class="unit-list" id="unitList"></div>
 </section>
 
@@ -635,6 +643,6 @@
   </div>
 </div>
 
-<script src="app-bundle.js?v=20261118-22"></script>
+<script src="app-bundle.js?v=20261118-23"></script>
 </body>
 </html>
