@@ -823,6 +823,7 @@
     else if (id === "s-speak") goBackFromSpeak();
     else if (id === "s-textbook") openSubject("en");
     else if (id === "s-pinyin-drill") openSubject("zh");
+    else if (id === "s-spell") openSubject("zh");
     else if (id === "s-pick") openSubject((pickDeck && pickDeck.subject) || "en");
     else if (id === "s-alphabet") openSubject("en");
     else if (id === "s-en-quiz") {
@@ -2122,6 +2123,159 @@
     return b;
   }
 
+  function spellCard() {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "unit-card deck-card spell-card";
+    b.innerHTML =
+      '<span class="unit-no">拼</span>' +
+      '<span class="unit-info"><b>拼读工坊</b>' +
+      "<span>声母 + 声调韵母，拼出整音节</span>" +
+      "<em>选一选，听 b + ā = bā</em></span>" +
+      '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
+    b.addEventListener("click", function () {
+      sfx("tap");
+      openSpell();
+    });
+    return b;
+  }
+
+  var spellState = { initial: "b", final: "a", tone: 1 };
+  var spellInitialItems = [];
+  var spellFinalItems = [];
+  var spellLoading = false;
+  var spellCallbacks = [];
+
+  function ensureSpellData(cb) {
+    if (window.SPELL_DATA) {
+      if (cb) cb();
+      return;
+    }
+    if (cb) spellCallbacks.push(cb);
+    if (spellLoading) return;
+    spellLoading = true;
+    var s = document.createElement("script");
+    s.src = "assets/spell-data.js?v=20261119-30";
+    s.onload = function () {
+      spellLoading = false;
+      var list = spellCallbacks.splice(0);
+      list.forEach(function (fn) { fn(); });
+    };
+    s.onerror = function () {
+      spellLoading = false;
+      var list = spellCallbacks.splice(0);
+      list.forEach(function (fn) { fn(); });
+    };
+    document.head.appendChild(s);
+  }
+
+  function spellDisplayFinal(initial, finalText) {
+    if (["j", "q", "x", "y"].indexOf(initial) >= 0) {
+      return finalText.replace(/ü/g, "u");
+    }
+    return finalText;
+  }
+
+  function spellInitialIndex(text) {
+    for (var i = 0; i < spellInitialItems.length; i++) {
+      if (spellInitialItems[i].text === text) return i;
+    }
+    return 0;
+  }
+
+  function spellFinalIndex(text) {
+    for (var i = 0; i < spellFinalItems.length; i++) {
+      if (spellFinalItems[i].text === text) return i;
+    }
+    return 0;
+  }
+
+  function spellKey() {
+    return spellState.initial + ":" + spellState.final + ":" + spellState.tone;
+  }
+
+  function initSpellSelectors() {
+    var initials = drillDeck("zh-initials");
+    var finals = drillDeck("zh-finals");
+    spellInitialItems = (initials && initials.items) || [];
+    spellFinalItems = (finals && finals.items) || [];
+    var si = $("#spellInitial");
+    var sf = $("#spellFinal");
+    if (!si || !sf) return;
+    si.innerHTML = spellInitialItems.map(function (it) {
+      return '<option value="' + escapeHTML(it.text) + '">' + escapeHTML(it.text) + "</option>";
+    }).join("");
+    sf.innerHTML = spellFinalItems.map(function (it) {
+      return '<option value="' + escapeHTML(it.text) + '">' + escapeHTML(it.text) + "</option>";
+    }).join("");
+    si.value = spellState.initial;
+    sf.value = spellState.final;
+  }
+
+  function spellToneFinal(entry) {
+    var py = entry && entry.py ? entry.py : "";
+    if (py && py.indexOf(spellState.initial) === 0) return py.slice(spellState.initial.length);
+    return spellState.final;
+  }
+
+  function updateSpell() {
+    var entry = spellData()[spellKey()];
+    var si = $("#spellInitial");
+    var sf = $("#spellFinal");
+    if (si) si.value = spellState.initial;
+    if (sf) sf.value = spellState.final;
+    $$("#spellTonebar button").forEach(function (b) {
+      b.classList.toggle("on", parseInt(b.dataset.spellTone, 10) === spellState.tone);
+    });
+    $("#spellInitialView").textContent = spellState.initial;
+    var finalText = spellToneFinal(entry);
+    $("#spellFinalView").textContent = spellDisplayFinal(spellState.initial, finalText);
+    $("#spellResult").textContent = entry
+      ? entry.py
+      : spellState.initial + spellDisplayFinal(spellState.initial, spellState.final);
+    $("#spellHint").textContent = entry
+      ? "先听声母、韵母，再听完整音节。"
+      : "这个组合不是普通话常用音节，换一个试试。";
+    $("#spellPlay").disabled = !entry;
+  }
+
+  function openSpell() {
+    rememberSubjectScroll();
+    showScreen("s-spell");
+    initSpellSelectors();
+    updateSpell();
+    ensureSpellData(updateSpell);
+  }
+
+  function playSpell() {
+    var entry = spellData()[spellKey()];
+    if (!entry) return;
+    ensureAudioPack(function () {
+      var ii = spellInitialIndex(spellState.initial);
+      var fi = spellFinalIndex(spellState.final);
+      var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
+      playSequence(keys, function () {
+        var a = new Audio(entry.audio + "?v=20261119-30");
+        a.volume = state.volume;
+        a.playbackRate = 1;
+        try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
+        var p = a.play();
+        if (p && p.catch) p.catch(function () {});
+      });
+    });
+  }
+
+  function randomSpell() {
+    var keys = Object.keys(spellData());
+    if (!keys.length) return;
+    var key = keys[Math.floor(Math.random() * keys.length)];
+    var parts = key.split(":");
+    spellState.initial = parts[0];
+    spellState.final = parts[1];
+    spellState.tone = parseInt(parts[2], 10);
+    updateSpell();
+  }
+
   function openPinyinDrill() {
     rememberSubjectScroll();
     drillTone = 1;
@@ -2169,6 +2323,9 @@
   var TB_IMG = window.TEXTBOOK_IMAGES || {};
   var TB_TEXT = window.TEXTBOOK_TEXT || {};
   var DRILL_SAY = window.DRILL_SAY || {};
+  function spellData() {
+    return window.SPELL_DATA || {};
+  }
   var SPECIAL_TB_WORDS = {
     "piggy bank": { w: "Piggy Bank", zh: "单词银行", ipa: "/ˈpɪɡi bæŋk/" }
   };
@@ -2619,6 +2776,7 @@
     if (!isEn) {
       var phonicsGrid = addSection("拼音与识字", "声调、声母、韵母、整体认读和字词练习", "subject-phonics");
       phonicsGrid.appendChild(pinyinDrillCard());
+      phonicsGrid.appendChild(spellCard());
     }
     if (extras.length) {
       var practiceGrid = addSection(
@@ -4274,6 +4432,29 @@
       b.classList.add("on");
       setTimeout(function () { b.classList.remove("on"); }, 700);
       say(b.dataset.drillKey, b.dataset.drillText, "zh-CN");
+    });
+    $("#spellInitial").addEventListener("change", function (ev) {
+      spellState.initial = ev.target.value;
+      updateSpell();
+    });
+    $("#spellFinal").addEventListener("change", function (ev) {
+      spellState.final = ev.target.value;
+      updateSpell();
+    });
+    $("#spellTonebar").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-spell-tone]");
+      if (!b) return;
+      spellState.tone = parseInt(b.dataset.spellTone, 10) || 1;
+      sfx("tap");
+      updateSpell();
+    });
+    $("#spellPlay").addEventListener("click", function () {
+      sfx("tap");
+      playSpell();
+    });
+    $("#spellRandom").addEventListener("click", function () {
+      sfx("tap");
+      randomSpell();
     });
     document.addEventListener("click", function (ev) {
       var again = ev.target.closest("[data-quiz-again]");

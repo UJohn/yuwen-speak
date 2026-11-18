@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="一年级小书房">
 <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=20261119-29">
+  <link rel="manifest" href="manifest.webmanifest?v=20261119-30">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261119-29">
+  <link rel="stylesheet" href="styles.css?v=20261119-30">
 </head>
 <body>
 
@@ -483,6 +483,52 @@
   </div>
 </section>
 
+<!-- ============================================================ 拼读工坊 -->
+<section class="screen" id="s-spell" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>拼读工坊</h2>
+      <p>选声母、韵母和声调，听完整拼读</p>
+    </div>
+  </div>
+  <div class="spell-wrap">
+    <div class="spell-card">
+      <div class="spell-selects">
+        <label>声母
+          <select id="spellInitial" aria-label="选择声母"></select>
+        </label>
+        <label>韵母
+          <select id="spellFinal" aria-label="选择韵母"></select>
+        </label>
+      </div>
+      <div class="spell-tonebar" id="spellTonebar">
+        <button type="button" data-spell-tone="1" class="on">第一声</button>
+        <button type="button" data-spell-tone="2">第二声</button>
+        <button type="button" data-spell-tone="3">第三声</button>
+        <button type="button" data-spell-tone="4">第四声</button>
+      </div>
+      <div class="spell-display" aria-live="polite">
+        <span id="spellInitialView">b</span>
+        <i>+</i>
+        <span id="spellFinalView">ā</span>
+        <i>=</i>
+        <strong id="spellResult">bā</strong>
+      </div>
+      <p class="spell-hint" id="spellHint">先听一遍，再自己拼。</p>
+      <div class="spell-actions">
+        <button class="btn btn-primary" id="spellPlay" type="button">
+          <i class="icon icon-volume"></i>拼读一遍
+        </button>
+        <button class="btn btn-ghost" id="spellRandom" type="button">换一个</button>
+      </div>
+      <p class="spell-note">只练拼音本身，不显示例字。</p>
+    </div>
+  </div>
+</section>
+
 <!-- ============================================================ 选一个 -->
 <section class="screen" id="s-pick" hidden>
   <div class="screen-top">
@@ -662,6 +708,6 @@
   <div id="voiceFloatBtns"></div>
 </div>
 
-<script src="app-bundle.js?v=20261119-29"></script>
+<script src="app-bundle.js?v=20261119-30"></script>
 </body>
 </html>

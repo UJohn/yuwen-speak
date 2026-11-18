@@ -4166,3 +4166,119 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 @media (min-width: 901px) and (max-width: 1000px) {
   .voice-float.on-drill { display: none; }
 }
+
+/* ---------------------------------------------------------------- spell workshop */
+.spell-wrap {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 6px 0 40px;
+}
+.spell-card {
+  padding: 24px 26px 22px;
+  border: 1.5px solid #F0D6DE;
+  border-radius: 26px;
+  background: var(--paper);
+  box-shadow: 0 10px 0 rgba(90, 68, 60, .04);
+}
+.spell-selects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.spell-selects label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+.spell-selects select {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1.5px solid #F0D6DE;
+  border-radius: 14px;
+  background: #FFFDF8;
+  color: var(--ink);
+  font-family: var(--py);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.spell-tonebar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0;
+}
+.spell-tonebar button {
+  min-height: 44px;
+  border: 1.5px solid #EADDD5;
+  border-radius: 999px;
+  background: #FFFDF8;
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.spell-tonebar button.on {
+  border-color: #D9BFE8;
+  background: #F7F2FE;
+  color: #6E5194;
+}
+.spell-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  min-height: 88px;
+  margin: 4px 0 12px;
+  padding: 16px 14px;
+  border: 1.5px dashed #E8D3C8;
+  border-radius: 20px;
+  background: #FFF9F3;
+  font-family: var(--py);
+}
+.spell-display span {
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 700;
+}
+.spell-display i { color: #B9A59A; font-style: normal; font-size: 20px; }
+.spell-display strong {
+  color: #B4586E;
+  font-size: clamp(34px, 5vw, 48px);
+}
+.spell-hint {
+  min-height: 20px;
+  margin: 0 0 18px;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  text-align: center;
+}
+.spell-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.spell-actions .btn { min-width: 140px; }
+.spell-note {
+  margin: 18px 0 0;
+  color: var(--ink-3);
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .spell-card { padding: 18px 16px 18px; border-radius: 22px; }
+  .spell-selects { gap: 8px; }
+  .spell-tonebar { gap: 5px; }
+  .spell-tonebar button { font-size: 11px; }
+  .spell-display { gap: 7px; padding: 12px 8px; }
+  .spell-display span { padding: 3px 8px; }
+  .spell-actions .btn { min-width: 0; flex: 1; }
+}
