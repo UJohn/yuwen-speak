@@ -66,7 +66,6 @@
   var pinyinProCallbacks = [];
   var BLENDS = window.PINYIN_BLENDS || [];
   var EN_ALPHABET = window.ENGLISH_ALPHABET || [];
-  var EN_IPA = window.ENGLISH_IPA || [];
 
   function loadState() {
     try {
@@ -520,13 +519,6 @@
 
   function renderHome() {
     $("#starCount").textContent = state.stars;
-    renderReading();
-    renderEnglishTools();
-    renderToday();
-    renderGameGrid();
-    applyHomeTab();
-    renderHeroProgress();
-    renderMascotLine();
     syncSoundIcon();
     syncSettingsUI();
     applyVolume();
@@ -1938,44 +1930,10 @@
     });
   }
 
-  function openIpa() {
-    showScreen("s-ipa");
-    renderIpa();
-  }
-
-  function renderIpa() {
-    var box = $("#ipaGrid");
-    if (!box) return;
-    box.innerHTML = "";
-    [["vowel", "元音"], ["consonant", "辅音"]].forEach(function (group) {
-      var items = EN_IPA.filter(function (x) { return x.kind === group[0]; });
-      if (!items.length) return;
-      var section = document.createElement("section");
-      section.className = "ipa-section";
-      section.innerHTML = "<h3>" + group[1] + "</h3>";
-      var grid = document.createElement("div");
-      grid.className = "ipa-grid";
-      items.forEach(function (item) {
-        var b = document.createElement("button");
-        b.type = "button";
-        b.className = "ipa-card";
-        b.dataset.ipaKey = item.key;
-        b.innerHTML = "<b>" + escapeHTML(item.ipa) + "</b><span>" + escapeHTML(item.word) + "</span>";
-        b.addEventListener("click", function () {
-          sfx("tap");
-          say(item.key, item.word, "en-GB");
-        });
-        grid.appendChild(b);
-      });
-      section.appendChild(grid);
-      box.appendChild(section);
-    });
-  }
-
   var eqState = null;
 
   function enQuizPool(mode) {
-    return mode === "alphabet" ? EN_ALPHABET : EN_IPA;
+    return EN_ALPHABET;
   }
 
   function enQuizLabel(item) {
@@ -2571,7 +2529,10 @@
               : "从课本单元开始，拼音、识字、阅读和小游戏都在下面。") + "</p>" +
           "</div>" +
           '<div class="subject-hero-side">' +
-            '<span class="subject-big-mark">' + (isEn ? "A" : "语") + "</span>" +
+            '<div class="subject-mascot-wrap">' +
+              '<img class="subject-mascot" src="assets/img/mascot-girl.webp" alt="">' +
+              '<span class="subject-big-mark">' + (isEn ? "A" : "语") + "</span>" +
+            "</div>" +
             '<span class="subject-progress">已读 <b>' + done + "</b> / " + entries.length + " 个</span>" +
           "</div>" +
         "</div>";
@@ -3509,7 +3470,7 @@
     $("#speakZhRow").hidden = !showZh;
     $("#speakSub").hidden = !showZh;
     $("#speakSub").textContent = showZh ? item.zh : "";
-    var ipa = isEn ? (item.ipa || (window.EN_IPA && window.EN_IPA[item.text]) || "") : "";
+    var ipa = isEn ? (item.ipa || "") : "";
     $("#speakIpa").textContent = ipa;
     $("#speakIpa").hidden = !ipa;
     $("#tipRow").hidden = !(!isEn && item.tip);
