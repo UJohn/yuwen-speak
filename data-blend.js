@@ -1,5 +1,9 @@
 window.AUDIO_MAP=window.AUDIO_MAP||{};
 window.AUDIO_MAP["py:diǎn"]="assets/audio/py-dian3.mp3";
+window.AUDIO_MAP["fb:tone-1"]="assets/audio/feedback/tone-1.mp3";
+window.AUDIO_MAP["fb:tone-2"]="assets/audio/feedback/tone-2.mp3";
+window.AUDIO_MAP["fb:tone-3"]="assets/audio/feedback/tone-3.mp3";
+window.AUDIO_MAP["fb:tone-4"]="assets/audio/feedback/tone-4.mp3";
 window.AUDIO_MAP["blend:ba"]="assets/audio/blend-ba.mp3";
 window.AUDIO_MAP["blend:pa"]="assets/audio/blend-pa.mp3";
 window.AUDIO_MAP["blend:ma"]="assets/audio/blend-ma.mp3";

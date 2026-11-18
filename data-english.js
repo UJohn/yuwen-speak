@@ -1,4 +1,6 @@
 window.AUDIO_MAP=window.AUDIO_MAP||{};
+window.AUDIO_MAP["en-feedback:right"]="assets/audio/english/feedback/right.mp3";
+window.AUDIO_MAP["en-feedback:wrong"]="assets/audio/english/feedback/wrong.mp3";
 window.AUDIO_MAP["en-alphabet:a"]="assets/audio/english/alphabet/a.mp3";
 window.AUDIO_MAP["en-alphabet:b"]="assets/audio/english/alphabet/b.mp3";
 window.AUDIO_MAP["en-alphabet:c"]="assets/audio/english/alphabet/c.mp3";

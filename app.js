@@ -151,7 +151,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261118-9";
+  var AUDIO_VERSION = "20261118-11";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -190,6 +190,27 @@
         return;
       } catch (err) {}
     }
+  }
+
+  function feedbackSay(ok, subject) {
+    if (!state.speak) return;
+    if (subject === "en") {
+      say(ok ? "en-feedback:right" : "en-feedback:wrong",
+        ok ? "That's right!" : "Try again.", "en-GB");
+      return;
+    }
+    say(ok ? "quiz:right" : "quiz:wrong",
+      ok ? "答对啦！" : "再听一听。", "zh-CN");
+  }
+
+  function feedbackKey(ok, subject) {
+    if (subject === "en") return ok ? "en-feedback:right" : "en-feedback:wrong";
+    return ok ? "quiz:right" : "quiz:wrong";
+  }
+
+  function playFeedbackSequence(keys) {
+    if (!state.speak) return;
+    playSequence(keys.filter(Boolean), null);
   }
 
   function stopTextbookSequence() {
@@ -517,11 +538,11 @@
   }
 
   function gameCount(kind, day) {
-    if (kind === "pinyin") return (day.pinyin.length + extraPinyinForDay(day).length) + " 组";
+    if (kind === "pinyin") return "8 组";
     if (kind === "stroke" || kind === "trace") return day.write.length + " 个字";
     if (kind === "pinyinQuiz" || kind === "blendQuiz") return "10 题";
     if (kind === "toneQuiz") return "20 题";
-    return (day.read.length + extraReadForDay(day).length) + " 道题";
+    return "10 题";
   }
 
   function renderGameGrid() {
@@ -841,10 +862,26 @@
     return out;
   }
 
+  function allPinyinPairs() {
+    var out = [];
+    var seen = {};
+    function add(pair) {
+      var key = pair[0] + "|" + pair[1];
+      if (seen[key]) return;
+      seen[key] = 1;
+      out.push(pair);
+    }
+    DAYS.forEach(function (day) {
+      (day.pinyin || []).forEach(add);
+    });
+    ((window.EXTRA_PRACTICE && window.EXTRA_PRACTICE.pinyin) || []).forEach(add);
+    return out;
+  }
+
   function startPinyin() {
     var day = dayByNo(currentDay);
     showScreen("s-pinyin");
-    var pairs = day.pinyin.concat(extraPinyinForDay(day));
+    var pairs = shuffle(allPinyinPairs()).slice(0, 8);
     pyState = { day: day, pairs: pairs, selected: null, left: pairs.length, total: pairs.length };
     var tray = $("#pinyinTray");
     var grid = $("#charGrid");
@@ -1260,10 +1297,25 @@
     return out;
   }
 
+  function allReadQuestions() {
+    var out = [];
+    var seen = {};
+    function add(q) {
+      if (!q || seen[q.q]) return;
+      seen[q.q] = 1;
+      out.push(q);
+    }
+    DAYS.forEach(function (day) {
+      (day.read || []).forEach(add);
+    });
+    ((window.EXTRA_PRACTICE && window.EXTRA_PRACTICE.read) || []).forEach(add);
+    return out;
+  }
+
   function startRead() {
     var day = dayByNo(currentDay);
     showScreen("s-read");
-    readState = { day: day, items: day.read.concat(extraReadForDay(day)), idx: 0, locked: false, done: 0 };
+    readState = { day: day, items: shuffle(allReadQuestions()).slice(0, 10), idx: 0, locked: false, done: 0 };
     renderReadDots();
     loadQuestion(0);
   }
@@ -1308,7 +1360,7 @@
       $("#readWhy").textContent = item.why;
       readState.done++;
       renderReadDots();
-      say("ans:" + item.ans, item.ans, "zh-CN");
+      playFeedbackSequence([feedbackKey(true, "zh"), "ans:" + item.ans]);
       if (readState.done === readState.items.length) {
         setTimeout(function () {
           completeActivity("read", 3, readState.items.length + " 题都看准了。看清字形再动笔，字就不会写错。");
@@ -1319,6 +1371,7 @@
     } else {
       btn.classList.add("wrong");
       sfx("wrong");
+      feedbackSay(false, "zh");
       setTimeout(function () { btn.classList.remove("wrong"); }, 420);
       $("#readWhy").textContent = "再仔细看看它的样子。";
     }
@@ -1403,7 +1456,7 @@
     fb.hidden = false;
     fb.className = "quiz-feedback " + (ok ? "right" : "wrong");
     fb.textContent = ok ? "答对啦！" : (picked ? "再听一听，正确答案是「" + item.label + "」。" : "时间到，正确答案是「" + item.label + "」。");
-    say(ok ? "quiz:right" : "quiz:wrong", ok ? "答对啦！" : "再听一听。", "zh-CN");
+    playFeedbackSequence([feedbackKey(ok, "zh"), item.key]);
     $("#pqNext").hidden = false;
     $("#pqNext").textContent = pqState.idx + 1 >= pqState.items.length ? "看成绩" : "下一个";
   }
@@ -1508,9 +1561,7 @@
     $("#tqPlay").hidden = false;
     $("#tqNext").hidden = false;
     $("#tqNext").textContent = tqState.idx + 1 >= tqState.items.length ? "看成绩" : "下一个";
-    setTimeout(function () {
-      if (tqState && tqState.items[tqState.idx] === item) say(item.key, item.ch, "zh-CN");
-    }, 280);
+    playFeedbackSequence([feedbackKey(ok, "zh"), item.key, "fb:tone-" + item.tone]);
   }
 
   function playToneQuizItem() {
@@ -1612,7 +1663,7 @@
     $("#bqReadResult").hidden = true;
     $("#bqPlayMine").hidden = true;
     $("#bqReadStatus").textContent = "";
-    say(ok ? "quiz:right" : "quiz:wrong", ok ? "答对啦！" : "再听一听。", "zh-CN");
+    playFeedbackSequence([feedbackKey(ok, "zh"), item.key]);
     $("#bqNext").hidden = false;
     $("#bqNext").textContent = bqState.idx + 1 >= bqState.items.length ? "看成绩" : "下一个";
   }
@@ -1918,7 +1969,7 @@
     fb.textContent = ok
       ? "答对啦！" + (item.letter ? item.letter + " " + item.lower : item.ipa + " · " + item.word + " " + item.zh)
       : "再听一听，正确答案是「" + enQuizLabel(item) + "」" + (item.letter ? "" : " · " + item.word);
-    say(ok ? "quiz:right" : "quiz:wrong", ok ? "答对啦！" : "再听一听。", "en-GB");
+    playFeedbackSequence([feedbackKey(ok, "en"), item.key]);
     $("#eqNext").hidden = false;
     $("#eqNext").textContent = eqState.idx + 1 >= eqState.items.length ? "看成绩" : "下一个";
   }
@@ -3527,7 +3578,8 @@
       : (best.text ? "读得不一样，再听一遍" : "这次没听清");
     $("#resultTitle").textContent = resultTitle;
     setTimeout(function () {
-      say("fb:" + resultTitle, resultTitle, "zh-CN");
+      if (speakState.lang.indexOf("en") === 0) feedbackSay(best.stars >= 2, "en");
+      else say("fb:" + resultTitle, resultTitle, "zh-CN");
     }, 220);
     $("#resultHeard").textContent = best.text ? "我听到的是：「" + best.text + "」" : "";
     if (best.stars > 0) {
