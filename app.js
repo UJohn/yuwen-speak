@@ -148,7 +148,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261118-6";
+  var AUDIO_VERSION = "20261118-7";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -644,6 +644,7 @@
     pqTimerId = null;
     pqState = null;
     tqState = null;
+    resetBlendRead();
     bqState = null;
     renderHome();
   }
@@ -1433,7 +1434,9 @@
     $("#tqPlay").hidden = false;
     $("#tqNext").hidden = true;
     $("#tqOptions").innerHTML = [1, 2, 3, 4].map(function (t) {
-      return '<button class="quiz-opt" type="button" data-tq-tone="' + t + '">第 ' + t + " 声</button>";
+      var mark = { 1: "ˉ", 2: "ˊ", 3: "ˇ", 4: "ˋ" }[t];
+      return '<button class="quiz-opt" type="button" data-tq-tone="' + t + '">' +
+        '<span class="tone-symbol">' + mark + "</span><span>第 " + t + " 声</span></button>";
     }).join("");
     setTimeout(function () {
       if (tqState === st && !st.locked) say(item.key, item.ch, "zh-CN");
@@ -1501,6 +1504,10 @@
   /* ------------------------------------------------------------ blend quiz */
 
   var bqState = null;
+  var bqReadRec = null;
+  var bqReadActive = false;
+  var bqReadSettled = true;
+  var bqReadTimer = null;
 
   function startBlendQuiz() {
     if (!BLENDS.length) return;
@@ -1520,6 +1527,9 @@
     $("#bqCounter").textContent = (st.idx + 1) + " / " + st.items.length;
     $("#bqFeedback").hidden = true;
     $("#bqNext").hidden = true;
+    resetBlendRead();
+    $("#bqReadBox").hidden = true;
+    $("#bqReadResult").hidden = true;
     var others = shuffle(BLENDS.filter(function (x) { return x.id !== item.id; })).slice(0, 3);
     var opts = shuffle([item].concat(others));
     $("#bqOptions").innerHTML = opts.map(function (o) {
@@ -1549,6 +1559,10 @@
     fb.textContent = ok
       ? "答对啦！" + item.parts.join(" — ")
       : (picked ? "再听一听，完整音节是「" + item.py + "」。" : "正确答案是「" + item.py + "」。");
+    $("#bqReadTarget").textContent = item.parts.join(" — ");
+    $("#bqReadBox").hidden = false;
+    $("#bqReadResult").hidden = true;
+    $("#bqReadStatus").textContent = "";
     say(ok ? "quiz:right" : "quiz:wrong", ok ? "答对啦！" : "再听一听。", "zh-CN");
     $("#bqNext").hidden = false;
     $("#bqNext").textContent = bqState.idx + 1 >= bqState.items.length ? "看成绩" : "下一个";
@@ -1579,6 +1593,131 @@
         '<button class="btn btn-ghost" type="button" data-quiz-home="1">回小书房</button>' +
       "</div>";
     if (n >= 7) say("praise:真棒！", "真棒！", "zh-CN");
+  }
+
+  function resetBlendRead() {
+    if (bqReadTimer) {
+      clearTimeout(bqReadTimer);
+      bqReadTimer = null;
+    }
+    if (bqReadRec) {
+      try { bqReadRec.abort(); } catch (err) {}
+      bqReadRec = null;
+    }
+    bqReadActive = false;
+    bqReadSettled = true;
+    var status = $("#bqReadStatus");
+    if (status) status.textContent = "";
+    var btn = $("#bqReadBtn");
+    if (btn) btn.innerHTML = '<i class="icon icon-mic"></i>跟读并评分';
+  }
+
+  function startBlendRead() {
+    if (!bqState) return;
+    if (bqReadActive) {
+      stopBlendRead(true);
+      return;
+    }
+    if (!SR) {
+      $("#bqReadStatus").textContent = "这个浏览器不能评分，请用 Edge 或 Safari";
+      return;
+    }
+    if (location.protocol === "file:") {
+      $("#bqReadStatus").textContent = "请用 localhost 或 HTTPS 网址打开";
+      return;
+    }
+    resetBlendRead();
+    var item = bqState.items[bqState.idx];
+    var rec = new SR();
+    bqReadRec = rec;
+    bqReadActive = true;
+    bqReadSettled = false;
+    $("#bqReadResult").hidden = true;
+    $("#bqReadStatus").textContent = "正在听…读完点一下结束";
+    $("#bqReadBtn").innerHTML = '<i class="icon icon-mic"></i>结束并评分';
+    rec.lang = "zh-CN";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.maxAlternatives = 5;
+    rec.onresult = function (ev) {
+      var best = [];
+      var interim = "";
+      for (var i = ev.resultIndex; i < ev.results.length; i++) {
+        var r = ev.results[i];
+        if (r.isFinal) {
+          for (var j = 0; j < r.length; j++) best.push(r[j].transcript);
+        } else {
+          interim += r[0].transcript;
+        }
+      }
+      if (interim) $("#bqReadStatus").textContent = "听到：" + interim;
+      if (best.length) finishBlendRead(best, false);
+    };
+    rec.onerror = function () {
+      finishBlendRead([], true);
+    };
+    rec.onend = function () {
+      if (bqReadActive && !bqReadSettled) finishBlendRead([], false);
+    };
+    try {
+      rec.start();
+      bqReadTimer = setTimeout(function () { stopBlendRead(false); }, 6500);
+    } catch (err) {
+      finishBlendRead([], true);
+    }
+  }
+
+  function stopBlendRead(manual) {
+    if (!bqReadActive || bqReadSettled) return;
+    bqReadActive = false;
+    if (bqReadTimer) {
+      clearTimeout(bqReadTimer);
+      bqReadTimer = null;
+    }
+    $("#bqReadStatus").textContent = manual ? "正在结算…" : "时间到，正在结算…";
+    try { if (bqReadRec) bqReadRec.stop(); } catch (err) {}
+    setTimeout(function () {
+      if (!bqReadSettled) finishBlendRead([], false);
+    }, 800);
+  }
+
+  function finishBlendRead(alts, failed) {
+    if (!bqState || bqReadSettled) return;
+    bqReadSettled = true;
+    bqReadActive = false;
+    if (bqReadTimer) {
+      clearTimeout(bqReadTimer);
+      bqReadTimer = null;
+    }
+    $("#bqReadBtn").innerHTML = '<i class="icon icon-mic"></i>再跟读一次';
+    $("#bqReadStatus").textContent = "";
+    var item = bqState.items[bqState.idx];
+    var targets = [item.py, item.parts.join(""), item.parts.join(" ")];
+    var heard = "";
+    var best = { ratio: -1, stars: 0, text: "" };
+    (alts || []).forEach(function (alt) {
+      targets.forEach(function (target) {
+        var s = scoreSay(target, alt, "zh-CN");
+        if (s.ratio > best.ratio) best = { ratio: s.ratio, stars: s.stars, text: alt };
+      });
+      if (alt && !heard) heard = alt;
+    });
+    var box = $("#bqReadResult");
+    box.hidden = false;
+    if (failed || !alts || !alts.length) {
+      box.innerHTML = "没有听到清楚的声音，再点话筒试一次。";
+      sfx("wrong");
+      return;
+    }
+    var title = best.stars === 3 ? "读得真准！" : best.stars === 2 ? "很接近了，再清楚一点" : best.stars === 1 ? "再听一遍，跟着读" : "再试一次，慢一点读";
+    box.innerHTML = '<b>' + title + "</b><br>我听到的是：「" + escapeHTML(heard) + "」" +
+      (best.stars ? " " + starTag(best.stars) : "");
+    if (best.stars >= 2) {
+      sfx("correct");
+      say("praise:真棒！", "真棒！", "zh-CN");
+    } else {
+      sfx("wrong");
+    }
   }
 
   /* ------------------------------------------------------------ pinyin drill */
@@ -3600,6 +3739,7 @@
       var b = ev.target.closest("[data-bq-opt]");
       if (b) answerBlendQuiz(b);
     });
+    $("#bqReadBtn").addEventListener("click", startBlendRead);
     $("#bqNext").addEventListener("click", nextBlendQuiz);
     $("#drillTonebar").addEventListener("click", function (ev) {
       var b = ev.target.closest("[data-drill-tone]");

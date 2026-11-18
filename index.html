@@ -13,7 +13,7 @@
   <link rel="manifest" href="manifest.webmanifest?v=20261117-18">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261117-18">
+  <link rel="stylesheet" href="styles.css?v=20261118-7">
 </head>
 <body>
 
@@ -231,6 +231,14 @@
       <p class="quiz-prompt">听一听，它是哪个拼音？</p>
       <div class="quiz-options" id="bqOptions"></div>
       <div class="quiz-feedback" id="bqFeedback" hidden></div>
+      <div class="bq-read" id="bqReadBox" hidden>
+        <p>跟读：<b id="bqReadTarget">b — a — ba</b></p>
+        <button class="btn btn-ghost" id="bqReadBtn" type="button">
+          <i class="icon icon-mic"></i>跟读并评分
+        </button>
+        <span class="bq-read-status" id="bqReadStatus"></span>
+        <div class="bq-read-result" id="bqReadResult" hidden></div>
+      </div>
       <button class="btn btn-primary quiz-next" id="bqNext" type="button" hidden>下一个</button>
     </div>
     <div class="quiz-result" id="bqResult" hidden></div>
@@ -556,12 +564,12 @@
 <script src="data-drill.js?v=20261117-18"></script>
 <script src="assets/en-ipa.js?v=20261117-18"></script>
 <script src="assets/audio-manifest.js?v=20261117-18"></script>
-<script src="data-blend.js?v=20261118-4"></script>
+<script src="data-blend.js?v=20261118-7"></script>
 <script src="assets/voice-libby.js?v=20261117-18"></script>
 <script src="assets/voice-maisie.js?v=20261117-18"></script>
 <script src="assets/voice-youdao.js?v=20261117-18"></script>
 <script src="assets/voice-tencent.js?v=20261117-18"></script>
 <script src="assets/voice-zh-xiaoyi.js?v=20261117-18"></script>
-<script src="app.js?v=20261118-6"></script>
+<script src="app.js?v=20261118-7"></script>
 </body>
 </html>
