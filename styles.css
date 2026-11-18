@@ -3380,9 +3380,10 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   display: grid;
   place-items: center;
   padding: 2px 4px;
+  overflow: hidden;
 }
 #tbPage .tb-reader-book {
-  height: calc(100dvh - 330px);
+  height: auto;
   width: auto;
   max-width: 100%;
   max-height: 100%;
@@ -3406,22 +3407,54 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 2px 0;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 2px 2px;
 }
-.tb-stage-nav {
+.tb-page-btn {
   flex: none;
-  min-height: 42px;
-  padding: 0 11px;
-  border: 1.5px solid #E8D3C8;
-  border-radius: 999px;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 2px solid #E8D3C8;
+  border-radius: 50%;
   background: #FFFDF8;
-  color: var(--ink-2);
-  font-size: 11px;
+  color: #8D746A;
+  font-family: var(--py);
+  font-size: 26px;
+  line-height: 1;
+  box-shadow: 0 4px 0 rgba(90, 68, 60, .07);
   cursor: pointer;
+  transition: transform .14s, box-shadow .14s;
 }
-.tb-stage-nav:disabled { opacity: .32; cursor: default; }
-.tb-stage-foot .tb-dots { min-width: 0; }
+.tb-page-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(90, 68, 60, .07);
+}
+.tb-page-btn:disabled { opacity: .3; cursor: default; box-shadow: none; }
+.tb-page-info {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.tb-page-info .tb-dots { flex: none; }
+.tb-page-pos {
+  color: #A98B78;
+  font-family: var(--py);
+  font-size: 10px;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.tb-swipe-hint {
+  color: #BCA79A;
+  font-size: 9px;
+  line-height: 1.3;
+}
 
 .tb-rail {
   min-width: 0;
@@ -3593,7 +3626,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 7px;
-  padding-top: 9px;
+  padding: 10px 0 10px;
   margin-top: 2px;
   border-top: 1px solid #F2E2D8;
   background: var(--cream);
@@ -3613,6 +3646,8 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   padding: 0 10px;
   font-size: 12px;
 }
+.tb-rail-actions .btn-primary:active,
+.tb-rail-actions .btn-ghost:active { transform: translateY(2px); }
 
 @media (max-width: 900px) {
   .tb-reader-shell {

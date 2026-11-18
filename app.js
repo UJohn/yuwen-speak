@@ -2155,7 +2155,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-31";
+    s.src = "assets/spell-data.js?v=20261119-32";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2255,7 +2255,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-31");
+        var a = new Audio(entry.audio + "?v=20261119-32");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -3083,9 +3083,15 @@
             "</div>" +
           "</div>" +
           '<div class="tb-stage-foot">' +
-            '<button type="button" class="tb-stage-nav" data-tb-nav="prev"' + (atVeryStart ? " disabled" : "") + ">" + prevLabel + "</button>" +
-            '<span class="tb-dots">' + dots + "</span>" +
-            '<button type="button" class="tb-stage-nav" data-tb-nav="next"' + (atVeryEnd ? " disabled" : "") + ">" + nextLabel + "</button>" +
+            '<button type="button" class="tb-page-btn" data-tb-nav="prev" aria-label="' +
+              escapeHTML(prevLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryStart ? " disabled" : "") + ">‹</button>" +
+            '<div class="tb-page-info">' +
+              '<span class="tb-dots">' + dots + "</span>" +
+              '<span class="tb-page-pos">第 ' + (idx + 1) + " / " + u.pages.length +
+                ' 页<span class="tb-swipe-hint"> · 左右滑动翻页</span></span>' +
+            "</div>" +
+            '<button type="button" class="tb-page-btn" data-tb-nav="next" aria-label="' +
+              escapeHTML(nextLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryEnd ? " disabled" : "") + ">›</button>" +
           "</div>" +
         "</section>" +
         '<aside class="tb-rail" aria-label="当前页句子和动作">' +
@@ -3136,6 +3142,9 @@
     }
     syncTbFocusLine(page, 0);
     syncTbImageToggle();
+    bindTbSwipe();
+    fitTbBook();
+    requestAnimationFrame(fitTbBook);
     try { $("#s-textbook").scrollTop = 0; } catch (err) {}
   }
 
@@ -3517,6 +3526,45 @@
     tbPageIdx = next;
     renderTbPage();
     sfx("tap");
+  }
+
+  function bindTbSwipe() {
+    var page = $("#tbPage");
+    if (!page || page.dataset.swipeBound) return;
+    page.dataset.swipeBound = "1";
+    var startX = 0, startY = 0, tracking = false;
+    page.addEventListener("touchstart", function (ev) {
+      if (!ev.touches || ev.touches.length !== 1) { tracking = false; return; }
+      if (!ev.target.closest || !ev.target.closest("#tbStage")) { tracking = false; return; }
+      startX = ev.touches[0].clientX;
+      startY = ev.touches[0].clientY;
+      tracking = true;
+    }, { passive: true });
+    page.addEventListener("touchend", function (ev) {
+      if (!tracking) return;
+      tracking = false;
+      var t = (ev.changedTouches && ev.changedTouches[0]) || null;
+      if (!t) return;
+      var dx = t.clientX - startX;
+      var dy = t.clientY - startY;
+      if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+      tbNav(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  }
+
+  function fitTbBook() {
+    var wrap = $("#tbPage .tb-book-wrap");
+    var book = $("#tbPage .tb-reader-book");
+    if (!wrap || !book) return;
+    var box = wrap.getBoundingClientRect();
+    var w = box.width - 8;
+    var h = box.height - 4;
+    if (w <= 0 || h <= 0) return;
+    var ratio = 900 / 1264;
+    var width = Math.min(w, h * ratio);
+    var height = width / ratio;
+    book.style.width = Math.floor(width) + "px";
+    book.style.height = Math.floor(height) + "px";
   }
 
   function textbookArt(kind, size) {
@@ -4170,6 +4218,13 @@
       sfx("tap");
       syncTbImageToggle();
       if (openScreenId === "s-textbook") renderTbPage();
+    });
+
+    var tbFitTimer = null;
+    window.addEventListener("resize", function () {
+      if (openScreenId !== "s-textbook") return;
+      clearTimeout(tbFitTimer);
+      tbFitTimer = setTimeout(fitTbBook, 120);
     });
 
     $$("#subjectTabs button").forEach(function (b) {
