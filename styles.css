@@ -1,17 +1,20 @@
 @font-face {
   font-family: "Kai";
-  src: url("assets/fonts/kai.woff") format("woff");
+  src: local("Kaiti SC"), local("STKaiti"), local("KaiTi"),
+    url("assets/fonts/kai.woff") format("woff");
   font-display: swap;
 }
 @font-face {
   font-family: "Andika";
-  src: url("assets/fonts/Andika-Regular.woff") format("woff");
+  src: local("Andika"), local("Avenir Next"), local("Arial Rounded MT Bold"), local("Arial"),
+    url("assets/fonts/Andika-Regular.woff") format("woff");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "Andika";
-  src: url("assets/fonts/Andika-Bold.woff") format("woff");
+  src: local("Andika Bold"), local("Avenir Next Bold"), local("Arial Rounded MT Bold"), local("Arial Bold"),
+    url("assets/fonts/Andika-Bold.woff") format("woff");
   font-weight: 700;
   font-display: swap;
 }
