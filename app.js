@@ -21,6 +21,23 @@
     { kind: "toneQuiz", name: "声调小侦探", tag: "SHENGDIAO", sub: "看拼音，判断第几声" }
   ];
 
+  function hasYoudaoVoice() {
+    return !!(window.VOICE_MAPS && window.VOICE_MAPS.youdao &&
+      Object.keys(window.VOICE_MAPS.youdao).length);
+  }
+
+  var TENCENT_VOICES = ["tencent-403006", "tencent-402001", "tencent-403011", "tencent-403014"];
+  function hasTencentVoice() {
+    return !!(window.VOICE_MAPS && window.VOICE_MAPS["tencent-403006"] &&
+      Object.keys(window.VOICE_MAPS["tencent-403006"]).length);
+  }
+
+  function isEnglishVoice(value) {
+    return ["sonia", "libby", "maisie"].indexOf(value) >= 0 ||
+      (value === "youdao" && hasYoudaoVoice()) ||
+      (TENCENT_VOICES.indexOf(value) >= 0 && hasTencentVoice());
+  }
+
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
@@ -28,7 +45,9 @@
 
   function blankState() {
     return {
-      schema: 2, stars: 0, sound: true, speak: true, volume: 1, slowRate: 0.72, enVoice: "sonia", zhVoice: "xiaoxiao", tbImages: true, tbGap: 200,
+      schema: 2, stars: 0, sound: true, speak: true, volume: 1, slowRate: 0.72,
+      enVoice: hasTencentVoice() ? "tencent-403006" : "sonia",
+      zhVoice: "xiaoxiao", tbImages: true, tbGap: 200,
       days: {}, chars: {}, read: {}, today: { date: "", count: 0 }
     };
   }
@@ -42,6 +61,9 @@
       var raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return blankState();
       var data = JSON.parse(raw);
+      if (hasTencentVoice() && ["sonia", "libby", "maisie"].indexOf(data.enVoice) >= 0) {
+        data.enVoice = "tencent-403006";
+      }
       var base = blankState();
       return {
         schema: 2,
@@ -50,7 +72,7 @@
         speak: data.speak !== false,
         volume: typeof data.volume === "number" ? Math.min(1, Math.max(0, data.volume)) : 1,
         slowRate: [0.6, 0.72, 0.85].indexOf(data.slowRate) >= 0 ? data.slowRate : 0.72,
-        enVoice: ["sonia", "libby", "maisie"].indexOf(data.enVoice) >= 0 ? data.enVoice : "sonia",
+        enVoice: isEnglishVoice(data.enVoice) ? data.enVoice : "sonia",
         zhVoice: ["xiaoxiao", "xiaoyi"].indexOf(data.zhVoice) >= 0 ? data.zhVoice : "xiaoxiao",
         tbImages: data.schema === 2 ? data.tbImages !== false : true,
         tbGap: [200, 100, 50, 0].indexOf(data.tbGap) >= 0 ? data.tbGap : 200,
@@ -124,7 +146,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261117-17";
+  var AUDIO_VERSION = "20261117-18";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -568,7 +590,11 @@
     });
     $$("#voiceSeg button").forEach(function (b) {
       b.classList.toggle("on", b.dataset.voice === state.enVoice);
+      if (b.classList.contains("tencent-voice")) b.hidden = !hasTencentVoice();
+      if (b.classList.contains("legacy-voice")) b.hidden = hasTencentVoice();
     });
+    var youdaoBtn = $("#voiceYoudao");
+    if (youdaoBtn) youdaoBtn.hidden = !hasYoudaoVoice() || hasTencentVoice();
     $$("#zhVoiceSeg button").forEach(function (b) {
       b.classList.toggle("on", b.dataset.zhVoice === state.zhVoice);
     });
@@ -2390,9 +2416,20 @@
     if (!show) return;
     var box = $("#voiceFloatBtns");
     if (!box) return;
-    var opts = isEn
-      ? [["sonia", "Sonia", "vf"], ["libby", "Libby", "vf"], ["maisie", "Maisie", "vf"]]
-      : [["xiaoxiao", "晓晓", "zhvf"], ["xiaoyi", "晓伊", "zhvf"]];
+    var opts;
+    if (isEn) {
+      opts = hasTencentVoice()
+        ? [
+            ["tencent-403006", "YunMia", "vf"],
+            ["tencent-402001", "云小团", "vf"],
+            ["tencent-403011", "403011", "vf"],
+            ["tencent-403014", "403014", "vf"]
+          ]
+        : [["sonia", "Sonia", "vf"], ["libby", "Libby", "vf"], ["maisie", "Maisie", "vf"]];
+      if (!hasTencentVoice() && hasYoudaoVoice()) opts.push(["youdao", "有道", "vf"]);
+    } else {
+      opts = [["xiaoxiao", "晓晓", "zhvf"], ["xiaoyi", "晓伊", "zhvf"]];
+    }
     var current = isEn ? state.enVoice : state.zhVoice;
     box.innerHTML = opts.map(function (o) {
       return '<button type="button" data-' + o[2] + '="' + o[0] + '"' +

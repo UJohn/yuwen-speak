@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="一年级小书房">
 <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=20261117-17">
+  <link rel="manifest" href="manifest.webmanifest?v=20261117-18">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261117-17">
+  <link rel="stylesheet" href="styles.css?v=20261117-18">
 </head>
 <body>
 
@@ -483,9 +483,14 @@
     <div class="setting-block">
       <b>英语音色</b>
       <div class="seg-row" id="voiceSeg">
-        <button type="button" data-voice="sonia">Sonia</button>
-        <button type="button" data-voice="libby">Libby</button>
-        <button type="button" data-voice="maisie">Maisie</button>
+        <button type="button" class="legacy-voice" data-voice="sonia">Sonia</button>
+        <button type="button" class="legacy-voice" data-voice="libby">Libby</button>
+        <button type="button" class="legacy-voice" data-voice="maisie">Maisie</button>
+        <button type="button" class="tencent-voice" data-voice="tencent-403006" hidden>YunMia</button>
+        <button type="button" class="tencent-voice" data-voice="tencent-402001" hidden>云小团</button>
+        <button type="button" class="tencent-voice" data-voice="tencent-403011" hidden>403011</button>
+        <button type="button" class="tencent-voice" data-voice="tencent-403014" hidden>403014</button>
+        <button type="button" data-voice="youdao" id="voiceYoudao" hidden>有道英音</button>
       </div>
       <button class="mini-test voice-test" id="voiceTest" type="button">试听英语音色</button>
     </div>
@@ -514,18 +519,20 @@
   </div>
 </div>
 
-<script src="assets/pinyin-pro.js?v=20261117-17"></script>
-<script src="data.js?v=20261117-17"></script>
-<script src="data-extra.js?v=20261117-17"></script>
-<script src="data-reading.js?v=20261117-17"></script>
-<script src="data-textbook.js?v=20261117-17"></script>
-<script src="data-textbook-images.js?v=20261117-17"></script>
-<script src="data-drill.js?v=20261117-17"></script>
-<script src="assets/en-ipa.js?v=20261117-17"></script>
-<script src="assets/audio-manifest.js?v=20261117-17"></script>
-<script src="assets/voice-libby.js?v=20261117-17"></script>
-<script src="assets/voice-maisie.js?v=20261117-17"></script>
-<script src="assets/voice-zh-xiaoyi.js?v=20261117-17"></script>
-<script src="app.js?v=20261117-17"></script>
+<script src="assets/pinyin-pro.js?v=20261117-18"></script>
+<script src="data.js?v=20261117-18"></script>
+<script src="data-extra.js?v=20261117-18"></script>
+<script src="data-reading.js?v=20261117-18"></script>
+<script src="data-textbook.js?v=20261117-18"></script>
+<script src="data-textbook-images.js?v=20261117-18"></script>
+<script src="data-drill.js?v=20261117-18"></script>
+<script src="assets/en-ipa.js?v=20261117-18"></script>
+<script src="assets/audio-manifest.js?v=20261117-18"></script>
+<script src="assets/voice-libby.js?v=20261117-18"></script>
+<script src="assets/voice-maisie.js?v=20261117-18"></script>
+<script src="assets/voice-youdao.js?v=20261117-18"></script>
+<script src="assets/voice-tencent.js?v=20261117-18"></script>
+<script src="assets/voice-zh-xiaoyi.js?v=20261117-18"></script>
+<script src="app.js?v=20261117-18"></script>
 </body>
 </html>
