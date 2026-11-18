@@ -2647,7 +2647,8 @@
     b.innerHTML =
       '<span class="unit-no">' + escapeHTML(u.badge || u.unit.replace("Unit ", "U")) + "</span>" +
       '<span class="unit-info"><b>' + escapeHTML(u.title) + "</b>" +
-      "<span>" + escapeHTML(u.zh) + " · " + done + "/" + u.items.length + " 已读</span>" +
+      '<span class="unit-meta"><span class="unit-sub">' + escapeHTML(u.zh) + "</span>" +
+      '<span class="unit-progress">' + done + "/" + u.items.length + "</span></span>" +
       (u.lessons ? '<em>' + escapeHTML(u.lessons.join(" · ")) + "</em>" : "") + "</span>" +
       '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
     b.addEventListener("click", function () {
@@ -2696,9 +2697,9 @@
       b.type = "button";
       b.className = "pick-item" + (deck.id === "en-sentences" ? " long" : "");
       var stars = state.read[itemId] || 0;
-      var subline = it.ipa
-        ? it.ipa + (it.zh ? " · " + it.zh : "")
-        : (it.py ? (it.py + (it.zh && it.zh !== it.text ? " · " + it.zh : "")) : (it.zh || ""));
+      var subline = it.py
+        ? (it.py + (it.zh && it.zh !== it.text ? " · " + it.zh : ""))
+        : (it.zh || "");
       b.innerHTML =
         (it.unitLabel ? '<em>' + escapeHTML(it.unitLabel) + "</em>" : "") +
         "<b>" + escapeHTML(it.text) + "</b>" +
@@ -2839,7 +2840,6 @@
       return '<span class="tb-word">' +
         '<button class="tb-word-main" type="button" data-tb-word="' + escapeHTML(w.w) + '">' +
         '<b>' + escapeHTML(w.w) + "</b>" +
-        (w.ipa ? '<span class="tb-ipa">' + escapeHTML(w.ipa) + "</span>" : "") +
         '<em>' + escapeHTML(w.zh) + "</em></button>" +
         '<button class="tb-word-zh" type="button" data-tb-word-zh="' + escapeHTML(w.w) + '" aria-label="听中文">' +
         '<i class="icon icon-volume"></i></button></span>';
@@ -3000,8 +3000,8 @@
     focus.classList.add("is-word");
     $("#tbFocusChip").textContent = "单词";
     $("#tbFocusEn").textContent = word.w;
-    $("#tbFocusIpa").textContent = word.ipa || "";
-    $("#tbFocusIpa").hidden = !word.ipa;
+    $("#tbFocusIpa").textContent = "";
+    $("#tbFocusIpa").hidden = true;
     $("#tbFocusZh").textContent = word.zh || "";
     $("#tbFocusWordBtn").hidden = !/[\s-]/.test(word.w);
     $$("#tbFocus [data-tb-sheet-nav]").forEach(function (b) { b.hidden = true; });
@@ -3041,8 +3041,8 @@
     tbSheetLine = -1;
     $("#tbSheetChip").textContent = "单词";
     $("#tbSheetEn").textContent = word.w;
-    $("#tbSheetIpa").textContent = word.ipa || "";
-    $("#tbSheetIpa").hidden = !word.ipa;
+    $("#tbSheetIpa").textContent = "";
+    $("#tbSheetIpa").hidden = true;
     $("#tbSheetZh").textContent = word.zh || "";
     $("#tbSheetWordBtn").hidden = !/[\s-]/.test(word.w);
     syncTbFocusWord(word);
@@ -3470,9 +3470,8 @@
     $("#speakZhRow").hidden = !showZh;
     $("#speakSub").hidden = !showZh;
     $("#speakSub").textContent = showZh ? item.zh : "";
-    var ipa = isEn ? (item.ipa || "") : "";
-    $("#speakIpa").textContent = ipa;
-    $("#speakIpa").hidden = !ipa;
+    $("#speakIpa").textContent = "";
+    $("#speakIpa").hidden = true;
     $("#tipRow").hidden = !(!isEn && item.tip);
     $("#speakTip").textContent = (!isEn && item.tip) ? item.tip : "";
     $("#cardPrev").disabled = idx === 0;
