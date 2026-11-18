@@ -151,7 +151,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261118-11";
+  var AUDIO_VERSION = "20261118-13";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -174,6 +174,7 @@
 
   function say(key, text, lang, slow) {
     if (!state.speak) return;
+    stopTextbookSequence();
     var src = resolveAudioSrc(key);
     if (src) {
       try {
@@ -223,6 +224,9 @@
 
   function playSequence(keys, onDone) {
     stopTextbookSequence();
+    if (audioEl) {
+      try { audioEl.pause(); } catch (err) {}
+    }
     var token = tbSeqToken;
     var i = 0;
     function next() {
