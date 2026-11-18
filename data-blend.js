@@ -1,4 +1,5 @@
 window.AUDIO_MAP=window.AUDIO_MAP||{};
+window.AUDIO_MAP["py:diǎn"]="assets/audio/py-dian3.mp3";
 window.AUDIO_MAP["blend:ba"]="assets/audio/blend-ba.mp3";
 window.AUDIO_MAP["blend:pa"]="assets/audio/blend-pa.mp3";
 window.AUDIO_MAP["blend:ma"]="assets/audio/blend-ma.mp3";
