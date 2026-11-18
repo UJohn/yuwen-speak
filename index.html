@@ -13,7 +13,7 @@
   <link rel="manifest" href="manifest.webmanifest?v=20261117-18">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261118-7">
+  <link rel="stylesheet" href="styles.css?v=20261118-8">
 </head>
 <body>
 
@@ -43,6 +43,12 @@
     </div>
   </header>
 
+  <nav class="home-tabs" id="homeTabs" role="tablist" aria-label="学习区域">
+    <button type="button" data-home-tab="zh" class="on">语文课</button>
+    <button type="button" data-home-tab="en">英语课</button>
+    <button type="button" data-home-tab="practice">闯关练习</button>
+  </nav>
+
   <main>
     <section class="hero">
       <div class="hero-copy">
@@ -54,8 +60,6 @@
             开始今天的跟读
             <i class="icon icon-chevron"></i>
           </button>
-          <button class="btn btn-ghost" id="gotoChinese" type="button">语文课本</button>
-          <button class="btn btn-ghost" id="gotoEnglish" type="button">英语课本</button>
         </div>
         <div class="hero-progress" id="heroProgress"></div>
       </div>
@@ -72,17 +76,25 @@
 
     <section class="reading" id="reading">
       <div class="section-head">
-        <h3>读一读</h3>
-        <p>语文和英语，各选一课</p>
+        <h3 id="readingTitle">语文阅读</h3>
+        <p id="readingSub">课本、拼音、词语、句子</p>
       </div>
       <div class="read-grid" id="readGrid"></div>
       <div class="read-stats" id="readStats"></div>
     </section>
 
-    <section class="week">
+    <section class="english-tools" id="englishTools" hidden>
       <div class="section-head">
-        <h3>练一练</h3>
-        <p>先读，再打印一张空白字帖</p>
+        <h3>英语工具</h3>
+        <p>字母表 · 国际音标 · 听音练习</p>
+      </div>
+      <div class="tool-grid" id="englishToolGrid"></div>
+    </section>
+
+    <section class="week" id="practiceSection" hidden>
+      <div class="section-head">
+        <h3>闯关练习</h3>
+        <p>拼音、识字和听音小游戏</p>
       </div>
       <div class="game-grid" id="gameGrid"></div>
       <div class="print-row">
@@ -236,12 +248,80 @@
         <button class="btn btn-ghost" id="bqReadBtn" type="button">
           <i class="icon icon-mic"></i>跟读并评分
         </button>
+        <button class="btn btn-soft" id="bqPlayMine" type="button" hidden>
+          <i class="icon icon-play"></i>回放我的跟读
+        </button>
         <span class="bq-read-status" id="bqReadStatus"></span>
         <div class="bq-read-result" id="bqReadResult" hidden></div>
       </div>
       <button class="btn btn-primary quiz-next" id="bqNext" type="button" hidden>下一个</button>
     </div>
     <div class="quiz-result" id="bqResult" hidden></div>
+  </div>
+</section>
+
+<!-- ============================================================ 英语字母表 -->
+<section class="screen" id="s-alphabet" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>英语字母表</h2>
+      <p>点一个字母听读音，再玩听音选字母</p>
+    </div>
+  </div>
+  <div class="alpha-wrap">
+    <div class="alpha-grid" id="alphabetGrid"></div>
+    <button class="btn btn-primary alpha-quiz-btn" id="alphabetQuizStart" type="button">
+      开始听音选字母
+    </button>
+  </div>
+</section>
+
+<!-- ============================================================ 国际音标 -->
+<section class="screen" id="s-ipa" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>国际音标</h2>
+      <p>点音标听例词，再玩听例词选音标</p>
+    </div>
+  </div>
+  <div class="ipa-wrap">
+    <div id="ipaGrid"></div>
+    <button class="btn btn-primary alpha-quiz-btn" id="ipaQuizStart" type="button">
+      开始听例词选音标
+    </button>
+  </div>
+</section>
+
+<!-- ============================================================ 英语小测 -->
+<section class="screen" id="s-en-quiz" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2 id="eqTitle">听音选字母</h2>
+      <p id="eqSub">听清楚，再选出正确答案</p>
+    </div>
+    <div class="round-dots" id="eqDots"></div>
+  </div>
+  <div class="quiz-wrap">
+    <div class="quiz-card" id="eqCard">
+      <div class="quiz-meta"><span id="eqCounter">1 / 10</span><span class="quiz-timer">英语</span></div>
+      <button class="quiz-speaker" id="eqSpeaker" type="button">
+        <i class="icon icon-volume"></i>再听一遍
+      </button>
+      <p class="quiz-prompt" id="eqPrompt">听一听，它是哪个字母？</p>
+      <div class="quiz-options" id="eqOptions"></div>
+      <div class="quiz-feedback" id="eqFeedback" hidden></div>
+      <button class="btn btn-primary quiz-next" id="eqNext" type="button" hidden>下一个</button>
+    </div>
+    <div class="quiz-result" id="eqResult" hidden></div>
   </div>
 </section>
 
@@ -355,8 +435,8 @@
     </div>
   </div>
   <div class="subject-tabs" id="subjectTabs" role="tablist" aria-label="选择科目">
-    <button type="button" data-subject="zh" role="tab">语文</button>
-    <button type="button" data-subject="en" role="tab">英语</button>
+    <button type="button" data-subject="zh" role="tab">语文课</button>
+    <button type="button" data-subject="en" role="tab">英语课</button>
   </div>
   <div class="unit-list" id="unitList"></div>
 </section>
@@ -564,12 +644,13 @@
 <script src="data-drill.js?v=20261117-18"></script>
 <script src="assets/en-ipa.js?v=20261117-18"></script>
 <script src="assets/audio-manifest.js?v=20261117-18"></script>
-<script src="data-blend.js?v=20261118-7"></script>
+<script src="data-blend.js?v=20261118-8"></script>
+<script src="data-english.js?v=20261118-8"></script>
 <script src="assets/voice-libby.js?v=20261117-18"></script>
 <script src="assets/voice-maisie.js?v=20261117-18"></script>
 <script src="assets/voice-youdao.js?v=20261117-18"></script>
 <script src="assets/voice-tencent.js?v=20261117-18"></script>
 <script src="assets/voice-zh-xiaoyi.js?v=20261117-18"></script>
-<script src="app.js?v=20261118-7"></script>
+<script src="app.js?v=20261118-9"></script>
 </body>
 </html>

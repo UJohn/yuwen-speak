@@ -56,7 +56,10 @@
   var state = loadState();
   var currentDay = firstOpenDay();
   var flowQueue = null;
+  var homeTab = "zh";
   var BLENDS = window.PINYIN_BLENDS || [];
+  var EN_ALPHABET = window.ENGLISH_ALPHABET || [];
+  var EN_IPA = window.ENGLISH_IPA || [];
 
   function loadState() {
     try {
@@ -148,7 +151,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261118-7";
+  var AUDIO_VERSION = "20261118-9";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -416,13 +419,54 @@
   function renderHome() {
     $("#starCount").textContent = state.stars;
     renderReading();
+    renderEnglishTools();
     renderToday();
     renderGameGrid();
+    applyHomeTab();
     renderHeroProgress();
     renderMascotLine();
     syncSoundIcon();
     syncSettingsUI();
     applyVolume();
+  }
+
+  function applyHomeTab() {
+    var isPractice = homeTab === "practice";
+    $("#reading").hidden = isPractice;
+    $("#englishTools").hidden = homeTab !== "en";
+    $("#practiceSection").hidden = !isPractice;
+    $(".today-line").hidden = isPractice;
+    $("#readingTitle").textContent = homeTab === "en" ? "英语阅读" : "语文阅读";
+    $("#readingSub").textContent = homeTab === "en" ? "课本、单词、句子" : "课本、拼音、词语、句子";
+    $$("#homeTabs button").forEach(function (b) {
+      var on = b.dataset.homeTab === homeTab;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-selected", String(on));
+    });
+  }
+
+  function renderEnglishTools() {
+    var grid = $("#englishToolGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    [
+      { id: "alphabet", mark: "A", title: "英语字母表", sub: "26 个字母 · 听音选字母", art: "A a  ·  B b  ·  C c" },
+      { id: "ipa", mark: "/iː/", title: "国际音标", sub: "44 个音标 · 听例词选音标", art: "see · sit · cat · book" }
+    ].forEach(function (tool) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "tool-card";
+      b.innerHTML =
+        '<span class="tool-mark">' + tool.mark + "</span>" +
+        '<span class="tool-copy"><b>' + tool.title + "</b><span>" + tool.sub + "</span><em>" + tool.art + "</em></span>" +
+        '<span class="tool-go"><i class="icon icon-chevron"></i></span>';
+      b.addEventListener("click", function () {
+        sfx("tap");
+        if (tool.id === "alphabet") openAlphabet();
+        else openIpa();
+      });
+      grid.appendChild(b);
+    });
   }
 
   function renderDayStrip() {
@@ -644,6 +688,7 @@
     pqTimerId = null;
     pqState = null;
     tqState = null;
+    eqState = null;
     resetBlendRead();
     bqState = null;
     renderHome();
@@ -1508,6 +1553,8 @@
   var bqReadActive = false;
   var bqReadSettled = true;
   var bqReadTimer = null;
+  var bqRecording = false;
+  var bqRecUrl = null;
 
   function startBlendQuiz() {
     if (!BLENDS.length) return;
@@ -1530,6 +1577,7 @@
     resetBlendRead();
     $("#bqReadBox").hidden = true;
     $("#bqReadResult").hidden = true;
+    $("#bqPlayMine").hidden = true;
     var others = shuffle(BLENDS.filter(function (x) { return x.id !== item.id; })).slice(0, 3);
     var opts = shuffle([item].concat(others));
     $("#bqOptions").innerHTML = opts.map(function (o) {
@@ -1562,6 +1610,7 @@
     $("#bqReadTarget").textContent = item.parts.join(" — ");
     $("#bqReadBox").hidden = false;
     $("#bqReadResult").hidden = true;
+    $("#bqPlayMine").hidden = true;
     $("#bqReadStatus").textContent = "";
     say(ok ? "quiz:right" : "quiz:wrong", ok ? "答对啦！" : "再听一听。", "zh-CN");
     $("#bqNext").hidden = false;
@@ -1604,6 +1653,11 @@
       try { bqReadRec.abort(); } catch (err) {}
       bqReadRec = null;
     }
+    if (bqRecording) {
+      bqRecording = false;
+      try { stopCapture(); } catch (err) {}
+    }
+    bqRecUrl = null;
     bqReadActive = false;
     bqReadSettled = true;
     var status = $("#bqReadStatus");
@@ -1659,6 +1713,14 @@
     rec.onend = function () {
       if (bqReadActive && !bqReadSettled) finishBlendRead([], false);
     };
+    startCapture().then(function (ok) {
+      if (!ok) return;
+      if (bqReadSettled) {
+        stopCapture();
+      } else {
+        bqRecording = true;
+      }
+    });
     try {
       rec.start();
       bqReadTimer = setTimeout(function () { stopBlendRead(false); }, 6500);
@@ -1704,6 +1766,16 @@
     });
     var box = $("#bqReadResult");
     box.hidden = false;
+    var finalizeRecording = function () {
+      if (!bqRecording) return;
+      bqRecording = false;
+      stopCapture().then(function (url) {
+        if (!url) return;
+        bqRecUrl = url;
+        $("#bqPlayMine").hidden = false;
+      });
+    };
+    finalizeRecording();
     if (failed || !alts || !alts.length) {
       box.innerHTML = "没有听到清楚的声音，再点话筒试一次。";
       sfx("wrong");
@@ -1718,6 +1790,163 @@
     } else {
       sfx("wrong");
     }
+  }
+
+  /* ------------------------------------------------------------ english tools */
+
+  function openAlphabet() {
+    showScreen("s-alphabet");
+    renderAlphabet();
+  }
+
+  function renderAlphabet() {
+    var grid = $("#alphabetGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    EN_ALPHABET.forEach(function (item) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "alpha-card";
+      b.dataset.alphaKey = item.key;
+      b.innerHTML = "<b>" + escapeHTML(item.letter) + "</b><span>" + escapeHTML(item.lower) + "</span>";
+      b.addEventListener("click", function () {
+        sfx("tap");
+        say(item.key, item.lower, "en-GB");
+      });
+      grid.appendChild(b);
+    });
+  }
+
+  function openIpa() {
+    showScreen("s-ipa");
+    renderIpa();
+  }
+
+  function renderIpa() {
+    var box = $("#ipaGrid");
+    if (!box) return;
+    box.innerHTML = "";
+    [["vowel", "元音"], ["consonant", "辅音"]].forEach(function (group) {
+      var items = EN_IPA.filter(function (x) { return x.kind === group[0]; });
+      if (!items.length) return;
+      var section = document.createElement("section");
+      section.className = "ipa-section";
+      section.innerHTML = "<h3>" + group[1] + "</h3>";
+      var grid = document.createElement("div");
+      grid.className = "ipa-grid";
+      items.forEach(function (item) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "ipa-card";
+        b.dataset.ipaKey = item.key;
+        b.innerHTML = "<b>" + escapeHTML(item.ipa) + "</b><span>" + escapeHTML(item.word) + "</span>";
+        b.addEventListener("click", function () {
+          sfx("tap");
+          say(item.key, item.word, "en-GB");
+        });
+        grid.appendChild(b);
+      });
+      section.appendChild(grid);
+      box.appendChild(section);
+    });
+  }
+
+  var eqState = null;
+
+  function enQuizPool(mode) {
+    return mode === "alphabet" ? EN_ALPHABET : EN_IPA;
+  }
+
+  function enQuizLabel(item) {
+    return item.letter || item.ipa;
+  }
+
+  function enQuizSpeak(item) {
+    say(item.key, item.letter ? item.lower : item.word, "en-GB");
+  }
+
+  function startEnglishQuiz(mode) {
+    var pool = enQuizPool(mode);
+    if (!pool.length) return;
+    var items = shuffle(pool).slice(0, 10);
+    eqState = { mode: mode, items: items, idx: 0, correct: 0, locked: false };
+    showScreen("s-en-quiz");
+    $("#eqTitle").textContent = mode === "alphabet" ? "听音选字母" : "听例词选音标";
+    $("#eqSub").textContent = mode === "alphabet" ? "听字母名，选出正确字母" : "听例词，选出正确音标";
+    $("#eqCard").hidden = false;
+    $("#eqResult").hidden = true;
+    renderEnglishQuiz();
+  }
+
+  function renderEnglishQuiz() {
+    var st = eqState;
+    if (!st) return;
+    var item = st.items[st.idx];
+    st.locked = false;
+    $("#eqCounter").textContent = (st.idx + 1) + " / " + st.items.length;
+    $("#eqPrompt").textContent = st.mode === "alphabet" ? "听一听，它是哪个字母？" : "听一听，它是哪个音标？";
+    $("#eqFeedback").hidden = true;
+    $("#eqNext").hidden = true;
+    var pool = enQuizPool(st.mode);
+    var target = enQuizLabel(item);
+    var others = shuffle(pool.filter(function (x) { return enQuizLabel(x) !== target; })).slice(0, 3);
+    var opts = shuffle([item].concat(others));
+    $("#eqOptions").innerHTML = opts.map(function (x) {
+      return '<button class="quiz-opt" type="button" data-eq-opt="' + escapeHTML(enQuizLabel(x)) + '">' +
+        escapeHTML(enQuizLabel(x)) + "</button>";
+    }).join("");
+    setTimeout(function () {
+      if (eqState === st && !st.locked) enQuizSpeak(item);
+    }, 350);
+  }
+
+  function answerEnglishQuiz(btn) {
+    if (!eqState || eqState.locked) return;
+    eqState.locked = true;
+    var item = eqState.items[eqState.idx];
+    var picked = btn ? btn.dataset.eqOpt : "";
+    var ok = picked === enQuizLabel(item);
+    if (ok) eqState.correct++;
+    $$("#eqOptions .quiz-opt").forEach(function (b) {
+      b.disabled = true;
+      if (b.dataset.eqOpt === enQuizLabel(item)) b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+    });
+    var fb = $("#eqFeedback");
+    fb.hidden = false;
+    fb.className = "quiz-feedback " + (ok ? "right" : "wrong");
+    fb.textContent = ok
+      ? "答对啦！" + (item.letter ? item.letter + " " + item.lower : item.ipa + " · " + item.word + " " + item.zh)
+      : "再听一听，正确答案是「" + enQuizLabel(item) + "」" + (item.letter ? "" : " · " + item.word);
+    say(ok ? "quiz:right" : "quiz:wrong", ok ? "答对啦！" : "再听一听。", "en-GB");
+    $("#eqNext").hidden = false;
+    $("#eqNext").textContent = eqState.idx + 1 >= eqState.items.length ? "看成绩" : "下一个";
+  }
+
+  function nextEnglishQuiz() {
+    if (!eqState) return;
+    if (eqState.idx + 1 >= eqState.items.length) {
+      finishEnglishQuiz();
+      return;
+    }
+    eqState.idx++;
+    renderEnglishQuiz();
+  }
+
+  function finishEnglishQuiz() {
+    var n = eqState.correct;
+    var stars = n >= 9 ? 3 : (n >= 7 ? 2 : (n >= 5 ? 1 : 0));
+    $("#eqCard").hidden = true;
+    var box = $("#eqResult");
+    box.hidden = false;
+    box.innerHTML =
+      '<div class="result-stars">' + starTag(stars) + "</div>" +
+      "<h3>答对 " + n + " / " + eqState.items.length + "</h3>" +
+      "<p>" + (n >= 9 ? "听得准，记得牢！" : n >= 7 ? "很不错，再练一次更稳。" : "先听例词，再记音标。") + "</p>" +
+      '<div class="quiz-result-actions">' +
+        '<button class="btn btn-primary" type="button" data-quiz-again="eq">再来一次</button>' +
+        '<button class="btn btn-ghost" type="button" data-quiz-home="1">回小书房</button>' +
+      "</div>";
   }
 
   /* ------------------------------------------------------------ pinyin drill */
@@ -2067,7 +2296,7 @@
     var grid = $("#readGrid");
     if (!grid) return;
     grid.innerHTML = "";
-    SUBJECTS.forEach(function (subject) {
+    SUBJECTS.filter(function (subject) { return subject.id === homeTab; }).forEach(function (subject) {
       var decks = subjectDecks(subject.id).filter(function (d) { return !d.extra; });
       var entries = [];
       decks.forEach(function (deck) {
@@ -3491,6 +3720,9 @@
     $("#startRead").addEventListener("click", function () {
       sfx("tap");
       var entries = allReadingEntries();
+      if (homeTab === "en" || homeTab === "zh") {
+        entries = entries.filter(function (e) { return e.deck.subject === homeTab; });
+      }
       var next = entries.filter(function (e) { return !state.read[e.id]; })[0] || entries[0];
       if (next.unit) {
         startDeck({
@@ -3506,12 +3738,22 @@
       }
     });
 
-    $("#gotoChinese").addEventListener("click", function () {
+    $$("#homeTabs button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        homeTab = b.dataset.homeTab;
+        sfx("tap");
+        renderHome();
+      });
+    });
+
+    var gotoChinese = $("#gotoChinese");
+    if (gotoChinese) gotoChinese.addEventListener("click", function () {
       sfx("tap");
       openSubject("zh");
     });
 
-    $("#gotoEnglish").addEventListener("click", function () {
+    var gotoEnglish = $("#gotoEnglish");
+    if (gotoEnglish) gotoEnglish.addEventListener("click", function () {
       sfx("tap");
       openSubject("en");
     });
@@ -3740,7 +3982,25 @@
       if (b) answerBlendQuiz(b);
     });
     $("#bqReadBtn").addEventListener("click", startBlendRead);
+    $("#bqPlayMine").addEventListener("click", function () {
+      if (!bqRecUrl) return;
+      try {
+        var a = new Audio(bqRecUrl);
+        a.play();
+      } catch (err) {}
+    });
     $("#bqNext").addEventListener("click", nextBlendQuiz);
+    $("#alphabetQuizStart").addEventListener("click", function () { startEnglishQuiz("alphabet"); });
+    $("#ipaQuizStart").addEventListener("click", function () { startEnglishQuiz("ipa"); });
+    $("#eqSpeaker").addEventListener("click", function () {
+      if (!eqState) return;
+      enQuizSpeak(eqState.items[eqState.idx]);
+    });
+    $("#eqOptions").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-eq-opt]");
+      if (b) answerEnglishQuiz(b);
+    });
+    $("#eqNext").addEventListener("click", nextEnglishQuiz);
     $("#drillTonebar").addEventListener("click", function (ev) {
       var b = ev.target.closest("[data-drill-tone]");
       if (!b) return;
@@ -3763,6 +4023,7 @@
       if (again) {
         if (again.dataset.quizAgain === "pq") startPinyinQuiz();
         else if (again.dataset.quizAgain === "bq") startBlendQuiz();
+        else if (again.dataset.quizAgain === "eq") startEnglishQuiz(eqState ? eqState.mode : "alphabet");
         else startToneQuiz();
         return;
       }

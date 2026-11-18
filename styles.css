@@ -154,6 +154,32 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 .brand-text p { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-3); letter-spacing: .04em; }
 .topbar-actions { display: flex; align-items: center; gap: 9px; }
 
+.home-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 6px;
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 253, 248, .72);
+  box-shadow: 0 4px 0 rgba(90, 68, 60, .04);
+}
+.home-tabs button {
+  flex: 1;
+  min-height: 46px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s, color .2s, transform .2s;
+}
+.home-tabs button:hover { background: #FFF4EE; color: var(--ink); }
+.home-tabs button.on { background: #FFFDF8; color: var(--pink-d); box-shadow: 0 3px 0 #F1DCD1; }
+.home-tabs button:active { transform: translateY(1px); }
+
 .star-chip {
   display: flex;
   align-items: center;
@@ -431,6 +457,77 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 .day-chip.active .d-dots i.on { background: var(--pink-d); }
 
 /* ---------------------------------------------------------------- games */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.tool-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 120px;
+  padding: 18px;
+  text-align: left;
+  border: 2px solid #E5D7F2;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #F8F3FF, #FFF8F1);
+  box-shadow: 0 7px 0 rgba(90, 68, 60, .05);
+  cursor: pointer;
+  transition: transform .18s, box-shadow .18s;
+}
+.tool-card:hover { transform: translateY(-4px); box-shadow: 0 12px 0 rgba(90, 68, 60, .05); }
+.tool-card:active { transform: translateY(-1px); }
+.tool-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: #fff;
+  color: #8E6FB4;
+  font-family: var(--py);
+  font-size: 19px;
+  font-weight: 700;
+  box-shadow: 0 3px 0 #E5D7F2;
+}
+.tool-copy { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.tool-copy b { font-size: 18px; color: var(--ink); }
+.tool-copy span { font-size: 12.5px; color: var(--ink-3); }
+.tool-copy em { font-family: var(--py); font-size: 13px; color: #8E6FB4; font-style: normal; margin-top: 3px; }
+.tool-go { margin-left: auto; color: #B69ACF; }
+.alpha-wrap, .ipa-wrap { width: 100%; max-width: 900px; margin: 0 auto; padding-bottom: 42px; }
+.alpha-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+.alpha-card, .ipa-card {
+  min-height: 86px;
+  border: 2px solid #E5D7F2;
+  border-radius: 18px;
+  background: #FFFDF8;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 4px 0 #EDE2F5;
+  transition: transform .15s, background .15s;
+}
+.alpha-card:hover, .ipa-card:hover { transform: translateY(-2px); background: #FBF6FF; }
+.alpha-card:active, .ipa-card:active { transform: translateY(1px); }
+.alpha-card b { display: block; font-family: var(--py); font-size: 31px; line-height: 1; }
+.alpha-card span { display: block; margin-top: 5px; font-family: var(--py); font-size: 17px; color: var(--ink-2); }
+.alpha-quiz-btn { display: block; margin: 20px auto 0; min-width: 230px; }
+.ipa-section { margin-bottom: 22px; }
+.ipa-section h3 { margin: 0 0 10px; font-size: 17px; color: #8E6FB4; }
+.ipa-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+.ipa-card { min-height: 76px; padding: 8px 5px; }
+.ipa-card b { display: block; font-family: var(--py); font-size: 20px; color: #8E6FB4; }
+.ipa-card span { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .game-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -3099,6 +3196,24 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   .game-card:hover,
   .stamp:hover,
   .icon-btn:hover { transform: none; }
+}
+
+@media (max-width: 699px) {
+  .home-tabs button { min-height: 44px; font-size: 13px; }
+  .tool-grid { grid-template-columns: 1fr; }
+  .alpha-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+  .ipa-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .alpha-card { min-height: 76px; }
+  .alpha-card b { font-size: 26px; }
+  .alpha-card span { font-size: 15px; }
+  .ipa-card b { font-size: 17px; }
+  .ipa-card span { font-size: 10px; }
+}
+
+@media (max-width: 420px) {
+  .alpha-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ipa-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .alpha-quiz-btn { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
