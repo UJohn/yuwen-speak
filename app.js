@@ -2155,7 +2155,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-32";
+    s.src = "assets/spell-data.js?v=20261119-33";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2255,7 +2255,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-32");
+        var a = new Audio(entry.audio + "?v=20261119-33");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -3077,21 +3077,21 @@
             '<span class="tb-stage-chip">第 ' + (idx + 1) + " / " + u.pages.length + " 页</span>" +
           "</div>" +
           '<div class="tb-book-wrap">' +
+            '<button type="button" class="tb-page-btn is-prev" data-tb-nav="prev" aria-label="' +
+              escapeHTML(prevLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryStart ? " disabled" : "") + ">‹</button>" +
             '<div class="tb-visual tb-reader-book' + (hasBook ? " is-book" : "") + '">' +
               tbVisualHTML(page, u) +
               '<span class="tb-unit-tag">' + escapeHTML(u.badge) + " · " + escapeHTML(u.zh) + "</span>" +
             "</div>" +
+            '<button type="button" class="tb-page-btn is-next" data-tb-nav="next" aria-label="' +
+              escapeHTML(nextLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryEnd ? " disabled" : "") + ">›</button>" +
           "</div>" +
           '<div class="tb-stage-foot">' +
-            '<button type="button" class="tb-page-btn" data-tb-nav="prev" aria-label="' +
-              escapeHTML(prevLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryStart ? " disabled" : "") + ">‹</button>" +
             '<div class="tb-page-info">' +
               '<span class="tb-dots">' + dots + "</span>" +
               '<span class="tb-page-pos">第 ' + (idx + 1) + " / " + u.pages.length +
                 ' 页<span class="tb-swipe-hint"> · 左右滑动翻页</span></span>' +
             "</div>" +
-            '<button type="button" class="tb-page-btn" data-tb-nav="next" aria-label="' +
-              escapeHTML(nextLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryEnd ? " disabled" : "") + ">›</button>" +
           "</div>" +
         "</section>" +
         '<aside class="tb-rail" aria-label="当前页句子和动作">' +
@@ -3557,7 +3557,7 @@
     var book = $("#tbPage .tb-reader-book");
     if (!wrap || !book) return;
     var box = wrap.getBoundingClientRect();
-    var w = box.width - 8;
+    var w = box.width - (window.innerWidth <= 520 ? 118 : 104);
     var h = box.height - 4;
     if (w <= 0 || h <= 0) return;
     var ratio = 900 / 1264;

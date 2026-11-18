@@ -3375,11 +3375,12 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   white-space: nowrap;
 }
 .tb-book-wrap {
+  position: relative;
   flex: 1;
   min-height: 0;
   display: grid;
   place-items: center;
-  padding: 2px 4px;
+  padding: 2px 46px;
   overflow: hidden;
 }
 #tbPage .tb-reader-book {
@@ -3409,12 +3410,13 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px 2px 2px;
+  padding: 4px 2px 0;
 }
+.tb-stage-foot .tb-page-info { flex: 1; }
 .tb-page-btn {
   flex: none;
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   display: grid;
   place-items: center;
@@ -3423,11 +3425,26 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   background: #FFFDF8;
   color: #8D746A;
   font-family: var(--py);
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
   box-shadow: 0 4px 0 rgba(90, 68, 60, .07);
   cursor: pointer;
   transition: transform .14s, box-shadow .14s;
+}
+.tb-book-wrap .tb-page-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 46px;
+  height: 46px;
+  background: rgba(255, 253, 248, .96);
+  box-shadow: 0 4px 12px rgba(90, 68, 60, .14);
+}
+.tb-book-wrap .tb-page-btn.is-prev { left: 0; }
+.tb-book-wrap .tb-page-btn.is-next { right: 0; }
+.tb-book-wrap .tb-page-btn:active:not(:disabled) {
+  transform: translateY(calc(-50% + 2px));
 }
 .tb-page-btn:active:not(:disabled) {
   transform: translateY(2px);
