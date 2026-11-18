@@ -2422,8 +2422,8 @@
         ? [
             ["tencent-403006", "YunMia", "vf"],
             ["tencent-402001", "云小团", "vf"],
-            ["tencent-403011", "403011", "vf"],
-            ["tencent-403014", "403014", "vf"]
+            ["tencent-403011", "云嘉瑜", "vf"],
+            ["tencent-403014", "云佳洁", "vf"]
           ]
         : [["sonia", "Sonia", "vf"], ["libby", "Libby", "vf"], ["maisie", "Maisie", "vf"]];
       if (!hasTencentVoice() && hasYoudaoVoice()) opts.push(["youdao", "有道", "vf"]);
