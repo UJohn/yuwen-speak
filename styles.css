@@ -3611,6 +3611,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 @media (min-width: 901px) {
   #tbSheet { display: none !important; }
   #s-textbook.sheet-open { padding-bottom: 16px; }
+  #s-textbook { padding-bottom: 10px; }
   .voice-float.on-textbook {
     top: 200px;
     right: max(8px, env(safe-area-inset-right));
