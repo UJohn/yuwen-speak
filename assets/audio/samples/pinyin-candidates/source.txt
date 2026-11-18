@@ -1,0 +1,5 @@
+拼音候选录音来源：
+- https://yoyochinese.com/chinese-learning-tools/Mandarin-Chinese-pronunciation-lesson/pinyin-chart-table
+- https://studycli.org/pinyin-chart/
+通过 https://github.com/zispace/hanyu-pinyin-audio 汇集下载
+仅作家庭学习试听，请勿商用。

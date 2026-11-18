@@ -146,7 +146,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261118-1";
+  var AUDIO_VERSION = "20261118-2";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
