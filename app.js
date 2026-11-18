@@ -148,7 +148,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261118-5";
+  var AUDIO_VERSION = "20261118-6";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -1409,7 +1409,7 @@
   function toneQuizPool() {
     var pairs = (window.EXTRA_PRACTICE && window.EXTRA_PRACTICE.pinyin) || [];
     return pairs.map(function (p) {
-      return { py: p[0], ch: p[1], tone: toneOf(p[0]), key: "char:" + p[1] };
+      return { py: p[0], ch: p[1], tone: toneOf(p[0]), key: "py:" + p[0] };
     }).filter(function (x) { return x.tone > 0; });
   }
 
