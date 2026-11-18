@@ -2155,7 +2155,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-30";
+    s.src = "assets/spell-data.js?v=20261119-31";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2255,7 +2255,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-30");
+        var a = new Audio(entry.audio + "?v=20261119-31");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -3053,18 +3053,6 @@
     var nextLabel = idx >= u.pages.length - 1 && hasNextUnit ? "下一单元 →" : "下一页 →";
     var hasBook = !!(state.tbImages && TB_IMG[page.id]);
     var done = !!state.read["tb-page:" + page.id];
-    var lines = page.lines.map(function (line, i) {
-      var lineDone = !!state.read["tb-line:" + page.id + ":" + i];
-      return '<div class="tb-line' + (lineDone ? " done" : "") + '" data-tb-line-row="' + i + '">' +
-        '<button class="tb-line-main" type="button" data-tb-line="' + i + '">' +
-        '<span class="tb-line-no">' + (i + 1 < 10 ? "0" : "") + (i + 1) + "</span>" +
-        '<span class="tb-line-copy"><span class="tb-en">' + escapeHTML(line.en) + "</span>" +
-        '<span class="tb-zh">' + escapeHTML(line.zh) + "</span></span>" +
-        "</button>" +
-        '<button class="tb-mini" type="button" data-tb-zh="' + i + '" aria-label="听中文解释">' +
-        '<i class="icon icon-volume"></i></button>' +
-        "</div>";
-    }).join("");
     var words = page.words.map(function (w) {
       return '<span class="tb-word">' +
         '<button class="tb-word-main" type="button" data-tb-word="' + escapeHTML(w.w) + '">' +
@@ -3103,7 +3091,7 @@
         '<aside class="tb-rail" aria-label="当前页句子和动作">' +
           '<div class="tb-rail-head">' +
             '<span class="tb-rail-kicker">READ ALONG</span>' +
-            '<p>点图上的句子，或点下面句子；每一次点击都会显示朗读卡。</p>' +
+            '<p>点图上的句子开始朗读，也可以用上方的上一句、下一句切换。</p>' +
           "</div>" +
           '<div class="tb-focus" id="tbFocus" aria-live="polite">' +
             '<div class="tb-sheet-top">' +
@@ -3126,7 +3114,6 @@
             "</div>" +
           "</div>" +
           '<div class="tb-rail-scroll">' +
-            '<div class="tb-line-rail">' + lines + "</div>" +
             '<div class="tb-word-head"><b>PIGGY BANK</b><span>点单词听英语</span></div>' +
             '<div class="tb-words">' + words + "</div>" +
           "</div>" +
@@ -3218,9 +3205,6 @@
     $("#tbFocusZh").textContent = line.zh || "";
     $("#tbFocusWordBtn").hidden = false;
     $$("#tbFocus [data-tb-sheet-nav]").forEach(function (b) { b.hidden = false; });
-    $$("#tbPage .tb-line[data-tb-line-row]").forEach(function (row) {
-      row.classList.toggle("focus", parseInt(row.dataset.tbLineRow, 10) === i);
-    });
   }
 
   function syncTbFocusWord(word) {
@@ -3335,11 +3319,14 @@
     say(tbLineKey(page, i), line.en, "en-GB", slow);
     state.read["tb-line:" + page.id + ":" + i] = 1;
     save();
-    var row = $("#tbPage").querySelectorAll(".tb-line")[i];
-    if (row) {
-      row.classList.add("on", "done");
-      setTimeout(function () { row.classList.remove("on"); }, 900);
-    }
+    flashTbLine(i);
+  }
+
+  function flashTbLine(i) {
+    var hot = $("#tbPage .tb-hot[data-tb-line='" + i + "']");
+    if (!hot) return;
+    hot.classList.add("on");
+    setTimeout(function () { hot.classList.remove("on"); }, 900);
   }
 
   function playTextbookWord(word, text, zh, isZh) {
@@ -3382,10 +3369,6 @@
     var focusEl = $("#tbFocusEn");
     var focusVisible = focusEl && focusEl.offsetParent !== null;
     var enEl = focusVisible ? focusEl : (sheetOpen ? $("#tbSheetEn") : null);
-    if (!enEl) {
-      var row = $("#tbPage").querySelectorAll(".tb-line")[lineIndex];
-      enEl = row && row.querySelector(".tb-en");
-    }
     if (!enEl) return;
     var text = String(line.en || "").replace(/[’‘]/g, "'");
     var parts = text.match(/[A-Za-z']+|[^A-Za-z']+/g) || [];
