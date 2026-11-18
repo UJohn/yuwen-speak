@@ -467,6 +467,10 @@
     document.head.appendChild(s);
   }
 
+  function warmResources() {
+    ensureAudioPack();
+  }
+
   function speakRubyHTML(text, py) {
     var chars = Array.from(text);
     var toks = String(py || "").trim().split(/\s+/).filter(Boolean);
@@ -1420,6 +1424,9 @@
     readState = { day: day, items: shuffle(allReadQuestions()).slice(0, 10), idx: 0, locked: false, done: 0 };
     renderReadDots();
     loadQuestion(0);
+    ensurePinyinPro(function () {
+      if (openScreenId === "s-read" && readState) loadQuestion(readState.idx);
+    });
   }
 
   function renderReadDots() {
@@ -2778,12 +2785,6 @@
 
   function startDeck(deck, startIdx, returnTo) {
     rememberSubjectScroll();
-    ensureAudioPack();
-    var requestedLang = String(deck.lang || "zh-CN");
-    if (requestedLang.indexOf("zh") === 0 && !window.pinyinPro && !pinyinProFailed) {
-      ensurePinyinPro(function () { startDeck(deck, startIdx, returnTo); });
-      return;
-    }
     speakReturn = returnTo || { screen: "home" };
     var entries = deck.items.map(function (it, i) {
       return {
@@ -2803,6 +2804,9 @@
       : "听一遍，再跟着读";
     renderSpeakDots();
     loadSpeakItem(speakState.idx);
+    setTimeout(function () {
+      if (openScreenId === "s-speak") ensureAudioPack();
+    }, 80);
   }
 
   /* ------------------------------------------------------------ textbook */
@@ -4316,6 +4320,11 @@
 
     probeTextbookImages();
     try { renderHome(); } catch (err) { showFatal(err); }
+    if (window.requestIdleCallback) {
+      requestIdleCallback(warmResources, { timeout: 1600 });
+    } else {
+      setTimeout(warmResources, 900);
+    }
   }
 
   if (document.readyState === "loading") {
