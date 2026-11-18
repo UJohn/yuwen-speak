@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="一年级小书房">
 <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=20261118-26">
+  <link rel="manifest" href="manifest.webmanifest?v=20261118-27">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261118-26">
+  <link rel="stylesheet" href="styles.css?v=20261118-27">
 </head>
 <body>
 
@@ -58,7 +58,6 @@
           <p>语文和英语分开进入，课本、拼音、识字、阅读和跟读练习都在里面。</p>
         </div>
         <div class="home-mascot">
-          <span class="mascot-bubble">今天想读语文，还是英语呀？</span>
           <img src="assets/img/mascot-girl.webp" alt="小书童">
           <span class="mascot-sparkle" aria-hidden="true">✦</span>
         </div>
@@ -633,23 +632,36 @@
   </div>
 </div>
 
+<!-- ============================================================ 星星记录 -->
+<div class="modal" id="starModal" hidden>
+  <div class="modal-card star-card">
+    <button class="icon-btn modal-close" id="starModalClose" type="button" aria-label="关闭">
+      <i class="icon icon-x"></i>
+    </button>
+    <h2>我的星星</h2>
+    <p class="modal-sub">星星会一直累计，不会扣掉，也不能兑换；它是你认真读过、练过的记录。</p>
+    <div class="star-total">
+      <img src="assets/img/star.webp" alt="">
+      <b id="starModalCount">0</b>
+      <span>颗</span>
+    </div>
+    <ul class="star-rules">
+      <li>跟读或读课文，第一次读对 <b>+1</b> 颗；同一内容重复读不再加。</li>
+      <li>完成拼音、识字、闯关或写字练习，通常 <b>+3</b> 颗。</li>
+      <li>换设备或清除浏览器缓存后，星星会重新从 0 开始。</li>
+    </ul>
+    <button class="btn btn-primary star-ok" id="starModalOk" type="button">继续读书</button>
+  </div>
+</div>
+
 <div class="print-sheet" id="printSheet" aria-hidden="true"></div>
 <audio id="myVoice" hidden></audio>
 
 <div class="voice-float" id="voiceFloat" hidden aria-label="切换音色">
   <span>音色</span>
   <div id="voiceFloatBtns"></div>
-  <div class="voice-gap" id="voiceGapBox" hidden>
-    <span>逐词间隔</span>
-    <select id="voiceGapSel" aria-label="逐词间隔">
-      <option value="200" selected>200ms</option>
-      <option value="100">100ms</option>
-      <option value="50">50ms</option>
-      <option value="0">0ms</option>
-    </select>
-  </div>
 </div>
 
-<script src="app-bundle.js?v=20261118-26"></script>
+<script src="app-bundle.js?v=20261118-27"></script>
 </body>
 </html>

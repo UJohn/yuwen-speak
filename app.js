@@ -52,7 +52,7 @@
     return {
       schema: 2, stars: 0, sound: true, speak: true, volume: 1, slowRate: 0.72,
       enVoice: hasTencentVoice() ? "tencent-403006" : "sonia",
-      zhVoice: "xiaoxiao", tbImages: true, tbGap: 200,
+      zhVoice: "xiaoxiao", tbImages: true,
       days: {}, chars: {}, read: {}, today: { date: "", count: 0 }
     };
   }
@@ -86,7 +86,6 @@
         enVoice: isEnglishVoice(data.enVoice) ? data.enVoice : "sonia",
         zhVoice: ["xiaoxiao", "xiaoyi"].indexOf(data.zhVoice) >= 0 ? data.zhVoice : "xiaoxiao",
         tbImages: data.schema === 2 ? data.tbImages !== false : true,
-        tbGap: [200, 100, 50, 0].indexOf(data.tbGap) >= 0 ? data.tbGap : 200,
         days: data.days && typeof data.days === "object" ? data.days : {},
         chars: data.chars && typeof data.chars === "object" ? data.chars : {},
         read: data.read && typeof data.read === "object" ? data.read : {},
@@ -364,8 +363,22 @@
 
   function addStars(n) {
     state.stars += n;
-    $("#starCount").textContent = state.stars;
+    syncStarChip();
     save();
+  }
+
+  function syncStarChip() {
+    $("#starCount").textContent = state.stars;
+    $("#starChip").setAttribute("aria-label", "我的星星，共 " + state.stars + " 颗");
+  }
+
+  function openStarModal() {
+    $("#starModalCount").textContent = state.stars;
+    $("#starModal").hidden = false;
+  }
+
+  function closeStarModal() {
+    $("#starModal").hidden = true;
   }
 
   function flashToast(el, text) {
@@ -518,7 +531,7 @@
   /* ------------------------------------------------------------ home */
 
   function renderHome() {
-    $("#starCount").textContent = state.stars;
+    syncStarChip();
     syncSoundIcon();
     syncSettingsUI();
     applyVolume();
@@ -623,7 +636,7 @@
     card.dataset.game = kind;
     card.innerHTML =
       (ds[kind]
-        ? '<span class="g-done"><i class="icon icon-check"></i></span>'
+        ? '<span class="g-done">今天已练</span>'
         : '<span class="g-count">' + (extra ? "10 题" : gameCount(kind, day)) + "</span>") +
       '<span class="g-tag">' + meta.tag + "</span>" +
       "<h4>" + meta.name + "</h4>" +
@@ -736,6 +749,7 @@
   /* ------------------------------------------------------------ screens */
 
   var openScreenId = null;
+  var subjectScroll = { zh: 0, en: 0 };
 
   function showScreen(id) {
     if (id !== "s-textbook") closeTbSheet();
@@ -751,6 +765,14 @@
     stopTextbookSequence();
     stopWordSequence();
     stopTbWordSequence();
+  }
+
+  function rememberSubjectScroll() {
+    if (openScreenId !== "s-units") return;
+    var screen = $("#s-units");
+    if (!screen) return;
+    var id = screen.classList.contains("theme-en") ? "en" : "zh";
+    subjectScroll[id] = screen.scrollTop;
   }
 
   function goHome() {
@@ -789,11 +811,29 @@
     goHome();
   }
 
+  function goBackScreen(id) {
+    if (!id) goHome();
+    else if (id === "s-speak") goBackFromSpeak();
+    else if (id === "s-textbook") openSubject("en");
+    else if (id === "s-pinyin-drill") openSubject("zh");
+    else if (id === "s-pick") openSubject((pickDeck && pickDeck.subject) || "en");
+    else if (id === "s-alphabet") openSubject("en");
+    else if (id === "s-en-quiz") {
+      if (eqReturn === "s-alphabet") openAlphabet();
+      else openSubject("en");
+    } else if (["s-pinyin", "s-read", "s-pinyin-quiz", "s-tone-quiz", "s-blend-quiz", "s-stroke", "s-trace"].indexOf(id) >= 0) {
+      openSubject("zh");
+    } else {
+      goHome();
+    }
+  }
+
   function cancelSpeech() {
     try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (err) {}
   }
 
   function openGame(kind, dayNo) {
+    rememberSubjectScroll();
     ensureAudioPack();
     currentDay = dayNo || currentDay;
     if (kind === "pinyin") startPinyin();
@@ -1908,6 +1948,7 @@
   /* ------------------------------------------------------------ english tools */
 
   function openAlphabet() {
+    rememberSubjectScroll();
     showScreen("s-alphabet");
     renderAlphabet();
   }
@@ -1931,6 +1972,7 @@
   }
 
   var eqState = null;
+  var eqReturn = "en";
 
   function enQuizPool(mode) {
     return EN_ALPHABET;
@@ -1944,9 +1986,10 @@
     say(item.key, item.letter ? item.lower : item.word, "en-GB");
   }
 
-  function startEnglishQuiz(mode) {
+  function startEnglishQuiz(mode, returnTo) {
     var pool = enQuizPool(mode);
     if (!pool.length) return;
+    if (returnTo) eqReturn = returnTo;
     var items = shuffle(pool).slice(0, 10);
     eqState = { mode: mode, items: items, idx: 0, correct: 0, locked: false };
     showScreen("s-en-quiz");
@@ -2070,6 +2113,7 @@
   }
 
   function openPinyinDrill() {
+    rememberSubjectScroll();
     drillTone = 1;
     showScreen("s-pinyin-drill");
     renderPinyinDrill();
@@ -2602,6 +2646,12 @@
       });
       toolsGrid.appendChild(alpha);
     }
+    if (subjectScroll[subject.id]) {
+      requestAnimationFrame(function () {
+        var units = $("#s-units");
+        if (units && openScreenId === "s-units") units.scrollTop = subjectScroll[subject.id];
+      });
+    }
   }
 
   function textbookPages() {
@@ -2685,6 +2735,7 @@
   var pickDeck = null;
 
   function openPicker(deck) {
+    rememberSubjectScroll();
     pickDeck = deck;
     showScreen("s-pick");
     $("#pickTitle").textContent = deck.title;
@@ -2726,6 +2777,7 @@
   }
 
   function startDeck(deck, startIdx, returnTo) {
+    rememberSubjectScroll();
     ensureAudioPack();
     var requestedLang = String(deck.lang || "zh-CN");
     if (requestedLang.indexOf("zh") === 0 && !window.pinyinPro && !pinyinProFailed) {
@@ -2775,6 +2827,7 @@
 
   function openTextbook(unitId) {
     if (!TB.length) return;
+    rememberSubjectScroll();
     tbUnitId = unitId || (tbUnit() && tbUnit().id) || TB[0].id;
     tbPageIdx = 0;
     showScreen("s-textbook");
@@ -2785,13 +2838,24 @@
   function renderTbTabs() {
     var tabs = $("#tbTabs");
     if (!tabs) return;
+    var shortTitle = {
+      "en-u1": "Hello",
+      "en-u2": "My Bag",
+      "en-u3": "Count",
+      "en-u4": "Colors",
+      "en-u5": "Scooter",
+      "en-u6": "Jump"
+    };
     tabs.innerHTML = "";
     TB.forEach(function (u) {
       var b = document.createElement("button");
       b.type = "button";
       b.dataset.tbUnit = u.id;
       b.className = u.id === tbUnitId ? "on" : "";
-      b.innerHTML = '<b>' + escapeHTML(u.badge) + "</b><span>" + escapeHTML(u.title) + "</span>";
+      b.title = u.title;
+      b.setAttribute("aria-label", u.badge + " " + u.title);
+      b.innerHTML = '<b>' + escapeHTML(u.badge) + "</b><span>" +
+        escapeHTML(shortTitle[u.id] || u.title) + "</span>";
       b.addEventListener("click", function () {
         if (u.id === tbUnitId) return;
         sfx("tap");
@@ -3095,19 +3159,6 @@
       return '<button type="button" data-' + o[2] + '="' + o[0] + '"' +
         (o[0] === current ? ' class="on"' : "") + ">" + o[1] + "</button>";
     }).join("");
-    var gapBox = $("#voiceGapBox");
-    if (gapBox) {
-      var speakWords = 0;
-      if (openScreenId === "s-speak" && speakState && speakState.entries[speakState.idx]) {
-        speakWords = String(speakState.entries[speakState.idx].item.text || "").trim().split(/\s+/).length;
-      }
-      var showGap = isEn && (openScreenId === "s-textbook" || speakWords >= 2);
-      gapBox.hidden = !showGap;
-      if (showGap) {
-        var gapSel = $("#voiceGapSel");
-        if (gapSel) gapSel.value = String(state.tbGap || 200);
-      }
-    }
   }
 
   function playLine(page, i, quiet, slow) {
@@ -3137,8 +3188,7 @@
   var tbWordPlain = "";
 
   function tbGapMs() {
-    var v = state.tbGap;
-    return [200, 100, 50, 0].indexOf(v) >= 0 ? v : 200;
+    return 0;
   }
 
   function stopTbWordSequence() {
@@ -3806,14 +3856,7 @@
       if (!b) return;
       sfx("tap");
       var screen = b.closest(".screen");
-      if (screen && screen.id === "s-speak") { goBackFromSpeak(); return; }
-      if (screen && screen.id === "s-textbook") { openSubject("en"); return; }
-      if (screen && screen.id === "s-pinyin-drill") { openSubject("zh"); return; }
-      if (screen && screen.id === "s-pick") {
-        openSubject((pickDeck && pickDeck.subject) || "en");
-        return;
-      }
-      goHome();
+      goBackScreen(screen ? screen.id : openScreenId);
     });
 
     document.addEventListener("click", function (ev) {
@@ -3995,13 +4038,6 @@
     $("#wordBtn").addEventListener("click", function () {
       sfx("tap");
       playWordByWord();
-    });
-    $("#voiceGapSel").addEventListener("change", function (ev) {
-      var v = parseInt(ev.target.value, 10);
-      if ([200, 100, 50, 0].indexOf(v) >= 0) {
-        state.tbGap = v;
-        save();
-      }
     });
     $("#slowBtn").addEventListener("click", function () {
       sfx("tap");
@@ -4205,7 +4241,7 @@
       } catch (err) {}
     });
     $("#bqNext").addEventListener("click", nextBlendQuiz);
-    $("#alphabetQuizStart").addEventListener("click", function () { startEnglishQuiz("alphabet"); });
+    $("#alphabetQuizStart").addEventListener("click", function () { startEnglishQuiz("alphabet", "s-alphabet"); });
     $("#eqSpeaker").addEventListener("click", function () {
       if (!eqState) return;
       enQuizSpeak(eqState.items[eqState.idx]);
@@ -4260,14 +4296,21 @@
 
     $("#starChip").addEventListener("click", function () {
       sfx("tap");
-      $("#reading").scrollIntoView({ behavior: "smooth", block: "start" });
+      openStarModal();
+    });
+
+    $("#starModalClose").addEventListener("click", closeStarModal);
+    $("#starModalOk").addEventListener("click", closeStarModal);
+    $("#starModal").addEventListener("click", function (ev) {
+      if (ev.target === this) closeStarModal();
     });
 
     document.addEventListener("keydown", function (ev) {
       if (ev.key === "Escape") {
+        if (!$("#starModal").hidden) { closeStarModal(); return; }
         if (!$("#settingsModal").hidden) { $("#settingsModal").hidden = true; return; }
         if (!$("#celebrate").hidden) { hideCelebrate(); goHome(); return; }
-        if (openScreenId) goHome();
+        if (openScreenId) goBackScreen(openScreenId);
       }
     });
 
