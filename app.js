@@ -18,7 +18,7 @@
   };
   var EXTRA_GAMES = [
     { kind: "pinyinQuiz", name: "听音选拼音", tag: "TINGYIN", sub: "听标准音，限时选拼音" },
-    { kind: "toneQuiz", name: "声调小侦探", tag: "SHENGDIAO", sub: "看拼音，判断第几声" },
+    { kind: "toneQuiz", name: "声调小侦探", tag: "SHENGDIAO", sub: "听读音，判断第几声" },
     { kind: "blendQuiz", name: "找拼读", tag: "PINDU", sub: "听 b—a—ba，找出完整音节" }
   ];
 
@@ -148,7 +148,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261118-4";
+  var AUDIO_VERSION = "20261118-5";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -475,7 +475,8 @@
   function gameCount(kind, day) {
     if (kind === "pinyin") return (day.pinyin.length + extraPinyinForDay(day).length) + " 组";
     if (kind === "stroke" || kind === "trace") return day.write.length + " 个字";
-    if (kind === "pinyinQuiz" || kind === "toneQuiz" || kind === "blendQuiz") return "10 题";
+    if (kind === "pinyinQuiz" || kind === "blendQuiz") return "10 题";
+    if (kind === "toneQuiz") return "20 题";
     return (day.read.length + extraReadForDay(day).length) + " 道题";
   }
 
@@ -1413,7 +1414,7 @@
   }
 
   function startToneQuiz() {
-    var items = shuffle(toneQuizPool()).slice(0, 10);
+    var items = shuffle(toneQuizPool()).slice(0, 20);
     tqState = { items: items, idx: 0, correct: 0, locked: true };
     showScreen("s-tone-quiz");
     $("#tqCard").hidden = false;
@@ -1427,13 +1428,16 @@
     var item = st.items[st.idx];
     st.locked = false;
     $("#tqCounter").textContent = (st.idx + 1) + " / " + st.items.length;
-    $("#tqPinyin").textContent = item.py;
+    $("#tqPinyin").textContent = "?";
     $("#tqFeedback").hidden = true;
-    $("#tqPlay").hidden = true;
+    $("#tqPlay").hidden = false;
     $("#tqNext").hidden = true;
     $("#tqOptions").innerHTML = [1, 2, 3, 4].map(function (t) {
       return '<button class="quiz-opt" type="button" data-tq-tone="' + t + '">第 ' + t + " 声</button>";
     }).join("");
+    setTimeout(function () {
+      if (tqState === st && !st.locked) say(item.key, item.ch, "zh-CN");
+    }, 350);
   }
 
   function answerToneQuiz(btn) {
@@ -1452,6 +1456,7 @@
     fb.hidden = false;
     fb.className = "quiz-feedback " + (ok ? "right" : "wrong");
     fb.textContent = (ok ? "答对啦！" : "再看看声调：") + "「" + item.py + "」是" + TONE_TIPS[item.tone] + "。";
+    $("#tqPinyin").textContent = item.py;
     $("#tqPlay").hidden = false;
     $("#tqNext").hidden = false;
     $("#tqNext").textContent = tqState.idx + 1 >= tqState.items.length ? "看成绩" : "下一个";
@@ -1478,14 +1483,14 @@
 
   function finishToneQuiz() {
     var n = tqState.correct;
-    var stars = n >= 9 ? 3 : (n >= 7 ? 2 : (n >= 5 ? 1 : 0));
+    var stars = n >= 17 ? 3 : (n >= 13 ? 2 : (n >= 9 ? 1 : 0));
     $("#tqCard").hidden = true;
     var box = $("#tqResult");
     box.hidden = false;
     box.innerHTML =
       '<div class="result-stars">' + starTag(stars) + "</div>" +
       "<h3>答对 " + n + " / " + tqState.items.length + "</h3>" +
-      "<p>" + (n >= 9 ? "四声都听得很准！" : n >= 7 ? "已经很不错，再练一次更稳。" : "二声和三声最容易混，再听几遍。") + "</p>" +
+      "<p>" + (n >= 17 ? "四声都听得很准！" : n >= 13 ? "已经很不错，再练一次更稳。" : "二声和三声最容易混，再听几遍。") + "</p>" +
       '<div class="quiz-result-actions">' +
         '<button class="btn btn-primary" type="button" data-quiz-again="tq">再来一次</button>' +
         '<button class="btn btn-ghost" type="button" data-quiz-home="1">回小书房</button>' +
