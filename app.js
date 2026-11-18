@@ -2743,13 +2743,14 @@
     var done = !!state.read["tb-page:" + page.id];
     var lines = page.lines.map(function (line, i) {
       var lineDone = !!state.read["tb-line:" + page.id + ":" + i];
-      return '<div class="tb-line' + (lineDone ? " done" : "") + '">' +
+      return '<div class="tb-line' + (lineDone ? " done" : "") + '" data-tb-line-row="' + i + '">' +
         '<button class="tb-line-main" type="button" data-tb-line="' + i + '">' +
-        '<span class="tb-en">' + escapeHTML(line.en) + "</span>" +
-        '<span class="tb-zh">' + escapeHTML(line.zh) + "</span>" +
+        '<span class="tb-line-no">' + (i + 1 < 10 ? "0" : "") + (i + 1) + "</span>" +
+        '<span class="tb-line-copy"><span class="tb-en">' + escapeHTML(line.en) + "</span>" +
+        '<span class="tb-zh">' + escapeHTML(line.zh) + "</span></span>" +
         "</button>" +
         '<button class="tb-mini" type="button" data-tb-zh="' + i + '" aria-label="听中文解释">' +
-        '<i class="icon icon-volume"></i><span>中文</span></button>' +
+        '<i class="icon icon-volume"></i></button>' +
         "</div>";
     }).join("");
     var words = page.words.map(function (w) {
@@ -2766,37 +2767,64 @@
         (state.read["tb-page:" + p.id] ? " done" : "") + '" data-tb-page="' + i +
         '" aria-label="第 ' + (i + 1) + ' 页"></button>';
     }).join("");
+    var firstLine = page.lines[0] || { en: "", zh: "" };
     $("#tbPage").innerHTML =
-      '<div class="tb-card tb-reader' + (hasBook ? " has-book" : "") + '">' +
-        '<div class="tb-reader-head">' +
-          '<div class="tb-crumb">' + escapeHTML(u.unit || u.title) + " · " +
-            escapeHTML(String(page.section).toUpperCase()) + "</div>" +
-          "<h3>" + escapeHTML(page.sub) + "</h3>" +
-          '<p class="tb-hint">点课本图上的句子，弹出这一句的朗读卡。</p>' +
-        "</div>" +
-        '<div class="tb-visual tb-reader-book' + (hasBook ? " is-book" : "") + '">' +
-          tbVisualHTML(page, u) +
-          '<span class="tb-unit-tag">' + escapeHTML(u.badge) + " · " + escapeHTML(u.zh) + "</span>" +
-        "</div>" +
-        '<div class="tb-reader-foot">' +
-          '<div class="tb-actions">' +
-            '<button class="btn btn-primary tb-playall" type="button" data-tb-playall="1">' +
-              '<i class="icon icon-play"></i>整页听一遍</button>' +
-            '<button class="btn ' + (done ? "btn-ghost" : "btn-primary") + ' tb-done" type="button" data-tb-done="1">' +
+      '<div class="tb-reader-shell">' +
+        '<section class="tb-stage" id="tbStage" aria-label="课本图">' +
+          '<div class="tb-stage-head">' +
+            '<div><div class="tb-crumb">' + escapeHTML(u.unit || u.title) + " · " +
+              escapeHTML(String(page.section).toUpperCase()) + "</div>" +
+              '<h3>' + escapeHTML(page.sub) + "</h3></div>" +
+            '<span class="tb-stage-chip">第 ' + (idx + 1) + " / " + u.pages.length + " 页</span>" +
+          "</div>" +
+          '<div class="tb-book-wrap">' +
+            '<div class="tb-visual tb-reader-book' + (hasBook ? " is-book" : "") + '">' +
+              tbVisualHTML(page, u) +
+              '<span class="tb-unit-tag">' + escapeHTML(u.badge) + " · " + escapeHTML(u.zh) + "</span>" +
+            "</div>" +
+          "</div>" +
+          '<div class="tb-stage-foot">' +
+            '<button type="button" class="tb-stage-nav" data-tb-nav="prev"' + (atVeryStart ? " disabled" : "") + ">" + prevLabel + "</button>" +
+            '<span class="tb-dots">' + dots + "</span>" +
+            '<button type="button" class="tb-stage-nav" data-tb-nav="next"' + (atVeryEnd ? " disabled" : "") + ">" + nextLabel + "</button>" +
+          "</div>" +
+        "</section>" +
+        '<aside class="tb-rail" aria-label="当前页句子和动作">' +
+          '<div class="tb-rail-head">' +
+            '<span class="tb-rail-kicker">READ ALONG</span>' +
+            '<p>点图上的句子，或点下面句子；每一次点击都会显示朗读卡。</p>' +
+          "</div>" +
+          '<div class="tb-focus" id="tbFocus" aria-live="polite">' +
+            '<div class="tb-sheet-top">' +
+              '<span class="tb-sheet-chip" id="tbFocusChip">句子 1 / ' + page.lines.length + "</span>" +
+              '<div class="tb-sheet-nav">' +
+                '<button type="button" data-tb-sheet-nav="prev" aria-label="上一句">‹</button>' +
+                '<button type="button" data-tb-sheet-nav="next" aria-label="下一句">›</button>' +
+              "</div>" +
+            "</div>" +
+            '<p class="tb-focus-en" id="tbFocusEn">' + escapeHTML(firstLine.en) + "</p>" +
+            '<p class="tb-focus-ipa" id="tbFocusIpa" hidden></p>' +
+            '<div class="tb-focus-zhrow"><span id="tbFocusZh">' + escapeHTML(firstLine.zh) + "</span>" +
+              '<button type="button" data-tb-sheet-zh aria-label="听中文解释"><i class="icon icon-volume"></i></button>' +
+            "</div>" +
+            '<div class="tb-focus-actions">' +
+              '<button type="button" data-tb-sheet-listen><i class="icon icon-volume"></i>听一遍</button>' +
+              '<button type="button" data-tb-sheet-slow><i class="icon icon-volume"></i>慢速</button>' +
+              '<button type="button" data-tb-sheet-slow2><i class="icon icon-volume"></i>慢速×2</button>' +
+              '<button type="button" data-tb-sheet-word id="tbFocusWordBtn"><i class="icon icon-volume"></i>逐词</button>' +
+            "</div>" +
+          "</div>" +
+          '<div class="tb-rail-scroll">' +
+            '<div class="tb-line-rail">' + lines + "</div>" +
+            '<div class="tb-word-head"><b>PIGGY BANK</b><span>点单词听英语</span></div>' +
+            '<div class="tb-words">' + words + "</div>" +
+          "</div>" +
+          '<div class="tb-rail-actions">' +
+            '<button class="btn btn-primary" type="button" data-tb-playall="1"><i class="icon icon-play"></i>整页听一遍</button>' +
+            '<button class="btn ' + (done ? "btn-ghost" : "btn-primary") + '" type="button" data-tb-done="1">' +
               (done ? "再读一遍" : "我读完了 +1 ★") + "</button>" +
           "</div>" +
-          '<div class="tb-pager">' +
-            '<button type="button" data-tb-nav="prev"' + (atVeryStart ? " disabled" : "") + ">" + prevLabel + "</button>" +
-            '<span class="tb-dots">' + dots + "</span>" +
-            '<button type="button" data-tb-nav="next"' + (atVeryEnd ? " disabled" : "") + ">" + nextLabel + "</button>" +
-          "</div>" +
-          '<details class="tb-line-index">' +
-            '<summary>句子清单 · 也可以点这里读</summary>' +
-            '<div class="tb-lines">' + lines + "</div>" +
-          "</details>" +
-          '<div class="tb-word-head"><b>PIGGY BANK</b><span>点单词听英语，点小喇叭听中文</span></div>' +
-          '<div class="tb-words">' + words + "</div>" +
-        "</div>" +
+        "</aside>" +
       "</div>";
     var bookImg = $("#tbPage .tb-book-img");
     if (bookImg) {
@@ -2808,6 +2836,7 @@
         renderTbPage();
       });
     }
+    syncTbFocusLine(page, 0);
     syncTbImageToggle();
     try { $("#s-textbook").scrollTop = 0; } catch (err) {}
   }
@@ -2867,6 +2896,35 @@
     if (screen) screen.classList.remove("sheet-open");
   }
 
+  function syncTbFocusLine(page, i) {
+    var line = page && page.lines ? page.lines[i] : null;
+    var focus = $("#tbFocus");
+    if (!line || !focus) return;
+    focus.classList.remove("is-word");
+    $("#tbFocusChip").textContent = "句子 " + (i + 1) + " / " + page.lines.length;
+    $("#tbFocusEn").textContent = line.en;
+    $("#tbFocusIpa").hidden = true;
+    $("#tbFocusZh").textContent = line.zh || "";
+    $("#tbFocusWordBtn").hidden = false;
+    $$("#tbFocus [data-tb-sheet-nav]").forEach(function (b) { b.hidden = false; });
+    $$("#tbPage .tb-line[data-tb-line-row]").forEach(function (row) {
+      row.classList.toggle("focus", parseInt(row.dataset.tbLineRow, 10) === i);
+    });
+  }
+
+  function syncTbFocusWord(word) {
+    var focus = $("#tbFocus");
+    if (!word || !focus) return;
+    focus.classList.add("is-word");
+    $("#tbFocusChip").textContent = "单词";
+    $("#tbFocusEn").textContent = word.w;
+    $("#tbFocusIpa").textContent = word.ipa || "";
+    $("#tbFocusIpa").hidden = !word.ipa;
+    $("#tbFocusZh").textContent = word.zh || "";
+    $("#tbFocusWordBtn").hidden = !/[\s-]/.test(word.w);
+    $$("#tbFocus [data-tb-sheet-nav]").forEach(function (b) { b.hidden = true; });
+  }
+
   function openTbSheet(page, i) {
     var line = page && page.lines ? page.lines[i] : null;
     var sheet = $("#tbSheet");
@@ -2880,6 +2938,7 @@
     $("#tbSheetWordBtn").hidden = false;
     $$("#tbSheet [data-tb-sheet-nav]").forEach(function (b) { b.hidden = false; });
     $("#tbSheetZh").textContent = line.zh || "";
+    syncTbFocusLine(page, i);
     $("#tbSheet").hidden = false;
     var screen = $("#s-textbook");
     if (screen) screen.classList.add("sheet-open");
@@ -2904,6 +2963,7 @@
     $("#tbSheetIpa").hidden = !word.ipa;
     $("#tbSheetZh").textContent = word.zh || "";
     $("#tbSheetWordBtn").hidden = !/[\s-]/.test(word.w);
+    syncTbFocusWord(word);
     $$("#tbSheet [data-tb-sheet-nav]").forEach(function (b) { b.hidden = true; });
     $("#tbSheet").hidden = false;
     var screen = $("#s-textbook");
@@ -3018,7 +3078,9 @@
     stopTbWordSequence();
     pausePlayback();
     var sheetOpen = tbSheetLine === lineIndex;
-    var enEl = sheetOpen ? $("#tbSheetEn") : null;
+    var focusEl = $("#tbFocusEn");
+    var focusVisible = focusEl && focusEl.offsetParent !== null;
+    var enEl = focusVisible ? focusEl : (sheetOpen ? $("#tbSheetEn") : null);
     if (!enEl) {
       var row = $("#tbPage").querySelectorAll(".tb-line")[lineIndex];
       enEl = row && row.querySelector(".tb-en");
@@ -3093,7 +3155,8 @@
         html += escapeHTML(part);
       }
     });
-    var enEl = $("#tbSheetEn");
+    var focusEl = $("#tbFocusEn");
+    var enEl = focusEl && focusEl.offsetParent !== null ? focusEl : $("#tbSheetEn");
     tbWordEl = enEl;
     tbWordPlain = enEl.textContent;
     enEl.innerHTML = html;
