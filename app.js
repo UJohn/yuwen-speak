@@ -57,6 +57,9 @@
   var currentDay = firstOpenDay();
   var flowQueue = null;
   var homeTab = "zh";
+  var pinyinProLoading = false;
+  var pinyinProFailed = false;
+  var pinyinProCallbacks = [];
   var BLENDS = window.PINYIN_BLENDS || [];
   var EN_ALPHABET = window.ENGLISH_ALPHABET || [];
   var EN_IPA = window.ENGLISH_IPA || [];
@@ -378,6 +381,31 @@
     }).join("");
   }
 
+  /* pinyin-pro is only needed once a Chinese reading/game screen is opened. */
+  function ensurePinyinPro(cb) {
+    if (window.pinyinPro || pinyinProFailed) {
+      if (cb) cb();
+      return;
+    }
+    if (cb) pinyinProCallbacks.push(cb);
+    if (pinyinProLoading) return;
+    pinyinProLoading = true;
+    var s = document.createElement("script");
+    s.src = "assets/pinyin-pro.js?v=20261117-18";
+    s.onload = function () {
+      pinyinProLoading = false;
+      var list = pinyinProCallbacks.splice(0);
+      list.forEach(function (fn) { fn(); });
+    };
+    s.onerror = function () {
+      pinyinProLoading = false;
+      pinyinProFailed = true;
+      var list = pinyinProCallbacks.splice(0);
+      list.forEach(function (fn) { fn(); });
+    };
+    document.head.appendChild(s);
+  }
+
   function speakRubyHTML(text, py) {
     var chars = Array.from(text);
     var toks = String(py || "").trim().split(/\s+/).filter(Boolean);
@@ -434,7 +462,7 @@
   function starTag(rating) {
     var out = "";
     for (var i = 0; i < 3; i++) {
-      out += '<img src="assets/img/star.png" alt=""' + (i < rating ? "" : ' class="off"') + ">";
+      out += '<img src="assets/img/star.webp" alt=""' + (i < rating ? "" : ' class="off"') + ">";
     }
     return out;
   }
@@ -989,7 +1017,7 @@
       b.type = "button";
       b.className = i === strokeState.idx ? "on" : "";
       b.innerHTML = ch + '<span class="cs-stars">' +
-        (strokeState.done[ch] ? '<img src="assets/img/star.png" alt="">' : "") + "</span>";
+        (strokeState.done[ch] ? '<img src="assets/img/star.webp" alt="">' : "") + "</span>";
       b.addEventListener("click", function () { loadStrokeChar(i); });
       wrap.appendChild(b);
     });
@@ -1101,7 +1129,7 @@
       b.type = "button";
       b.className = i === traceState.idx ? "on" : "";
       b.innerHTML = ch + '<span class="cs-stars">' +
-        (state.chars[ch] ? '<img src="assets/img/star.png" alt="">'.repeat(state.chars[ch]) : "") + "</span>";
+        (state.chars[ch] ? '<img src="assets/img/star.webp" alt="">'.repeat(state.chars[ch]) : "") + "</span>";
       b.addEventListener("click", function () { loadTraceChar(i); });
       wrap.appendChild(b);
     });
@@ -2466,7 +2494,7 @@
       save();
     }
     var avgPill = done.length
-      ? '<span class="stat-pill"><img src="assets/img/star.png" alt="">平均 <b>' +
+      ? '<span class="stat-pill"><img src="assets/img/star.webp" alt="">平均 <b>' +
         (totalStars / done.length).toFixed(1) + "</b> 星</span>"
       : '<span class="stat-pill">读完就有评分</span>';
     box.innerHTML =
@@ -2638,6 +2666,11 @@
   }
 
   function startDeck(deck, startIdx, returnTo) {
+    var requestedLang = String(deck.lang || "zh-CN");
+    if (requestedLang.indexOf("zh") === 0 && !window.pinyinPro && !pinyinProFailed) {
+      ensurePinyinPro(function () { startDeck(deck, startIdx, returnTo); });
+      return;
+    }
     speakReturn = returnTo || { screen: "home" };
     var entries = deck.items.map(function (it, i) {
       return {
@@ -2670,20 +2703,9 @@
   var tbImagesReady = false;
 
   function probeTextbookImages() {
-    var probe = new Image();
-    probe.onload = function () {
-      tbImagesReady = true;
-      syncTbImageToggle();
-    };
-    probe.onerror = function () {
-      tbImagesReady = false;
-      if (state.tbImages) {
-        state.tbImages = false;
-        save();
-      }
-      syncTbImageToggle();
-    };
-    probe.src = "assets/textbook/u1-sing.webp";
+    /* Avoid downloading a textbook page just to test image availability. */
+    tbImagesReady = !!(TB_IMG && Object.keys(TB_IMG).length);
+    syncTbImageToggle();
   }
 
   function tbUnit() {

@@ -1,17 +1,17 @@
 @font-face {
   font-family: "Kai";
-  src: url("assets/fonts/kai.otf") format("opentype");
+  src: url("assets/fonts/kai.woff") format("woff");
   font-display: swap;
 }
 @font-face {
   font-family: "Andika";
-  src: url("assets/fonts/Andika-Regular.ttf") format("truetype");
+  src: url("assets/fonts/Andika-Regular.woff") format("woff");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "Andika";
-  src: url("assets/fonts/Andika-Bold.ttf") format("truetype");
+  src: url("assets/fonts/Andika-Bold.woff") format("woff");
   font-weight: 700;
   font-display: swap;
 }
