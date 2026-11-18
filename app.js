@@ -437,6 +437,7 @@
   var audioPackLoading = false;
   var audioPackFailed = false;
   var audioPackCallbacks = [];
+  var audioMapBeforePack = null;
 
   function ensureAudioPack(cb) {
     if (window.AUDIO_PACK_READY) {
@@ -450,11 +451,13 @@
     if (cb) audioPackCallbacks.push(cb);
     if (audioPackLoading) return;
     audioPackLoading = true;
+    if (!audioMapBeforePack) audioMapBeforePack = window.AUDIO_MAP || {};
     var s = document.createElement("script");
     s.src = "audio-bundle.js?v=20261118-22";
     s.onload = function () {
       audioPackLoading = false;
       window.AUDIO_PACK_READY = true;
+      window.AUDIO_MAP = Object.assign({}, window.AUDIO_MAP || {}, audioMapBeforePack);
       var list = audioPackCallbacks.splice(0);
       list.forEach(function (fn) { fn(); });
     };
