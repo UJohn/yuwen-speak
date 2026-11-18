@@ -210,6 +210,33 @@
   </div>
 </section>
 
+<!-- ============================================================ 找拼读 -->
+<section class="screen" id="s-blend-quiz" hidden>
+  <div class="screen-top">
+    <button class="icon-btn back" type="button" data-back aria-label="返回">
+      <i class="icon icon-back"></i>
+    </button>
+    <div class="screen-title">
+      <h2>找拼读</h2>
+      <p>听 b—a—ba，找出完整音节</p>
+    </div>
+    <div class="round-dots" id="bqDots"></div>
+  </div>
+  <div class="quiz-wrap">
+    <div class="quiz-card" id="bqCard">
+      <div class="quiz-meta"><span id="bqCounter">1 / 10</span><span class="quiz-timer">听拼读</span></div>
+      <button class="quiz-speaker" id="bqSpeaker" type="button">
+        <i class="icon icon-volume"></i>再听一遍
+      </button>
+      <p class="quiz-prompt">听一听，它是哪个拼音？</p>
+      <div class="quiz-options" id="bqOptions"></div>
+      <div class="quiz-feedback" id="bqFeedback" hidden></div>
+      <button class="btn btn-primary quiz-next" id="bqNext" type="button" hidden>下一个</button>
+    </div>
+    <div class="quiz-result" id="bqResult" hidden></div>
+  </div>
+</section>
+
 <!-- ============================================================ 跟读打分 -->
 <section class="screen" id="s-speak" hidden>
   <div class="screen-top">
@@ -529,11 +556,12 @@
 <script src="data-drill.js?v=20261117-18"></script>
 <script src="assets/en-ipa.js?v=20261117-18"></script>
 <script src="assets/audio-manifest.js?v=20261117-18"></script>
+<script src="data-blend.js?v=20261118-3"></script>
 <script src="assets/voice-libby.js?v=20261117-18"></script>
 <script src="assets/voice-maisie.js?v=20261117-18"></script>
 <script src="assets/voice-youdao.js?v=20261117-18"></script>
 <script src="assets/voice-tencent.js?v=20261117-18"></script>
 <script src="assets/voice-zh-xiaoyi.js?v=20261117-18"></script>
-<script src="app.js?v=20261118-2"></script>
+<script src="app.js?v=20261118-3"></script>
 </body>
 </html>

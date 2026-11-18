@@ -18,7 +18,8 @@
   };
   var EXTRA_GAMES = [
     { kind: "pinyinQuiz", name: "听音选拼音", tag: "TINGYIN", sub: "听标准音，限时选拼音" },
-    { kind: "toneQuiz", name: "声调小侦探", tag: "SHENGDIAO", sub: "看拼音，判断第几声" }
+    { kind: "toneQuiz", name: "声调小侦探", tag: "SHENGDIAO", sub: "看拼音，判断第几声" },
+    { kind: "blendQuiz", name: "找拼读", tag: "PINDU", sub: "听 b—a—ba，找出完整音节" }
   ];
 
   function hasYoudaoVoice() {
@@ -55,6 +56,7 @@
   var state = loadState();
   var currentDay = firstOpenDay();
   var flowQueue = null;
+  var BLENDS = window.PINYIN_BLENDS || [];
 
   function loadState() {
     try {
@@ -146,7 +148,7 @@
   var wordSeqAudio = null;
   var wordSeqToken = 0;
   var speakAutoTimer = null;
-  var AUDIO_VERSION = "20261118-2";
+  var AUDIO_VERSION = "20261118-3";
 
   function isEnglishAudioKey(key) {
     return key.indexOf("en") === 0 || key.indexOf("tb:") === 0 || key.indexOf("tbw:") === 0 ||
@@ -464,13 +466,16 @@
     if (kind === "toneQuiz") {
       return '<div class="g-art"><span class="g-pill">mǎ</span><span class="g-char">3</span></div>';
     }
+    if (kind === "blendQuiz") {
+      return '<div class="g-art"><span class="g-pill">b</span><span class="g-char">—</span><span class="g-pill">a</span><span class="g-char">?</span></div>';
+    }
     return '<div class="g-art"><span class="g-char">日</span><span class="g-pill">还是</span><span class="g-char">目</span></div>';
   }
 
   function gameCount(kind, day) {
     if (kind === "pinyin") return (day.pinyin.length + extraPinyinForDay(day).length) + " 组";
     if (kind === "stroke" || kind === "trace") return day.write.length + " 个字";
-    if (kind === "pinyinQuiz" || kind === "toneQuiz") return "10 题";
+    if (kind === "pinyinQuiz" || kind === "toneQuiz" || kind === "blendQuiz") return "10 题";
     return (day.read.length + extraReadForDay(day).length) + " 道题";
   }
 
@@ -638,6 +643,7 @@
     pqTimerId = null;
     pqState = null;
     tqState = null;
+    bqState = null;
     renderHome();
   }
 
@@ -663,6 +669,7 @@
     if (kind === "pinyin") startPinyin();
     else if (kind === "pinyinQuiz") startPinyinQuiz();
     else if (kind === "toneQuiz") startToneQuiz();
+    else if (kind === "blendQuiz") startBlendQuiz();
     else if (kind === "stroke") startStroke();
     else if (kind === "trace") startTrace();
     else startRead();
@@ -1481,6 +1488,89 @@
       "<p>" + (n >= 9 ? "四声都听得很准！" : n >= 7 ? "已经很不错，再练一次更稳。" : "二声和三声最容易混，再听几遍。") + "</p>" +
       '<div class="quiz-result-actions">' +
         '<button class="btn btn-primary" type="button" data-quiz-again="tq">再来一次</button>' +
+        '<button class="btn btn-ghost" type="button" data-quiz-home="1">回小书房</button>' +
+      "</div>";
+    if (n >= 7) say("praise:真棒！", "真棒！", "zh-CN");
+  }
+
+  /* ------------------------------------------------------------ blend quiz */
+
+  var bqState = null;
+
+  function startBlendQuiz() {
+    if (!BLENDS.length) return;
+    var items = shuffle(BLENDS).slice(0, 10);
+    bqState = { items: items, idx: 0, correct: 0, locked: false };
+    showScreen("s-blend-quiz");
+    $("#bqCard").hidden = false;
+    $("#bqResult").hidden = true;
+    renderBlendQuiz();
+  }
+
+  function renderBlendQuiz() {
+    var st = bqState;
+    if (!st) return;
+    var item = st.items[st.idx];
+    st.locked = false;
+    $("#bqCounter").textContent = (st.idx + 1) + " / " + st.items.length;
+    $("#bqFeedback").hidden = true;
+    $("#bqNext").hidden = true;
+    var others = shuffle(BLENDS.filter(function (x) { return x.id !== item.id; })).slice(0, 3);
+    var opts = shuffle([item].concat(others));
+    $("#bqOptions").innerHTML = opts.map(function (o) {
+      return '<button class="quiz-opt" type="button" data-bq-opt="' + escapeHTML(o.py) + '">' +
+        escapeHTML(o.py) + "</button>";
+    }).join("");
+    setTimeout(function () {
+      if (bqState === st && !st.locked) say(item.key, item.py, "zh-CN");
+    }, 350);
+  }
+
+  function answerBlendQuiz(btn) {
+    if (!bqState || bqState.locked) return;
+    bqState.locked = true;
+    var item = bqState.items[bqState.idx];
+    var picked = btn ? btn.dataset.bqOpt : "";
+    var ok = picked === item.py;
+    if (ok) bqState.correct++;
+    $$("#bqOptions .quiz-opt").forEach(function (b) {
+      b.disabled = true;
+      if (b.dataset.bqOpt === item.py) b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+    });
+    var fb = $("#bqFeedback");
+    fb.hidden = false;
+    fb.className = "quiz-feedback " + (ok ? "right" : "wrong");
+    fb.textContent = ok
+      ? "答对啦！" + item.parts.join(" — ")
+      : (picked ? "再听一听，完整音节是「" + item.py + "」。" : "正确答案是「" + item.py + "」。");
+    say(ok ? "quiz:right" : "quiz:wrong", ok ? "答对啦！" : "再听一听。", "zh-CN");
+    $("#bqNext").hidden = false;
+    $("#bqNext").textContent = bqState.idx + 1 >= bqState.items.length ? "看成绩" : "下一个";
+  }
+
+  function nextBlendQuiz() {
+    if (!bqState) return;
+    if (bqState.idx + 1 >= bqState.items.length) {
+      finishBlendQuiz();
+      return;
+    }
+    bqState.idx++;
+    renderBlendQuiz();
+  }
+
+  function finishBlendQuiz() {
+    var n = bqState.correct;
+    var stars = n >= 9 ? 3 : (n >= 7 ? 2 : (n >= 5 ? 1 : 0));
+    $("#bqCard").hidden = true;
+    var box = $("#bqResult");
+    box.hidden = false;
+    box.innerHTML =
+      '<div class="result-stars">' + starTag(stars) + "</div>" +
+      "<h3>答对 " + n + " / " + bqState.items.length + "</h3>" +
+      "<p>" + (n >= 9 ? "拼读听得又快又准！" : n >= 7 ? "很不错，再练一次更稳。" : "先听声母、再听韵母，最后合起来。") + "</p>" +
+      '<div class="quiz-result-actions">' +
+        '<button class="btn btn-primary" type="button" data-quiz-again="bq">再来一次</button>' +
         '<button class="btn btn-ghost" type="button" data-quiz-home="1">回小书房</button>' +
       "</div>";
     if (n >= 7) say("praise:真棒！", "真棒！", "zh-CN");
@@ -3496,6 +3586,16 @@
     });
     $("#tqPlay").addEventListener("click", playToneQuizItem);
     $("#tqNext").addEventListener("click", nextToneQuiz);
+    $("#bqSpeaker").addEventListener("click", function () {
+      if (!bqState) return;
+      var item = bqState.items[bqState.idx];
+      say(item.key, item.py, "zh-CN");
+    });
+    $("#bqOptions").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-bq-opt]");
+      if (b) answerBlendQuiz(b);
+    });
+    $("#bqNext").addEventListener("click", nextBlendQuiz);
     $("#drillTonebar").addEventListener("click", function (ev) {
       var b = ev.target.closest("[data-drill-tone]");
       if (!b) return;
@@ -3517,6 +3617,7 @@
       var again = ev.target.closest("[data-quiz-again]");
       if (again) {
         if (again.dataset.quizAgain === "pq") startPinyinQuiz();
+        else if (again.dataset.quizAgain === "bq") startBlendQuiz();
         else startToneQuiz();
         return;
       }
