@@ -1,4 +1,7 @@
 (function () {
+  /* The audio dictionaries are loaded on first playback, not with the first screen. */
+  window.TENCENT_VOICE_AVAILABLE = true;
+
   "use strict";
 
   window.addEventListener("error", function (ev) {
@@ -29,6 +32,7 @@
 
   var TENCENT_VOICES = ["tencent-403006", "tencent-402001", "tencent-403011", "tencent-403014"];
   function hasTencentVoice() {
+    if (window.TENCENT_VOICE_AVAILABLE === true) return true;
     return !!(window.VOICE_MAPS && window.VOICE_MAPS["tencent-403006"] &&
       Object.keys(window.VOICE_MAPS["tencent-403006"]).length);
   }
@@ -177,6 +181,10 @@
 
   function say(key, text, lang, slow) {
     if (!state.speak) return;
+    if (!window.AUDIO_PACK_READY && !audioPackFailed) {
+      ensureAudioPack(function () { say(key, text, lang, slow); });
+      return;
+    }
     stopTextbookSequence();
     var src = resolveAudioSrc(key);
     if (src) {
@@ -226,6 +234,10 @@
   }
 
   function playSequence(keys, onDone) {
+    if (!window.AUDIO_PACK_READY && !audioPackFailed) {
+      ensureAudioPack(function () { playSequence(keys, onDone); });
+      return;
+    }
     stopTextbookSequence();
     if (audioEl) {
       try { audioEl.pause(); } catch (err) {}
@@ -263,6 +275,10 @@
 
   function playWordByWord() {
     if (!speakState) return;
+    if (!window.AUDIO_PACK_READY && !audioPackFailed) {
+      ensureAudioPack(function () { playWordByWord(); });
+      return;
+    }
     clearTimeout(speakAutoTimer);
     var item = speakState.entries[speakState.idx].item;
     var text = String(item.text || "").replace(/[’‘]/g, "'");
@@ -401,6 +417,39 @@
       pinyinProLoading = false;
       pinyinProFailed = true;
       var list = pinyinProCallbacks.splice(0);
+      list.forEach(function (fn) { fn(); });
+    };
+    document.head.appendChild(s);
+  }
+
+  var audioPackLoading = false;
+  var audioPackFailed = false;
+  var audioPackCallbacks = [];
+
+  function ensureAudioPack(cb) {
+    if (window.AUDIO_PACK_READY) {
+      if (cb) cb();
+      return;
+    }
+    if (audioPackFailed) {
+      if (cb) cb();
+      return;
+    }
+    if (cb) audioPackCallbacks.push(cb);
+    if (audioPackLoading) return;
+    audioPackLoading = true;
+    var s = document.createElement("script");
+    s.src = "audio-bundle.js?v=20261118-22";
+    s.onload = function () {
+      audioPackLoading = false;
+      window.AUDIO_PACK_READY = true;
+      var list = audioPackCallbacks.splice(0);
+      list.forEach(function (fn) { fn(); });
+    };
+    s.onerror = function () {
+      audioPackLoading = false;
+      audioPackFailed = true;
+      var list = audioPackCallbacks.splice(0);
       list.forEach(function (fn) { fn(); });
     };
     document.head.appendChild(s);
@@ -765,6 +814,7 @@
   }
 
   function openGame(kind, dayNo) {
+    ensureAudioPack();
     currentDay = dayNo || currentDay;
     if (kind === "pinyin") startPinyin();
     else if (kind === "pinyinQuiz") startPinyinQuiz();
@@ -2504,6 +2554,7 @@
   }
 
   function openSubject(id) {
+    ensureAudioPack();
     var subject = subjectById(id);
     var decks = subjectDecks(subject.id);
     if (!decks.length) return;
@@ -2666,6 +2717,7 @@
   }
 
   function startDeck(deck, startIdx, returnTo) {
+    ensureAudioPack();
     var requestedLang = String(deck.lang || "zh-CN");
     if (requestedLang.indexOf("zh") === 0 && !window.pinyinPro && !pinyinProFailed) {
       ensurePinyinPro(function () { startDeck(deck, startIdx, returnTo); });
@@ -3096,6 +3148,10 @@
   function playTbWordByWord(page, lineIndex, gapMs) {
     var line = page.lines[lineIndex];
     if (!line || !state.speak) return;
+    if (!window.AUDIO_PACK_READY && !audioPackFailed) {
+      ensureAudioPack(function () { playTbWordByWord(page, lineIndex, gapMs); });
+      return;
+    }
     stopTextbookSequence();
     stopTbWordSequence();
     pausePlayback();
@@ -3162,6 +3218,10 @@
 
   function playTbSheetWordByWord(gapMs) {
     if (tbSheetMode !== "word" || !tbSheetWord || !state.speak) return;
+    if (!window.AUDIO_PACK_READY && !audioPackFailed) {
+      ensureAudioPack(function () { playTbSheetWordByWord(gapMs); });
+      return;
+    }
     stopTextbookSequence();
     stopTbWordSequence();
     pausePlayback();
