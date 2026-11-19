@@ -2176,13 +2176,13 @@
   function pinyinDrillCard() {
     var b = document.createElement("button");
     b.type = "button";
-    b.className = "unit-card deck-card pinyin-drill-card";
+    b.className = "unit-card tile-card deck-card pinyin-drill-card";
     b.innerHTML =
-      themeArt("pinyin-hub", "is-deck") +
-      '<span class="unit-info"><b>拼音综合认读</b>' +
-      "<span>声调 + 23 声母 + 24 韵母 + 16 整体认读</span>" +
-      "<em>先选声调，再点拼音听发音</em></span>" +
-      '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
+      '<span class="tile-top"><span class="tile-tag">拼音</span>' +
+        '<span class="tile-count">63</span></span>' +
+      "<h4>拼音综合认读</h4>" +
+      '<p class="tile-sub">点读 + 拼读工坊</p>' +
+      '<span class="tile-art">' + themeArt("pinyin-hub", "is-tile") + "</span>";
     b.addEventListener("click", function () {
       sfx("tap");
       openPinyinDrill();
@@ -2205,7 +2205,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-37";
+    s.src = "assets/spell-data.js?v=20261119-38";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2323,7 +2323,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-37");
+        var a = new Audio(entry.audio + "?v=20261119-38");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2903,12 +2903,13 @@
   function alphabetEntryCard() {
     var b = document.createElement("button");
     b.type = "button";
-    b.className = "unit-card deck-card alphabet-entry";
+    b.className = "unit-card tile-card deck-card alphabet-entry";
     b.innerHTML =
-      themeArt("alphabet", "is-deck") +
-      '<span class="unit-info"><b>英语字母表</b>' +
-      "<span>26 个字母 · 听音选字母</span></span>" +
-      '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
+      '<span class="tile-top"><span class="tile-tag">ABC</span>' +
+        '<span class="tile-count">26</span></span>' +
+      "<h4>英语字母表</h4>" +
+      '<p class="tile-sub">听音选字母</p>' +
+      '<span class="tile-art">' + themeArt("alphabet", "is-tile") + "</span>";
     b.addEventListener("click", function () {
       sfx("tap");
       openAlphabet();
@@ -2927,15 +2928,17 @@
     var done = u.items.filter(function (_, i) { return state.read[u.id + ":" + i]; }).length;
     var b = document.createElement("button");
     b.type = "button";
-    b.className = "unit-card" + (u.lang === "en-US" ? " is-en" : "");
+    b.className = "unit-card tile-card" + (u.lang === "en-US" ? " is-en" : "");
     b.innerHTML =
-      (themeArt(ART_THEMES[u.id], "is-unit") ||
-        '<span class="unit-no">' + escapeHTML(u.badge || u.unit.replace("Unit ", "U")) + "</span>") +
-      '<span class="unit-info"><b>' + escapeHTML(u.title) + "</b>" +
-      '<span class="unit-meta"><span class="unit-sub">' + escapeHTML(u.zh) + "</span>" +
-      '<span class="unit-progress">' + done + "/" + u.items.length + "</span></span>" +
-      (u.lessons ? '<em>' + escapeHTML(u.lessons.join(" · ")) + "</em>" : "") + "</span>" +
-      '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
+      '<span class="tile-top"><span class="tile-tag">' +
+        escapeHTML(u.badge || u.unit.replace("Unit ", "U")) + "</span>" +
+        '<span class="tile-count">' + done + "/" + u.items.length + "</span></span>" +
+      "<h4>" + escapeHTML(u.title) + "</h4>" +
+      '<p class="tile-sub">' + escapeHTML(u.zh) + "</p>" +
+      '<span class="tile-art">' +
+        (themeArt(ART_THEMES[u.id], "is-tile") ||
+          '<span class="unit-no">' + escapeHTML(u.badge || "·") + "</span>") +
+      "</span>";
     b.addEventListener("click", function () {
       sfx("tap");
       startUnit(u, { screen: "s-units", subject: subjectId });
@@ -2953,13 +2956,17 @@
     };
     var b = document.createElement("button");
     b.type = "button";
-    b.className = "unit-card deck-card";
+    b.className = "unit-card tile-card deck-card";
     b.innerHTML =
-      (themeArt(ART_THEMES[deck.id], "is-deck") ||
-        '<span class="unit-no">' + (marks[deck.id] || escapeHTML(deck.tag.slice(0, 2))) + "</span>") +
-      '<span class="unit-info"><b>' + escapeHTML(deck.title) + "</b>" +
-      "<span>" + escapeHTML(deck.sub) + " · " + done + "/" + entries.length + " 已读</span></span>" +
-      '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
+      '<span class="tile-top"><span class="tile-tag">' +
+        escapeHTML(marks[deck.id] || deck.tag.slice(0, 2)) + "</span>" +
+        '<span class="tile-count">' + done + "/" + entries.length + "</span></span>" +
+      "<h4>" + escapeHTML(deck.title) + "</h4>" +
+      '<p class="tile-sub">' + escapeHTML(deck.sub) + "</p>" +
+      '<span class="tile-art">' +
+        (themeArt(ART_THEMES[deck.id], "is-tile") ||
+          '<span class="unit-no">' + (marks[deck.id] || "·") + "</span>") +
+      "</span>";
     b.addEventListener("click", function () {
       sfx("tap");
       if (deck.extra || deck.pickable) openPicker(deck);
@@ -3607,6 +3614,20 @@
   }
 
   function lockZoom() {
+    function resetScale() {
+      var vv = window.visualViewport;
+      if (!vv) return;
+      if (Math.abs((vv.scale || 1) - 1) > 0.01) {
+        document.documentElement.style.zoom = "";
+        document.body.style.zoom = "";
+        window.scrollTo(0, window.scrollY);
+      }
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", resetScale);
+      window.visualViewport.addEventListener("scroll", resetScale);
+    }
+
     document.addEventListener("gesturestart", function (ev) {
       ev.preventDefault();
     }, { passive: false });

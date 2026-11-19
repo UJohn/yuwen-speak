@@ -6,15 +6,13 @@
 }
 @font-face {
   font-family: "Andika";
-  src: local("Andika"), local("Avenir Next"), local("Arial Rounded MT Bold"), local("Arial"),
-    url("assets/fonts/Andika-Regular.woff") format("woff");
+  src: url("assets/fonts/Andika-Regular.woff") format("woff");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "Andika";
-  src: local("Andika Bold"), local("Avenir Next Bold"), local("Arial Rounded MT Bold"), local("Arial Bold"),
-    url("assets/fonts/Andika-Bold.woff") format("woff");
+  src: url("assets/fonts/Andika-Bold.woff") format("woff");
   font-weight: 700;
   font-display: swap;
 }
@@ -45,7 +43,7 @@
   --macaron-peach: #FFD1B8;
   --ui: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
   --kai: "Kai", "Kaiti SC", "STKaiti", serif;
-  --py: "Andika", "Segoe UI", sans-serif;
+  --py: "Andika", "PingFang SC", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -4112,6 +4110,94 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 }
 .card-art svg { width: 30px; height: 30px; display: block; }
 .theme-en .card-art { background: rgba(255, 255, 255, .82); }
+
+/* ---------------------------------------------------------------- tile cards */
+.subject-card-grid .unit-card.tile-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-height: 132px;
+  padding: 11px 12px 10px;
+  border-radius: 16px;
+  overflow: hidden;
+  text-align: left;
+}
+.tile-card .tile-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.tile-card .tile-tag {
+  color: rgba(90, 68, 60, .45);
+  font-family: var(--py);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tile-card .tile-count {
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .72);
+  color: rgba(90, 68, 60, .5);
+  font-family: var(--py);
+  font-size: 8px;
+  white-space: nowrap;
+}
+.tile-card h4 {
+  margin: 5px 0 2px;
+  font-family: var(--py);
+  font-size: 15.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tile-card .tile-sub {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tile-card .tile-art {
+  margin-top: auto;
+  padding-top: 6px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 40px;
+}
+.tile-card .tile-art .card-art {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+}
+.tile-card .tile-art .card-art svg { width: 30px; height: 30px; }
+.tile-card .tile-art .unit-no {
+  width: 42px;
+  height: 42px;
+  font-size: 15px;
+  border-radius: 14px;
+}
+
+@media (max-width: 980px) {
+  .subject-card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .subject-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .subject-card-grid .unit-card.tile-card { min-height: 124px; padding: 10px 10px 9px; }
+  .tile-card h4 { font-size: 14px; }
+}
 .subject-card-grid .unit-info b { font-size: 13.5px; }
 .subject-card-grid .unit-info span {
   display: block;
@@ -4207,7 +4293,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   .subject-section-head p { margin-top: 3px; }
 }
 @media (max-width: 520px) {
-  .subject-card-grid { grid-template-columns: 1fr; }
+  .subject-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Compact pass: keep the lists scannable on iPad and phone. */
