@@ -4097,6 +4097,18 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   background: var(--subject-soft);
   color: var(--subject-accent);
 }
+.card-art {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .78);
+  box-shadow: 0 2px 0 rgba(90, 68, 60, .05);
+}
+.card-art svg { width: 30px; height: 30px; display: block; }
+.theme-en .card-art { background: rgba(255, 255, 255, .82); }
 .subject-card-grid .unit-info b { font-size: 13.5px; }
 .subject-card-grid .unit-info span {
   display: block;

@@ -608,26 +608,71 @@
   }
 
   function gameArt(kind) {
+    return '<div class="g-art">' + cardArt(kind) + "</div>";
+  }
+
+  function cardArt(kind) {
     if (kind === "pinyin") {
-      return '<div class="g-art"><span class="g-pill">shǒu</span><span class="g-char">手</span></div>';
+      return '<span class="g-pill">shǒu</span><span class="g-char">手</span>';
     }
     if (kind === "stroke") {
-      return '<div class="g-art"><div class="g-mini-tian"><span>木</span></div>' +
-        '<span class="g-pill">1 2 3 4</span></div>';
+      return '<div class="g-mini-tian"><span>木</span></div>' +
+        '<span class="g-pill">1 2 3 4</span>';
     }
     if (kind === "trace") {
-      return '<div class="g-art"><div class="g-mini-tian"><span>日</span></div></div>';
+      return '<div class="g-mini-tian"><span>日</span></div>';
     }
     if (kind === "pinyinQuiz") {
-      return '<div class="g-art"><span class="g-pill">b</span><span class="g-char">?</span><span class="g-pill">p</span></div>';
+      return '<span class="g-pill">b</span><span class="g-char">?</span><span class="g-pill">p</span>';
     }
     if (kind === "toneQuiz") {
-      return '<div class="g-art"><span class="g-pill">mǎ</span><span class="g-char">3</span></div>';
+      return '<span class="g-pill">mǎ</span><span class="g-char">3</span>';
     }
     if (kind === "blendQuiz") {
-      return '<div class="g-art"><span class="g-pill">b</span><span class="g-char">—</span><span class="g-pill">a</span><span class="g-char">?</span></div>';
+      return '<span class="g-pill">b</span><span class="g-char">—</span><span class="g-pill">a</span><span class="g-char">?</span>';
     }
-    return '<div class="g-art"><span class="g-char">日</span><span class="g-pill">还是</span><span class="g-char">目</span></div>';
+    return '<span class="g-char">日</span><span class="g-pill">还是</span><span class="g-char">目</span>';
+  }
+
+  var ART_THEMES = {
+    "zh-u1": "sky", "zh-u2": "pinyin1", "zh-u3": "pinyin2", "zh-u4": "pinyin3",
+    "zh-u5": "autumn", "zh-u6": "school", "zh-u7": "moon", "zh-u8": "crow",
+    "en-u1": "hello", "en-u2": "bag", "en-u3": "count", "en-u4": "rainbow",
+    "en-u5": "scooter", "en-u6": "animals",
+    "en-r1": "review", "en-r2": "review", "en-names": "names",
+    "pinyin": "pinyin", "words": "words", "sentences": "sentences",
+    "en-words": "words", "en-sentences": "sentences", "en-wordbook": "wordbook",
+    "alphabet": "alphabet"
+  };
+
+  function themeArt(theme, cls) {
+    var body = {
+      sky: '<circle cx="18" cy="13" r="6.5" fill="#FFD48A"/><path d="M6 27c2-4 5-6 9-6s7 2 9 6" stroke="#8FD3BE" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="11" cy="17" r="1.4" fill="#F26D8D"/>',
+      pinyin: '<text x="6" y="23" font-size="15" font-family="Andika, sans-serif" fill="#8E6FB4">a</text><text x="18" y="26" font-size="12" font-family="Andika, sans-serif" fill="#4FAF92">o</text><text x="25" y="18" font-size="10" font-family="Andika, sans-serif" fill="#F26D8D">e</text>',
+      pinyin1: '<text x="4" y="24" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">a</text><text x="14" y="24" font-size="14" font-family="Andika, sans-serif" fill="#4FAF92">o</text><text x="24" y="24" font-size="14" font-family="Andika, sans-serif" fill="#F26D8D">e</text>',
+      pinyin2: '<text x="4" y="24" font-size="14" font-family="Andika, sans-serif" fill="#7FB6E8">b</text><text x="13" y="24" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">p</text><text x="22" y="24" font-size="14" font-family="Andika, sans-serif" fill="#4FAF92">m</text>',
+      pinyin3: '<text x="5" y="23" font-size="12" font-family="Andika, sans-serif" fill="#FFB067">ai</text><text x="19" y="23" font-size="12" font-family="Andika, sans-serif" fill="#8E6FB4">ei</text><text x="12" y="31" font-size="9" font-family="Andika, sans-serif" fill="#4FAF92">ang</text>',
+      "pinyin-hub": '<circle cx="18" cy="18" r="11" fill="none" stroke="#C5B2E2" stroke-width="2.2"/><text x="10" y="23" font-size="12" font-family="Andika, sans-serif" fill="#8E6FB4">ā</text><path d="M23 12v12" stroke="#FFB067" stroke-width="2.2" stroke-linecap="round"/>',
+      autumn: '<path d="M24 8c-6 1-10 6-11 13" stroke="#B4586E" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="22" rx="6" ry="3.4" fill="#FFB067" transform="rotate(-24 14 22)"/><circle cx="26" cy="25" r="2.4" fill="#FFD48A"/>',
+      school: '<rect x="8" y="13" width="20" height="16" rx="4" fill="#FF93A8"/><rect x="12" y="17" width="12" height="8" rx="2" fill="#FFE6EB"/><path d="M14 13v-3a4 4 0 0 1 8 0v3" stroke="#B4586E" stroke-width="2" fill="none"/>',
+      moon: '<path d="M22 8a9 9 0 1 0 6 16 10 10 0 0 1-6-16z" fill="#FFD48A"/><circle cx="10" cy="10" r="1.6" fill="#C5B2E2"/><circle cx="12" cy="26" r="1.3" fill="#8FD3BE"/>',
+      crow: '<ellipse cx="17" cy="20" rx="7.5" ry="6" fill="#6E5194"/><circle cx="23" cy="15" r="3.2" fill="#6E5194"/><path d="M26 15l5 1.6-5 1.6z" fill="#FFB067"/><circle cx="23.6" cy="14.2" r="0.9" fill="#FFFDF8"/>',
+      hello: '<circle cx="14" cy="17" r="6" fill="#FFE3CF"/><path d="M8 15c1-4 3.6-6 6-6s5 2 6 6" stroke="#6B4A3A" stroke-width="2.4" fill="none"/><path d="M23 21c4 0 6 2 6 5" stroke="#F26D8D" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+      bag: '<rect x="7" y="14" width="22" height="15" rx="5" fill="#8FD3BE"/><path d="M12 14v-2a6 6 0 0 1 12 0v2" stroke="#4FAF92" stroke-width="2.2" fill="none"/><rect x="14" y="19" width="8" height="5" rx="2" fill="#FFFDF8"/>',
+      count: '<text x="5" y="25" font-size="13" font-family="Andika, sans-serif" fill="#7FB6E8">1</text><text x="14" y="25" font-size="13" font-family="Andika, sans-serif" fill="#8FD3BE">2</text><text x="23" y="25" font-size="13" font-family="Andika, sans-serif" fill="#FFB067">3</text>',
+      rainbow: '<path d="M5 26c0-9 6-16 14-16s14 7 14 16" stroke="#FF93A8" stroke-width="3" fill="none"/><path d="M9 26c0-7 4.6-12 10-12s10 5 10 12" stroke="#FFD86B" stroke-width="3" fill="none"/><path d="M13 26c0-5 3-8 6-8s6 3 6 8" stroke="#8FD3BE" stroke-width="3" fill="none"/>',
+      scooter: '<circle cx="11" cy="26" r="4" fill="#5A443C"/><circle cx="26" cy="26" r="4" fill="#5A443C"/><path d="M13 25h9l4-11" stroke="#F26D8D" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M24 14h5" stroke="#8D746A" stroke-width="2.6" stroke-linecap="round"/>',
+      animals: '<circle cx="13" cy="19" r="5.4" fill="#B79A86"/><circle cx="26" cy="22" r="4.4" fill="#FFFDF8"/><path d="M24 18l-1-4 4 2zM29 18l1-4-4 2z" fill="#FFFDF8"/><circle cx="11.6" cy="18.4" r="0.9" fill="#5A443C"/><circle cx="14.6" cy="18.4" r="0.9" fill="#5A443C"/>',
+      review: '<path d="M24 10a9 9 0 1 0 3 7" stroke="#4FAF92" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M24 6v5h5" stroke="#4FAF92" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
+      names: '<text x="5" y="24" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">A</text><text x="15" y="24" font-size="14" font-family="Andika, sans-serif" fill="#F26D8D">B</text><text x="25" y="24" font-size="14" font-family="Andika, sans-serif" fill="#4FAF92">C</text>',
+      words: '<rect x="7" y="12" width="22" height="17" rx="3.5" fill="#FFFDF8" stroke="#FFD48A" stroke-width="2"/><path d="M11 18h14M11 22h9" stroke="#E0C7A8" stroke-width="1.8" stroke-linecap="round"/>',
+      sentences: '<rect x="6" y="11" width="24" height="9" rx="4.5" fill="#FFFDF8" stroke="#C5B2E2" stroke-width="2"/><path d="M10 15.5h12" stroke="#C5B2E2" stroke-width="1.8" stroke-linecap="round"/><path d="M20 20v6" stroke="#C5B2E2" stroke-width="2" stroke-linecap="round"/>',
+      wordbook: '<rect x="8" y="10" width="19" height="21" rx="3" fill="#FF93A8"/><rect x="11" y="10" width="16" height="21" rx="3" fill="#FFFDF8" stroke="#FFB067" stroke-width="1.8"/><path d="M16 17h6M16 21h6" stroke="#FFB067" stroke-width="1.8" stroke-linecap="round"/>',
+      alphabet: '<text x="4" y="26" font-size="20" font-family="Andika, sans-serif" fill="#3D8F80">A</text><text x="20" y="26" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">b</text>'
+    }[theme];
+    if (!body) return "";
+    return '<span class="card-art ' + (cls || "") + '" aria-hidden="true">' +
+      '<svg viewBox="0 0 36 36">' + body + "</svg></span>";
   }
 
   function gameCount(kind, day) {
@@ -2120,7 +2165,7 @@
     b.type = "button";
     b.className = "unit-card deck-card pinyin-drill-card";
     b.innerHTML =
-      '<span class="unit-no">音</span>' +
+      themeArt("pinyin-hub", "is-deck") +
       '<span class="unit-info"><b>拼音综合认读</b>' +
       "<span>声调 + 23 声母 + 24 韵母 + 16 整体认读</span>" +
       "<em>先选声调，再点拼音听发音</em></span>" +
@@ -2147,7 +2192,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-35";
+    s.src = "assets/spell-data.js?v=20261119-36";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2265,7 +2310,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-35");
+        var a = new Audio(entry.audio + "?v=20261119-36");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2773,7 +2818,7 @@
     }
     var unitGrid = addSection(
       isEn ? "课本单元" : "按课本单元",
-      isEn ? "6 个单元 + 2 个复习 + 英文名，全部平铺" : "8 个单元，点开就能读",
+      isEn ? "6 个单元 · 2 个复习 · 英文名 · 读课文" : "8 个单元，点开就能读",
       "subject-units"
     );
     decks.forEach(function (deck) {
@@ -2784,14 +2829,15 @@
 
     var drillIds = { "zh-tones": 1, "zh-initials": 1, "zh-finals": 1, "zh-whole": 1 };
     var extras = decks.filter(function (d) { return !d.units && !drillIds[d.id]; });
-    if (extras.length) {
+    if (extras.length || isEn) {
       var practiceGrid = addSection(
         isEn ? "专项练习" : "拼音与字词",
-        isEn ? "单词、句子和陌生单词本，随时加练" : "拼音认读、拼读工坊、词语和句子，随时加练",
+        isEn ? "单词 · 句子 · 陌生单词本 · 字母表" : "拼音认读、拼读工坊、词语和句子，随时加练",
         "subject-practice"
       );
       if (!isEn) practiceGrid.appendChild(pinyinDrillCard());
       extras.forEach(function (d) { practiceGrid.appendChild(deckCard(d)); });
+      if (isEn) practiceGrid.appendChild(alphabetEntryCard());
     }
     if (!isEn) {
       var gameGrid = addSection("闯关小游戏", "拼音找朋友、认字小侦探和听音小游戏", "subject-games");
@@ -2804,23 +2850,6 @@
         if (meta.kind === "blendQuiz") return;
         gameGrid.appendChild(makeGameCard(meta.kind, meta, gameDay, gameDone, true));
       });
-    }
-    if (isEn) {
-      var toolsGrid = addSection("英语工具", "字母表保留，点击就能听", "subject-tools");
-      var alpha = document.createElement("button");
-      alpha.type = "button";
-      alpha.className = "unit-card alphabet-entry";
-      alpha.innerHTML =
-        '<span class="unit-no">A</span>' +
-        '<span class="unit-info"><b>英语字母表</b>' +
-        "<span>26 个字母 · 听音选字母</span>" +
-        "<em>Aa · Bb · Cc · …</em></span>" +
-        '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
-      alpha.addEventListener("click", function () {
-        sfx("tap");
-        openAlphabet();
-      });
-      toolsGrid.appendChild(alpha);
     }
     if (subjectScroll[subject.id]) {
       requestAnimationFrame(function () {
@@ -2858,6 +2887,22 @@
     return b;
   }
 
+  function alphabetEntryCard() {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "unit-card deck-card alphabet-entry";
+    b.innerHTML =
+      cardArt("alphabet") +
+      '<span class="unit-info"><b>英语字母表</b>' +
+      "<span>26 个字母 · 听音选字母</span></span>" +
+      '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
+    b.addEventListener("click", function () {
+      sfx("tap");
+      openAlphabet();
+    });
+    return b;
+  }
+
   function addUnitGroup(list, title, note) {
     var group = document.createElement("div");
     group.className = "unit-group";
@@ -2871,7 +2916,8 @@
     b.type = "button";
     b.className = "unit-card" + (u.lang === "en-US" ? " is-en" : "");
     b.innerHTML =
-      '<span class="unit-no">' + escapeHTML(u.badge || u.unit.replace("Unit ", "U")) + "</span>" +
+      (themeArt(ART_THEMES[u.id], "is-unit") ||
+        '<span class="unit-no">' + escapeHTML(u.badge || u.unit.replace("Unit ", "U")) + "</span>") +
       '<span class="unit-info"><b>' + escapeHTML(u.title) + "</b>" +
       '<span class="unit-meta"><span class="unit-sub">' + escapeHTML(u.zh) + "</span>" +
       '<span class="unit-progress">' + done + "/" + u.items.length + "</span></span>" +
@@ -2896,7 +2942,8 @@
     b.type = "button";
     b.className = "unit-card deck-card";
     b.innerHTML =
-      '<span class="unit-no">' + (marks[deck.id] || escapeHTML(deck.tag.slice(0, 2))) + "</span>" +
+      (themeArt(ART_THEMES[deck.id], "is-deck") ||
+        '<span class="unit-no">' + (marks[deck.id] || escapeHTML(deck.tag.slice(0, 2))) + "</span>") +
       '<span class="unit-info"><b>' + escapeHTML(deck.title) + "</b>" +
       "<span>" + escapeHTML(deck.sub) + " · " + done + "/" + entries.length + " 已读</span></span>" +
       '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
