@@ -888,6 +888,7 @@
   }
 
   function openGame(kind, dayNo) {
+    rememberGameReturn();
     rememberSubjectScroll();
     ensureAudioPack();
     currentDay = dayNo || currentDay;
@@ -912,6 +913,24 @@
   /* ------------------------------------------------------------ complete */
 
   var celebrateAction = "next";
+  var celebrateBack = null;
+  var gameReturn = { screen: "home" };
+
+  function rememberGameReturn() {
+    var screen = $("#s-units");
+    var subject = screen && screen.classList.contains("theme-en") ? "en" : "zh";
+    gameReturn = { screen: "s-units", subject: subject };
+  }
+
+  function returnFromGame() {
+    if (celebrateBack && celebrateBack.screen === "s-units") {
+      openSubject(celebrateBack.subject || "zh");
+    } else if (gameReturn.screen === "s-units") {
+      openSubject(gameReturn.subject || "zh");
+    } else {
+      goHome();
+    }
+  }
 
   function completeActivity(kind, gained, text) {
     var ds = dayState(currentDay);
@@ -923,11 +942,14 @@
     var praise = pickPraise();
     say("praise:" + praise, praise, "zh-CN");
     var nextKind = flowQueue && flowQueue.length ? flowQueue[0] : null;
+    var backToList = gameReturn.screen === "s-units";
     showCelebrate({
       title: gained ? "太棒啦！" : "又练了一遍！",
       text: text,
       stars: gained,
-      nextLabel: nextKind ? "下一关" : "回小书房"
+      nextLabel: nextKind ? "下一关" : (backToList ? "回小课堂" : "回小书房"),
+      action: nextKind ? "next" : (backToList ? "back" : "next"),
+      backTo: gameReturn
     });
   }
 
@@ -943,7 +965,8 @@
     $("#celebrateStars").hidden = !(opt.stars > 0);
     $("#celebrateNext").textContent = opt.nextLabel || "下一关";
     celebrateAction = opt.action || "next";
-    $("#celebrateHome").hidden = opt.nextLabel === "回小书房" && celebrateAction !== "replay";
+    celebrateBack = opt.backTo || null;
+    $("#celebrateHome").hidden = /^回/.test(opt.nextLabel || "") && celebrateAction !== "replay";
     var box = $("#celebrate");
     box.hidden = false;
     confetti();
@@ -1572,13 +1595,13 @@
 
   function renderPinyinQuiz() {
     clearInterval(pqTimerId);
+    pqTimerId = null;
     var st = pqState;
     if (!st) return;
     var item = st.items[st.idx];
     st.locked = false;
-    st.timeLeft = 8;
     $("#pqCounter").textContent = (st.idx + 1) + " / " + st.items.length;
-    $("#pqTimer").textContent = "8 秒";
+    $("#pqTimer").textContent = "不限时";
     $("#pqTimer").classList.remove("low");
     $("#pqFeedback").hidden = true;
     $("#pqNext").hidden = true;
@@ -1593,16 +1616,6 @@
     setTimeout(function () {
       if (pqState === st && !st.locked) say(item.key, item.py || item.label, "zh-CN");
     }, 350);
-    pqTimerId = setInterval(function () {
-      if (pqState !== st || st.locked) return;
-      st.timeLeft--;
-      $("#pqTimer").textContent = Math.max(0, st.timeLeft) + " 秒";
-      $("#pqTimer").classList.toggle("low", st.timeLeft <= 3);
-      if (st.timeLeft <= 0) {
-        clearInterval(pqTimerId);
-        answerPinyinQuiz(null);
-      }
-    }, 1000);
   }
 
   function answerPinyinQuiz(btn) {
@@ -1621,7 +1634,7 @@
     var fb = $("#pqFeedback");
     fb.hidden = false;
     fb.className = "quiz-feedback " + (ok ? "right" : "wrong");
-    fb.textContent = ok ? "答对啦！" : (picked ? "再听一听，正确答案是「" + item.label + "」。" : "时间到，正确答案是「" + item.label + "」。");
+    fb.textContent = ok ? "答对啦！" : "再听一听，正确答案是「" + item.label + "」。";
     playFeedbackSequence([feedbackKey(ok, "zh"), item.key]);
     $("#pqNext").hidden = false;
     $("#pqNext").textContent = pqState.idx + 1 >= pqState.items.length ? "看成绩" : "下一个";
@@ -2192,7 +2205,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-36";
+    s.src = "assets/spell-data.js?v=20261119-37";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2310,7 +2323,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-36");
+        var a = new Audio(entry.audio + "?v=20261119-37");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2892,7 +2905,7 @@
     b.type = "button";
     b.className = "unit-card deck-card alphabet-entry";
     b.innerHTML =
-      cardArt("alphabet") +
+      themeArt("alphabet", "is-deck") +
       '<span class="unit-info"><b>英语字母表</b>' +
       "<span>26 个字母 · 听音选字母</span></span>" +
       '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
@@ -3591,6 +3604,38 @@
     tbPageIdx = next;
     renderTbPage();
     sfx("tap");
+  }
+
+  function lockZoom() {
+    document.addEventListener("gesturestart", function (ev) {
+      ev.preventDefault();
+    }, { passive: false });
+    document.addEventListener("gesturechange", function (ev) {
+      ev.preventDefault();
+    }, { passive: false });
+    document.addEventListener("gestureend", function (ev) {
+      ev.preventDefault();
+    }, { passive: false });
+
+    var lastTouchEnd = 0;
+    document.addEventListener("touchend", function (ev) {
+      if (ev.touches && ev.touches.length > 0) return;
+      var now = Date.now();
+      if (now - lastTouchEnd <= 300) ev.preventDefault();
+      lastTouchEnd = now;
+    }, { passive: false });
+
+    document.addEventListener("touchmove", function (ev) {
+      if (ev.touches && ev.touches.length > 1) ev.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener("dblclick", function (ev) {
+      ev.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener("wheel", function (ev) {
+      if (ev.ctrlKey) ev.preventDefault();
+    }, { passive: false });
   }
 
   function bindTbSwipe() {
@@ -4608,9 +4653,12 @@
 
     $("#celebrateNext").addEventListener("click", function () {
       var action = celebrateAction;
+      var back = celebrateBack || gameReturn;
       hideCelebrate();
       if (action === "replay" && speakState && speakState.deck) {
         startDeck(speakState.deck, 0, speakReturn);
+      } else if (action === "back") {
+        openSubject((back && back.subject) || "zh");
       } else {
         openNext();
       }
@@ -4641,6 +4689,7 @@
     });
 
     probeTextbookImages();
+    lockZoom();
     try { renderHome(); } catch (err) { showFatal(err); }
     if (window.requestIdleCallback) {
       requestIdleCallback(warmResources, { timeout: 1600 });

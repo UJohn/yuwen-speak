@@ -63,6 +63,9 @@ body {
   min-height: 100dvh;
   overflow-x: hidden;
   overscroll-behavior-y: none;
+  touch-action: pan-x pan-y;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 button:focus-visible,
 a:focus-visible {
