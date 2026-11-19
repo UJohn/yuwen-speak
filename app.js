@@ -2205,7 +2205,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-38";
+    s.src = "assets/spell-data.js?v=20261119-39";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2323,7 +2323,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-38");
+        var a = new Audio(entry.audio + "?v=20261119-39");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -3651,6 +3651,15 @@
     }, { passive: false });
 
     document.addEventListener("dblclick", function (ev) {
+      ev.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener("dragstart", function (ev) {
+      ev.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener("selectstart", function (ev) {
+      if (ev.target && ev.target.closest && ev.target.closest("input,textarea")) return;
       ev.preventDefault();
     }, { passive: false });
 
