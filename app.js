@@ -2248,7 +2248,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-41";
+    s.src = "assets/spell-data.js?v=20261119-42";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2366,7 +2366,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-41");
+        var a = new Audio(entry.audio + "?v=20261119-42");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
