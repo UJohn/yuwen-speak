@@ -61,7 +61,7 @@ body {
   min-height: 100dvh;
   overflow-x: hidden;
   overscroll-behavior-y: none;
-  touch-action: pan-x pan-y;
+  touch-action: pan-y;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-user-drag: none;
@@ -69,6 +69,7 @@ body {
   user-select: none;
   -webkit-user-select: none;
 }
+html { overflow-x: clip; }
 .app, .screen, .modal, .celebrate { overscroll-behavior: contain; }
 img, svg, button, .unit-card, .game-card, .tile-card {
   -webkit-user-drag: none;
@@ -4324,6 +4325,200 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 }
 @media (max-width: 520px) {
   .subject-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------------------------------------------------------------- theme v2 (reference-inspired) */
+#s-units {
+  background:
+    radial-gradient(760px 420px at 88% -12%, rgba(255, 176, 198, .55), transparent 62%),
+    radial-gradient(620px 380px at 4% -6%, rgba(255, 214, 150, .5), transparent 60%),
+    radial-gradient(700px 460px at 50% 108%, rgba(255, 205, 196, .45), transparent 66%),
+    linear-gradient(178deg, #FFE7E2 0%, #FFF0EA 34%, #FFF7F1 68%, #FFFAF5 100%);
+}
+#s-units.theme-en {
+  background:
+    radial-gradient(760px 420px at 88% -12%, rgba(160, 208, 255, .55), transparent 62%),
+    radial-gradient(620px 380px at 4% -6%, rgba(150, 226, 205, .5), transparent 60%),
+    radial-gradient(700px 460px at 50% 108%, rgba(196, 178, 246, .42), transparent 66%),
+    linear-gradient(178deg, #E7F3FF 0%, #EDFAF6 36%, #F5FDFB 70%, #FAFFFD 100%);
+}
+#s-units.theme-zh .screen-top { background: transparent; backdrop-filter: none; }
+#s-units.theme-en .screen-top { background: transparent; backdrop-filter: none; }
+#s-units .screen-title h2 { font-family: var(--py); font-weight: 700; letter-spacing: .01em; }
+#s-units.theme-zh .screen-title h2 { color: #C8556F; }
+#s-units.theme-en .screen-title h2 { color: #2F7F72; }
+
+.subject-hero {
+  border: 0;
+  border-radius: 28px;
+  padding: 26px 28px;
+  background: rgba(255, 255, 255, .82);
+  box-shadow: 0 18px 40px -26px rgba(120, 70, 70, .45), inset 0 1px 0 #fff;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+#s-units.theme-en .subject-hero {
+  box-shadow: 0 18px 40px -26px rgba(40, 100, 110, .42), inset 0 1px 0 #fff;
+}
+.subject-hero h2 { font-size: clamp(24px, 3vw, 32px); }
+
+.subject-section-head {
+  align-items: center;
+  gap: 12px;
+  padding: 0 2px 12px;
+}
+.subject-section-head h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .85);
+  font-family: var(--py);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 6px 14px -10px rgba(120, 70, 70, .5);
+}
+.subject-section-head h3::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .55;
+}
+.theme-zh .subject-section-head h3 { color: #C8556F; }
+.theme-en .subject-section-head h3 { color: #2F7F72; }
+.subject-section-head p { font-size: 11px; color: rgba(90, 68, 60, .5); }
+
+#s-units .subject-card-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+#s-units .subject-games .subject-card-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+#s-units .subject-card-grid .unit-card.tile-card,
+#s-units .subject-games .game-card {
+  position: relative;
+  height: 152px;
+  min-height: 152px;
+  padding: 14px 15px 13px;
+  border: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 14px 26px -18px rgba(140, 90, 90, .55);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+#s-units .subject-card-grid .unit-card.tile-card:hover,
+#s-units .subject-games .game-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 32px -18px rgba(140, 90, 90, .5);
+}
+#s-units .subject-card-grid .unit-card.tile-card::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  bottom: -44px;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .34);
+  pointer-events: none;
+}
+#s-units .subject-card-grid .unit-card.tile-card > * { position: relative; z-index: 1; }
+
+/* per-card pastel gradients, cycling like the reference */
+.theme-zh .subject-units .subject-card-grid .unit-card.tile-card:nth-child(4n + 1),
+.theme-zh .subject-practice .subject-card-grid .unit-card.tile-card:nth-child(4n + 1) {
+  background: linear-gradient(150deg, #FFC7D4 0%, #FFAEC2 100%);
+}
+.theme-zh .subject-units .subject-card-grid .unit-card.tile-card:nth-child(4n + 2),
+.theme-zh .subject-practice .subject-card-grid .unit-card.tile-card:nth-child(4n + 2) {
+  background: linear-gradient(150deg, #FFE3A6 0%, #FFCF87 100%);
+}
+.theme-zh .subject-units .subject-card-grid .unit-card.tile-card:nth-child(4n + 3),
+.theme-zh .subject-practice .subject-card-grid .unit-card.tile-card:nth-child(4n + 3) {
+  background: linear-gradient(150deg, #C9E7FF 0%, #A9D6FB 100%);
+}
+.theme-zh .subject-units .subject-card-grid .unit-card.tile-card:nth-child(4n),
+.theme-zh .subject-practice .subject-card-grid .unit-card.tile-card:nth-child(4n) {
+  background: linear-gradient(150deg, #DCD0FB 0%, #C3B0F5 100%);
+}
+
+.theme-en .subject-units .subject-card-grid .unit-card.tile-card:nth-child(4n + 1),
+.theme-en .subject-practice .subject-card-grid .unit-card.tile-card:nth-child(4n + 1) {
+  background: linear-gradient(150deg, #BFEBDD 0%, #96DDC8 100%);
+}
+.theme-en .subject-units .subject-card-grid .unit-card.tile-card:nth-child(4n + 2),
+.theme-en .subject-practice .subject-card-grid .unit-card.tile-card:nth-child(4n + 2) {
+  background: linear-gradient(150deg, #C9E6FF 0%, #A2CFF8 100%);
+}
+.theme-en .subject-units .subject-card-grid .unit-card.tile-card:nth-child(4n + 3),
+.theme-en .subject-practice .subject-card-grid .unit-card.tile-card:nth-child(4n + 3) {
+  background: linear-gradient(150deg, #FFE0B8 0%, #FFC98F 100%);
+}
+.theme-en .subject-units .subject-card-grid .unit-card.tile-card:nth-child(4n),
+.theme-en .subject-practice .subject-card-grid .unit-card.tile-card:nth-child(4n) {
+  background: linear-gradient(150deg, #DCD2FA 0%, #BFAEF2 100%);
+}
+
+#s-units .subject-games .game-card:nth-child(4n + 1) { background: linear-gradient(150deg, #FFD3DE 0%, #FFB9CB 100%); }
+#s-units .subject-games .game-card:nth-child(4n + 2) { background: linear-gradient(150deg, #DCD2FA 0%, #C3B0F5 100%); }
+#s-units .subject-games .game-card:nth-child(4n + 3) { background: linear-gradient(150deg, #FFE6B0 0%, #FFD28A 100%); }
+#s-units .subject-games .game-card:nth-child(4n) { background: linear-gradient(150deg, #C9E7FF 0%, #A9D6FB 100%); }
+
+#s-units .tile-card .tile-tag,
+#s-units .subject-games .game-card .g-tag {
+  color: rgba(70, 50, 45, .55);
+  font-weight: 700;
+}
+#s-units .tile-card .tile-count,
+#s-units .subject-games .game-card .g-count,
+#s-units .subject-games .game-card .g-done {
+  background: rgba(255, 255, 255, .72);
+  color: rgba(70, 50, 45, .62);
+  border: 0;
+}
+#s-units .tile-card h4,
+#s-units .subject-games .game-card h4 {
+  color: #4A3630;
+  font-family: var(--py);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.22;
+}
+#s-units .tile-card .tile-sub,
+#s-units .subject-games .game-card .g-sub {
+  color: rgba(70, 50, 45, .62);
+  font-size: 10.5px;
+}
+#s-units .tile-card .tile-art .card-art {
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 8px 16px -10px rgba(90, 60, 60, .55);
+}
+#s-units .subject-games .game-card .g-art { height: 46px; }
+
+@media (max-width: 720px) {
+  #s-units .subject-card-grid { gap: 10px; }
+  #s-units .subject-units .subject-card-grid,
+  #s-units .subject-practice .subject-card-grid,
+  #s-units .subject-phonics .subject-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #s-units .subject-games .subject-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #s-units .subject-card-grid .unit-card.tile-card,
+  #s-units .subject-games .game-card {
+    height: 146px;
+    min-height: 146px;
+    padding: 12px 12px 11px;
+    border-radius: 20px;
+  }
+  #s-units .tile-card h4, #s-units .subject-games .game-card h4 { font-size: 14.5px; }
+  .subject-section-head h3 { font-size: 14px; padding: 6px 13px; }
 }
 
 /* Compact pass: keep the lists scannable on iPad and phone. */
