@@ -1875,6 +1875,7 @@
   }
 
   function resetBlendRead() {
+    resetBlendCountdown();
     if (bqReadTimer) {
       clearTimeout(bqReadTimer);
       bqReadTimer = null;
@@ -1919,6 +1920,7 @@
     $("#bqReadResult").hidden = true;
     $("#bqReadStatus").textContent = "正在听…读完点一下结束";
     $("#bqReadBtn").innerHTML = '<i class="icon icon-mic"></i>结束并评分';
+    $("#bqReadBtn").classList.add("is-recording");
     rec.lang = "zh-CN";
     rec.interimResults = true;
     rec.continuous = false;
@@ -1953,15 +1955,55 @@
     });
     try {
       rec.start();
+      startBlendCountdown(6);
       bqReadTimer = setTimeout(function () { stopBlendRead(false); }, 6500);
     } catch (err) {
       finishBlendRead([], true);
     }
   }
 
+  var bqCountTimer = null;
+
+  function startBlendCountdown(seconds) {
+    clearInterval(bqCountTimer);
+    var left = seconds;
+    var el = $("#bqReadCount");
+    if (!el) return;
+    el.hidden = false;
+    el.classList.remove("low");
+    el.textContent = left + " 秒";
+    bqCountTimer = setInterval(function () {
+      left--;
+      if (left <= 0) {
+        clearInterval(bqCountTimer);
+        bqCountTimer = null;
+        el.textContent = "0 秒";
+        return;
+      }
+      el.textContent = left + " 秒";
+      el.classList.toggle("low", left <= 2);
+    }, 1000);
+  }
+
+  function resetBlendCountdown() {
+    if (bqCountTimer) {
+      clearInterval(bqCountTimer);
+      bqCountTimer = null;
+    }
+    var el = $("#bqReadCount");
+    if (el) {
+      el.hidden = true;
+      el.classList.remove("low");
+      el.textContent = "";
+    }
+    var btn = $("#bqReadBtn");
+    if (btn) btn.classList.remove("is-recording");
+  }
+
   function stopBlendRead(manual) {
-    if (!bqReadActive || bqReadSettled) return;
+    if (bqReadSettled) return;
     bqReadActive = false;
+    resetBlendCountdown();
     if (bqReadTimer) {
       clearTimeout(bqReadTimer);
       bqReadTimer = null;
@@ -1970,13 +2012,14 @@
     try { if (bqReadRec) bqReadRec.stop(); } catch (err) {}
     setTimeout(function () {
       if (!bqReadSettled) finishBlendRead([], false);
-    }, 800);
+    }, manual ? 350 : 800);
   }
 
   function finishBlendRead(alts, failed) {
     if (!bqState || bqReadSettled) return;
     bqReadSettled = true;
     bqReadActive = false;
+    resetBlendCountdown();
     if (bqReadTimer) {
       clearTimeout(bqReadTimer);
       bqReadTimer = null;

@@ -999,6 +999,35 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 .bq-read p { margin: 0 0 10px; color: #7E6259; font-size: 15px; }
 .bq-read p b { color: #C85373; font-size: 20px; letter-spacing: .08em; }
 .bq-read-status { display: inline-block; margin-left: 10px; color: #9B7C71; font-size: 13px; vertical-align: middle; }
+.bq-read-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.bq-mic.is-recording {
+  background: linear-gradient(160deg, #FF9FB1, #F26D8D);
+  border-color: #F26D8D;
+  color: #fff;
+  box-shadow: 0 5px 0 #D9567A;
+  animation: bqPulse 1.2s ease-in-out infinite;
+}
+@keyframes bqPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+.bq-count {
+  min-width: 58px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #FFF1F3;
+  color: #C8556F;
+  font-family: var(--py);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+.bq-count.low { background: #FFE1E6; color: #B23A55; }
 .bq-read-result { margin-top: 10px; color: #4B342E; font-size: 14px; line-height: 1.5; }
 .quiz-play { margin-top: 12px; }
 .quiz-result {
@@ -4576,7 +4605,8 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   padding: 4px;
   border: 1.5px solid #F0DED4;
   border-radius: 999px;
-  background: rgba(255, 253, 248, .8);
+  background: #FFFDF8;
+  box-shadow: 0 6px 14px -10px rgba(120, 70, 70, .45);
   position: sticky;
   top: 70px;
   z-index: 9;

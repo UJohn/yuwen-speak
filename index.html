@@ -289,9 +289,12 @@
       <div class="quiz-feedback" id="bqFeedback" hidden></div>
       <div class="bq-read" id="bqReadBox" hidden>
         <p>跟读：<b id="bqReadTarget">b — a — ba</b></p>
-        <button class="btn btn-ghost" id="bqReadBtn" type="button">
-          <i class="icon icon-mic"></i>跟读并评分
-        </button>
+        <div class="bq-read-actions">
+          <button class="btn btn-ghost bq-mic" id="bqReadBtn" type="button">
+            <i class="icon icon-mic"></i>跟读并评分
+          </button>
+          <span class="bq-count" id="bqReadCount" hidden>6 秒</span>
+        </div>
         <button class="btn btn-soft" id="bqPlayMine" type="button" hidden>
           <i class="icon icon-play"></i>回放我的跟读
         </button>
