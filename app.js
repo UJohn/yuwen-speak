@@ -51,7 +51,7 @@
     return {
       schema: 2, stars: 0, sound: true, speak: true, volume: 1, slowRate: 0.72,
       enVoice: hasTencentVoice() ? "tencent-403006" : "sonia",
-      zhVoice: "xiaoxiao", tbImages: true,
+      zhVoice: "xiaoxiao", pyVoice: "pinyin-yoyo", tbImages: true,
       days: {}, chars: {}, read: {}, today: { date: "", count: 0 }
     };
   }
@@ -84,6 +84,7 @@
         slowRate: [0.6, 0.72, 0.85].indexOf(data.slowRate) >= 0 ? data.slowRate : 0.72,
         enVoice: isEnglishVoice(data.enVoice) ? data.enVoice : "sonia",
         zhVoice: ["xiaoxiao", "xiaoyi"].indexOf(data.zhVoice) >= 0 ? data.zhVoice : "xiaoxiao",
+        pyVoice: ["pinyin-yoyo", "xiaoxiao", "xiaoyi"].indexOf(data.pyVoice) >= 0 ? data.pyVoice : "pinyin-yoyo",
         tbImages: data.schema === 2 ? data.tbImages !== false : true,
         days: data.days && typeof data.days === "object" ? data.days : {},
         chars: data.chars && typeof data.chars === "object" ? data.chars : {},
@@ -168,9 +169,11 @@
         window.VOICE_MAPS && window.VOICE_MAPS[state.enVoice]) {
       src = window.VOICE_MAPS[state.enVoice][key] || src;
     }
-    if (!isEnglishAudioKey(key) && state.zhVoice !== "xiaoxiao" &&
-        window.ZH_VOICE_MAPS && window.ZH_VOICE_MAPS[state.zhVoice]) {
-      src = window.ZH_VOICE_MAPS[state.zhVoice][key] || src;
+    var isPinyinKey = key.indexOf("dr:") === 0;
+    var zhVoice = isPinyinKey ? (state.pyVoice || "pinyin-yoyo") : state.zhVoice;
+    if (!isEnglishAudioKey(key) && zhVoice !== "xiaoxiao" && zhVoice !== "pinyin-yoyo" &&
+        window.ZH_VOICE_MAPS && window.ZH_VOICE_MAPS[zhVoice]) {
+      src = window.ZH_VOICE_MAPS[zhVoice][key] || src;
     }
     if (!src) return src;
     return src + (src.indexOf("?") >= 0 ? "&" : "?") + "v=" + AUDIO_VERSION;
@@ -1500,8 +1503,14 @@
     ["zh-initials", "zh-finals", "zh-whole"].forEach(function (id) {
       var deck = DECKS.filter(function (d) { return d.id === id; })[0];
       if (!deck) return;
+      var kind = id === "zh-initials" ? "initials" : (id === "zh-finals" ? "finals" : "whole");
       deck.items.forEach(function (it, i) {
-        out.push({ label: it.text, key: id + ":" + i, type: id });
+        out.push({
+          label: it.text,
+          key: "dr:" + kind + ":" + i + ":1",
+          type: id,
+          py: it.py || it.text
+        });
       });
     });
     return out;
@@ -1537,7 +1546,7 @@
         escapeHTML(o.label) + "</button>";
     }).join("");
     setTimeout(function () {
-      if (pqState === st && !st.locked) say(item.key, item.label, "zh-CN");
+      if (pqState === st && !st.locked) say(item.key, item.py || item.label, "zh-CN");
     }, 350);
     pqTimerId = setInterval(function () {
       if (pqState !== st || st.locked) return;
@@ -2138,7 +2147,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-34";
+    s.src = "assets/spell-data.js?v=20261119-35";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2256,7 +2265,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-34");
+        var a = new Audio(entry.audio + "?v=20261119-35");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -3287,13 +3296,21 @@
   function syncVoiceFloat() {
     var f = $("#voiceFloat");
     if (!f) return;
-    var isEn = openScreenId === "s-textbook" ||
+    var pinyinScreens = ["s-pinyin-quiz", "s-tone-quiz", "s-blend-quiz", "s-pinyin-drill"];
+    var chineseScreens = ["s-pinyin", "s-read", "s-stroke", "s-trace"];
+    var isEn = openScreenId === "s-textbook" || openScreenId === "s-alphabet" ||
+      openScreenId === "s-en-quiz" ||
       (openScreenId === "s-speak" && speakState && String(speakState.lang || "").indexOf("en") === 0);
-    var show = openScreenId === "s-textbook" || openScreenId === "s-speak" || openScreenId === "s-pinyin-drill";
+    var isPinyin = pinyinScreens.indexOf(openScreenId) >= 0;
+    var show = isEn || isPinyin || chineseScreens.indexOf(openScreenId) >= 0 ||
+      openScreenId === "s-speak";
     f.hidden = !show;
-    f.classList.toggle("on-drill", openScreenId === "s-pinyin-drill");
+    f.classList.toggle("on-drill", isPinyin);
     f.classList.toggle("on-textbook", openScreenId === "s-textbook");
     f.classList.toggle("on-speak", openScreenId === "s-speak");
+    f.classList.toggle("on-quiz", openScreenId === "s-pinyin-quiz" ||
+      openScreenId === "s-tone-quiz" || openScreenId === "s-blend-quiz" ||
+      openScreenId === "s-alphabet" || openScreenId === "s-en-quiz");
     if (!show) return;
     var box = $("#voiceFloatBtns");
     if (!box) return;
@@ -3308,10 +3325,12 @@
           ]
         : [["sonia", "Sonia", "vf"], ["libby", "Libby", "vf"], ["maisie", "Maisie", "vf"]];
       if (!hasTencentVoice() && hasYoudaoVoice()) opts.push(["youdao", "有道", "vf"]);
+    } else if (isPinyin) {
+      opts = [["pinyin-yoyo", "拼音 Yoyo", "pyvf"], ["xiaoxiao", "晓晓", "zhvf"], ["xiaoyi", "晓伊", "zhvf"]];
     } else {
       opts = [["xiaoxiao", "晓晓", "zhvf"], ["xiaoyi", "晓伊", "zhvf"]];
     }
-    var current = isEn ? state.enVoice : state.zhVoice;
+    var current = isEn ? state.enVoice : (isPinyin ? (state.pyVoice || "pinyin-yoyo") : state.zhVoice);
     box.innerHTML = opts.map(function (o) {
       return '<button type="button" data-' + o[2] + '="' + o[0] + '"' +
         (o[0] === current ? ' class="on"' : "") + ">" + o[1] + "</button>";
@@ -4370,9 +4389,10 @@
     });
 
     $("#voiceFloat").addEventListener("click", function (ev) {
-      var b = ev.target.closest("button[data-vf],button[data-zhvf]");
+      var b = ev.target.closest("button[data-vf],button[data-zhvf],button[data-pyvf]");
       if (!b) return;
-      if (b.dataset.zhvf) state.zhVoice = b.dataset.zhvf;
+      if (b.dataset.pyvf) state.pyVoice = b.dataset.pyvf;
+      else if (b.dataset.zhvf) state.zhVoice = b.dataset.zhvf;
       else state.enVoice = b.dataset.vf || "sonia";
       save();
       syncSettingsUI();
@@ -4386,6 +4406,20 @@
         if (page) playLine(page, tbLastLine || 0, true);
       } else if (openScreenId === "s-pinyin-drill" && drillLastKey) {
         say(drillLastKey, drillLastText, "zh-CN");
+      } else if (openScreenId === "s-pinyin-quiz" && pqState) {
+        var pqItem = pqState.items[pqState.idx];
+        if (pqItem) say(pqItem.key, pqItem.py || pqItem.label, "zh-CN");
+      } else if (openScreenId === "s-tone-quiz" && tqState) {
+        var tqItem = tqState.items[tqState.idx];
+        if (tqItem) say(tqItem.key, tqItem.ch, "zh-CN");
+      } else if (openScreenId === "s-blend-quiz" && bqState) {
+        var bqItem = bqState.items[bqState.idx];
+        if (bqItem) say(bqItem.key, bqItem.py, "zh-CN");
+      } else if (openScreenId === "s-alphabet") {
+        say("en-alphabet:a", "a", "en-GB");
+      } else if (openScreenId === "s-en-quiz" && eqState) {
+        var eqItem = eqState.items[eqState.idx];
+        if (eqItem) enQuizSpeak(eqItem);
       }
     });
 
@@ -4412,7 +4446,7 @@
     $("#pqSpeaker").addEventListener("click", function () {
       if (!pqState) return;
       var item = pqState.items[pqState.idx];
-      say(item.key, item.label, "zh-CN");
+      say(item.key, item.py || item.label, "zh-CN");
     });
     $("#pqNext").addEventListener("click", nextPinyinQuiz);
     $("#pqOptions").addEventListener("click", function (ev) {
