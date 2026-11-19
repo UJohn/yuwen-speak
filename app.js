@@ -20,9 +20,8 @@
     read: { name: "认字小侦探", tag: "RENZI", sub: "看清字形再动笔" }
   };
   var EXTRA_GAMES = [
-    { kind: "pinyinQuiz", name: "听音选拼音", tag: "TINGYIN", sub: "听标准音，限时选拼音" },
-    { kind: "toneQuiz", name: "声调小侦探", tag: "SHENGDIAO", sub: "听读音，判断第几声" },
-    { kind: "blendQuiz", name: "找拼读", tag: "PINDU", sub: "听 b—a—ba，找出完整音节" }
+    { kind: "pinyinQuiz", name: "听音选拼音", tag: "TINGYIN", sub: "听整音节，也听拼读" },
+    { kind: "toneQuiz", name: "声调小侦探", tag: "SHENGDIAO", sub: "听读音，判断第几声" }
   ];
 
   function hasYoudaoVoice() {
@@ -666,6 +665,7 @@
       grid.appendChild(makeGameCard(kind, GAME_META[kind], day, ds, false));
     });
     EXTRA_GAMES.forEach(function (meta) {
+      if (meta.kind === "blendQuiz") return;
       grid.appendChild(makeGameCard(meta.kind, meta, day, ds, true));
     });
   }
@@ -823,7 +823,6 @@
     else if (id === "s-speak") goBackFromSpeak();
     else if (id === "s-textbook") openSubject("en");
     else if (id === "s-pinyin-drill") openSubject("zh");
-    else if (id === "s-spell") openSubject("zh");
     else if (id === "s-pick") openSubject((pickDeck && pickDeck.subject) || "en");
     else if (id === "s-alphabet") openSubject("en");
     else if (id === "s-en-quiz") {
@@ -2085,6 +2084,7 @@
   /* ------------------------------------------------------------ pinyin drill */
 
   var drillTone = 1;
+  var drillTab = "read";
   var drillLastKey = null;
   var drillLastText = "";
   var TONE_GROUPS = {
@@ -2111,7 +2111,7 @@
     b.type = "button";
     b.className = "unit-card deck-card pinyin-drill-card";
     b.innerHTML =
-      '<span class="unit-no">拼</span>' +
+      '<span class="unit-no">音</span>' +
       '<span class="unit-info"><b>拼音综合认读</b>' +
       "<span>声调 + 23 声母 + 24 韵母 + 16 整体认读</span>" +
       "<em>先选声调，再点拼音听发音</em></span>" +
@@ -2119,23 +2119,6 @@
     b.addEventListener("click", function () {
       sfx("tap");
       openPinyinDrill();
-    });
-    return b;
-  }
-
-  function spellCard() {
-    var b = document.createElement("button");
-    b.type = "button";
-    b.className = "unit-card deck-card spell-card";
-    b.innerHTML =
-      '<span class="unit-no">拼</span>' +
-      '<span class="unit-info"><b>拼读工坊</b>' +
-      "<span>声母 + 声调韵母，拼出整音节</span>" +
-      "<em>选一选，听 b + ā = bā</em></span>" +
-      '<span class="unit-go"><i class="icon icon-chevron"></i></span>';
-    b.addEventListener("click", function () {
-      sfx("tap");
-      openSpell();
     });
     return b;
   }
@@ -2155,7 +2138,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261119-33";
+    s.src = "assets/spell-data.js?v=20261119-34";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2241,10 +2224,28 @@
 
   function openSpell() {
     rememberSubjectScroll();
-    showScreen("s-spell");
-    initSpellSelectors();
-    updateSpell();
-    ensureSpellData(updateSpell);
+    drillTone = drillTone || 1;
+    showScreen("s-pinyin-drill");
+    setDrillTab("spell");
+    renderPinyinDrill();
+  }
+
+  function setDrillTab(tab) {
+    drillTab = tab === "spell" ? "spell" : "read";
+    $$("#drillTabs button").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.drillTab === drillTab);
+    });
+    var isSpell = drillTab === "spell";
+    $("#drillTonebar").hidden = isSpell;
+    $("#drillGroups").hidden = isSpell;
+    var legend = $("#s-pinyin-drill .drill-legend");
+    if (legend) legend.hidden = isSpell;
+    $("#spellWrap").hidden = !isSpell;
+    if (isSpell) {
+      initSpellSelectors();
+      updateSpell();
+      ensureSpellData(updateSpell);
+    }
   }
 
   function playSpell() {
@@ -2255,7 +2256,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261119-33");
+        var a = new Audio(entry.audio + "?v=20261119-34");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2280,6 +2281,7 @@
     rememberSubjectScroll();
     drillTone = 1;
     showScreen("s-pinyin-drill");
+    setDrillTab("read");
     renderPinyinDrill();
   }
 
@@ -2773,17 +2775,13 @@
 
     var drillIds = { "zh-tones": 1, "zh-initials": 1, "zh-finals": 1, "zh-whole": 1 };
     var extras = decks.filter(function (d) { return !d.units && !drillIds[d.id]; });
-    if (!isEn) {
-      var phonicsGrid = addSection("拼音与识字", "声调、声母、韵母、整体认读和字词练习", "subject-phonics");
-      phonicsGrid.appendChild(pinyinDrillCard());
-      phonicsGrid.appendChild(spellCard());
-    }
     if (extras.length) {
       var practiceGrid = addSection(
-        isEn ? "专项练习" : "阅读与专项",
-        isEn ? "单词、句子和陌生单词本，随时加练" : "拼音、词语、句子和小游戏，随时加练",
+        isEn ? "专项练习" : "拼音与字词",
+        isEn ? "单词、句子和陌生单词本，随时加练" : "拼音认读、拼读工坊、词语和句子，随时加练",
         "subject-practice"
       );
+      if (!isEn) practiceGrid.appendChild(pinyinDrillCard());
       extras.forEach(function (d) { practiceGrid.appendChild(deckCard(d)); });
     }
     if (!isEn) {
@@ -2794,6 +2792,7 @@
         gameGrid.appendChild(makeGameCard(kind, GAME_META[kind], gameDay, gameDone, false));
       });
       EXTRA_GAMES.forEach(function (meta) {
+        if (meta.kind === "blendQuiz") return;
         gameGrid.appendChild(makeGameCard(meta.kind, meta, gameDay, gameDone, true));
       });
     }
@@ -2880,7 +2879,7 @@
     var entries = deckEntries(deck);
     var done = entries.filter(function (e) { return state.read[e.id]; }).length;
     var marks = {
-      pinyin: "拼", words: "词", sentences: "句",
+      pinyin: "读", words: "词", sentences: "句",
       "en-words": "词", "en-sentences": "句", "en-wordbook": "新",
       "zh-tones": "调", "zh-initials": "母", "zh-finals": "韵", "zh-whole": "整"
     };
@@ -4420,6 +4419,20 @@
       var b = ev.target.closest("[data-pq-opt]");
       if (b) answerPinyinQuiz(b);
     });
+    $("#pqTabs").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-pq-tab]");
+      if (!b || b.classList.contains("on")) return;
+      sfx("tap");
+      if (b.dataset.pqTab === "blend") startBlendQuiz();
+      else startPinyinQuiz();
+    });
+    $("#bqTabs").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-pq-tab]");
+      if (!b || b.classList.contains("on")) return;
+      sfx("tap");
+      if (b.dataset.pqTab === "syllable") startPinyinQuiz();
+      else startBlendQuiz();
+    });
     $("#tqOptions").addEventListener("click", function (ev) {
       var b = ev.target.closest("[data-tq-tone]");
       if (b) answerToneQuiz(b);
@@ -4460,6 +4473,12 @@
       drillTone = parseInt(b.dataset.drillTone, 10) || 1;
       sfx("tap");
       renderPinyinDrill();
+    });
+    $("#drillTabs").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-drill-tab]");
+      if (!b) return;
+      sfx("tap");
+      setDrillTab(b.dataset.drillTab);
     });
     $("#drillGroups").addEventListener("click", function (ev) {
       var b = ev.target.closest("[data-drill-key]");

@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="一年级小书房">
 <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=20261119-33">
+  <link rel="manifest" href="manifest.webmanifest?v=20261119-34">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261119-33">
+  <link rel="stylesheet" href="styles.css?v=20261119-34">
 </head>
 <body>
 
@@ -217,6 +217,10 @@
     </div>
     <div class="round-dots" id="pqDots"></div>
   </div>
+  <div class="drill-tabs" id="pqTabs" role="tablist" aria-label="听音练习方式">
+    <button type="button" data-pq-tab="syllable" class="on">听整音节</button>
+    <button type="button" data-pq-tab="blend">听拼读</button>
+  </div>
   <div class="quiz-wrap">
     <div class="quiz-card" id="pqCard">
       <div class="quiz-meta"><span id="pqCounter">1 / 10</span><span class="quiz-timer" id="pqTimer">8 秒</span></div>
@@ -269,6 +273,10 @@
       <p>听 b—a—ba，找出完整音节</p>
     </div>
     <div class="round-dots" id="bqDots"></div>
+  </div>
+  <div class="drill-tabs" id="bqTabs" role="tablist" aria-label="听音练习方式">
+    <button type="button" data-pq-tab="syllable">听整音节</button>
+    <button type="button" data-pq-tab="blend" class="on">听拼读</button>
   </div>
   <div class="quiz-wrap">
     <div class="quiz-card" id="bqCard">
@@ -466,6 +474,10 @@
       <p>先选声调，再点拼音听发音</p>
     </div>
   </div>
+  <div class="drill-tabs" id="drillTabs" role="tablist" aria-label="拼音练习方式">
+    <button type="button" data-drill-tab="read" class="on">点读认读</button>
+    <button type="button" data-drill-tab="spell">拼读工坊</button>
+  </div>
   <div class="drill-tonebar" id="drillTonebar">
     <button type="button" data-drill-tone="1" class="on">第一声</button>
     <button type="button" data-drill-tone="2">第二声</button>
@@ -481,20 +493,7 @@
     </div>
     <div id="drillGroups"></div>
   </div>
-</section>
-
-<!-- ============================================================ 拼读工坊 -->
-<section class="screen" id="s-spell" hidden>
-  <div class="screen-top">
-    <button class="icon-btn back" type="button" data-back aria-label="返回">
-      <i class="icon icon-back"></i>
-    </button>
-    <div class="screen-title">
-      <h2>拼读工坊</h2>
-      <p>选声母、韵母和声调，听完整拼读</p>
-    </div>
-  </div>
-  <div class="spell-wrap">
+  <div class="spell-wrap" id="spellWrap" hidden>
     <div class="spell-card">
       <div class="spell-selects">
         <label>声母
@@ -708,6 +707,6 @@
   <div id="voiceFloatBtns"></div>
 </div>
 
-<script src="app-bundle.js?v=20261119-33"></script>
+<script src="app-bundle.js?v=20261119-34"></script>
 </body>
 </html>

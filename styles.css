@@ -1010,7 +1010,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 /* ---------------------------------------------------------------- pinyin drill */
 .drill-tonebar {
   position: sticky;
-  top: 70px;
+  top: 132px;
   z-index: 8;
   width: 100%;
   max-width: 840px;
@@ -4220,6 +4220,37 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 }
 
 /* ---------------------------------------------------------------- spell workshop */
+.drill-tabs {
+  width: min(840px, 100%);
+  margin: 0 auto 12px;
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  border: 1.5px solid #F0DED4;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, .8);
+  position: sticky;
+  top: 70px;
+  z-index: 9;
+}
+.drill-tabs button {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .16s, color .16s;
+}
+.drill-tabs button.on {
+  background: linear-gradient(150deg, #FFB3C1, #F26D8D);
+  color: #fff;
+  box-shadow: 0 3px 0 rgba(217, 86, 122, .3);
+}
+
 .spell-wrap {
   width: min(760px, 100%);
   margin: 0 auto;
