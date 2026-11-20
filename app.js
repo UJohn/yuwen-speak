@@ -454,7 +454,7 @@
     audioPackLoading = true;
     if (!audioMapBeforePack) audioMapBeforePack = window.AUDIO_MAP || {};
     var s = document.createElement("script");
-    s.src = "audio-bundle.js?v=20261125-48";
+    s.src = "audio-bundle.js?v=20261126-49";
     s.onload = function () {
       audioPackLoading = false;
       window.AUDIO_PACK_READY = true;
@@ -2106,7 +2106,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261125-48";
+    s.src = "assets/spell-data.js?v=20261126-49";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2224,7 +2224,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261125-48");
+        var a = new Audio(entry.audio + "?v=20261126-49");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2864,7 +2864,9 @@
       '<p class="tile-sub">' + escapeHTML(deck.sub) + "</p>";
     b.addEventListener("click", function () {
       sfx("tap");
-      if (deck.extra || deck.pickable) openPicker(deck);
+      if (deck.id === "en-words" || deck.id === "en-sentences") {
+        startDeck(deck, 0, { screen: "s-units", subject: "en" });
+      } else if (deck.extra || deck.pickable) openPicker(deck);
       else startDeck(deck, 0, { screen: "s-units", subject: deck.subject || "zh" });
     });
     return b;
@@ -2945,7 +2947,10 @@
     });
     $("#s-speak").classList.toggle("split-view", !!isEnglishDeck);
     $("#speakSide").hidden = !isEnglishDeck;
-    if (isEnglishDeck) $("#speakSideCount").textContent = entries.length + " 个";
+    if (isEnglishDeck) {
+      $("#speakSideCount").textContent = entries.length + " 个";
+      openSideGroups = {};
+    }
     var lang = deck.lang || "zh-CN";
     if (lang.indexOf("en") === 0) lang = "en-GB";
     speakState = { deck: deck, entries: entries, idx: startIdx || 0, lang: lang };
@@ -3726,22 +3731,34 @@
     });
   }
 
+  var openSideGroups = {};
+
   function renderSpeakSideList() {
     var box = $("#speakSideList");
     if (!box || !speakState) return;
-    var lastGroup = "";
+    var groups = [];
+    var groupIndex = {};
+    speakState.entries.forEach(function (e) {
+      var group = e.item.unitLabel || e.item.unitBadge || "其他";
+      if (!(group in groupIndex)) { groupIndex[group] = groups.length; groups.push(group); }
+    });
     var html = "";
-    speakState.entries.forEach(function (e, i) {
-      var group = e.item.unitLabel || e.item.unitBadge || "";
-      if (group && group !== lastGroup) {
-        lastGroup = group;
-        html += '<div class="side-group">' + escapeHTML(group) + "</div>";
+    groups.forEach(function (group, gi) {
+      var open = openSideGroups[group] !== false;
+      html += '<div class="side-group' + (open ? " open" : "") + '" data-side-group="' + gi + '">' +
+        '<span class="side-group-name">' + escapeHTML(group) + "</span>" +
+        '<span class="side-group-arrow">' + (open ? "▾" : "▸") + "</span></div>";
+      if (open) {
+        speakState.entries.forEach(function (e, i) {
+          var eg = e.item.unitLabel || e.item.unitBadge || "其他";
+          if (eg !== group) return;
+          var done = state.read[e.id] || 0;
+          html += '<button type="button" class="side-item' + (i === speakState.idx ? " on" : "") +
+            '" data-side-idx="' + i + '"><b>' + escapeHTML(e.item.text) + "</b>" +
+            (e.item.zh ? "<span>" + escapeHTML(e.item.zh) + "</span>" : "") +
+            (done ? '<i class="side-star">★</i>' : "") + "</button>";
+        });
       }
-      var done = state.read[e.id] || 0;
-      html += '<button type="button" class="side-item' + (i === speakState.idx ? " on" : "") +
-        '" data-side-idx="' + i + '"><b>' + escapeHTML(e.item.text) + "</b>" +
-        (e.item.zh ? "<span>" + escapeHTML(e.item.zh) + "</span>" : "") +
-        (done ? '<i class="side-star">★</i>' : "") + "</button>";
     });
     box.innerHTML = html;
     ensureSideListVisible();
@@ -3751,6 +3768,20 @@
     var box = $("#speakSideList");
     if (!box) return;
     box.addEventListener("click", function (ev) {
+      var g = ev.target.closest("[data-side-group]");
+      if (g && speakState) {
+        var gi = Number(g.dataset.sideGroup);
+        var groups = [];
+        speakState.entries.forEach(function (e) {
+          var name = e.item.unitLabel || e.item.unitBadge || "其他";
+          if (groups.indexOf(name) < 0) groups.push(name);
+        });
+        var name = groups[gi];
+        openSideGroups[name] = openSideGroups[name] === false;
+        sfx("tap");
+        renderSpeakSideList();
+        return;
+      }
       var b = ev.target.closest("[data-side-idx]");
       if (!b || !speakState) return;
       sfx("tap");

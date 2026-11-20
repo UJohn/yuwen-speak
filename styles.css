@@ -4891,26 +4891,61 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   box-shadow: none;
 }
 
-/* English word/sentence practice: compact list on the left, speaking card on the right. */
+/* English word/sentence practice: accordion list left, mic + card right. */
 #s-speak.split-view .speak-wrap {
   display: grid;
-  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  gap: 10px 16px;
-  align-items: start;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
   max-width: 1180px;
   width: min(1180px, 100%);
 }
-#s-speak.split-view .speak-side { grid-column: 1; grid-row: 1 / span 2; }
-#s-speak.split-view .speak-card { grid-column: 2; grid-row: 1; }
-#s-speak.split-view .speak-bottom { grid-column: 2; grid-row: 2; }
+#s-speak.split-view .speak-side,
+#s-speak.split-view .speak-main {
+  align-self: stretch;
+}
+#s-speak.split-view .speak-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+#s-speak.split-view .speak-bottom {
+  grid-column: auto;
+  grid-row: auto;
+  order: -1;
+  width: 100%;
+  margin: 0;
+}
+#s-speak.split-view .speak-bottom .card-nav { display: none; }
+#s-speak.split-view .speak-bottom .mic-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border: 1.5px solid #F8CAD3;
+  border-radius: 20px;
+  background: rgba(255, 249, 250, .9);
+}
+#s-speak.split-view .speak-bottom .mic-btn {
+  width: 58px;
+  height: 58px;
+  margin: 0;
+  flex: none;
+}
+#s-speak.split-view .speak-bottom .mic-btn .icon { width: 26px; height: 26px; }
+#s-speak.split-view .speak-bottom .mic-hint,
+#s-speak.split-view .speak-bottom .mic-sub { margin: 0; text-align: left; }
+#s-speak.split-view .speak-bottom .mic-hint { font-size: 14px; }
+#s-speak.split-view .speak-bottom .mic-sub { font-size: 11px; }
 .speak-side {
   position: sticky;
   top: 10px;
   display: flex;
   flex-direction: column;
-  max-height: calc(100dvh - 170px);
-  min-height: 320px;
+  height: calc(100dvh - 190px);
+  min-height: 360px;
   padding: 12px 10px;
   border: 1.5px solid #F0DED4;
   border-radius: 22px;
@@ -4938,18 +4973,27 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   padding: 2px 4px 4px 2px;
   scrollbar-width: thin;
 }
 .side-group {
   flex: none;
-  padding: 8px 8px 3px;
-  font-size: 10px;
-  letter-spacing: .06em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  margin-top: 2px;
+  border-radius: 10px;
+  background: #FFF0F3;
   color: #B4586E;
+  font-size: 11px;
   font-weight: 700;
+  cursor: pointer;
 }
+.side-group:first-child { margin-top: 0; }
+.side-group-name { letter-spacing: .04em; }
+.side-group-arrow { font-size: 12px; }
 .side-item {
   position: relative;
   flex: none;
@@ -4958,7 +5002,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   align-items: flex-start;
   gap: 1px;
   width: 100%;
-  min-height: 46px;
+  min-height: 44px;
   padding: 6px 28px 6px 11px;
   border: 1.5px solid transparent;
   border-radius: 14px;
@@ -4989,21 +5033,80 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   font-size: 13px;
   font-style: normal;
 }
-#s-speak.split-view .speak-card { width: 100%; }
-#s-speak.split-view .speak-bottom { width: 100%; margin-top: 16px; }
+#s-speak.split-view .speak-card { width: 100%; flex: 1; }
 
 @media (max-width: 900px) {
-  #s-speak.split-view .speak-wrap { grid-template-columns: 1fr; grid-template-rows: auto; gap: 12px; }
-  #s-speak.split-view .speak-side,
-  #s-speak.split-view .speak-card,
-  #s-speak.split-view .speak-bottom { grid-column: 1; grid-row: auto; }
-  .speak-side {
-    position: static;
-    max-height: 220px;
-    min-height: 0;
-  }
+  #s-speak.split-view .speak-wrap { grid-template-columns: 1fr; gap: 12px; }
+  .speak-side { position: static; height: auto; max-height: 280px; min-height: 0; }
+  #s-speak.split-view .speak-bottom { order: 0; }
 }
 
 /* Split-view polish: keep voice switch clear of the card edge. */
 #s-speak.split-view ~ .voice-float,
 #s-speak.split-view .voice-float { right: max(2px, env(safe-area-inset-right)); }
+
+/* Sticky header: solid themed surface so scrolling content never bleeds through. */
+#s-units.theme-zh .screen-top,
+#s-units.theme-en .screen-top {
+  background: rgba(255, 248, 240, .97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 10px 14px 8px;
+  border-radius: 0 0 18px 18px;
+}
+#s-units.theme-en .screen-top { background: rgba(232, 247, 243, .97); }
+#s-units .screen-top::before { display: none; }
+
+/* Compact list cards across Chinese and English subject pages. */
+#s-units .subject-card-grid .unit-card.tile-card,
+#s-units .subject-games .game-card {
+  height: 122px;
+  min-height: 122px;
+  padding: 10px 12px 9px;
+  border-radius: 20px;
+}
+#s-units .tile-card h4,
+#s-units .game-card h4 { font-size: 14px; margin: 4px 0 1px; }
+#s-units .tile-card .tile-sub,
+#s-units .game-card .g-sub { font-size: 9.5px; }
+#s-units .tile-card .tile-art,
+#s-units .game-card .g-art { min-height: 30px; padding-top: 2px; }
+#s-units .tile-card .tile-art .card-art,
+#s-units .tile-card .tile-art .unit-no { width: 36px; height: 36px; }
+#s-units .tile-card .tile-art .card-art svg { width: 26px; height: 26px; }
+#s-units .tile-bg { width: 100px; height: 100px; opacity: .5; }
+
+/* Textbook sheet: keep it anchored to the viewport, never stretching across the page. */
+.tb-sheet { max-width: min(640px, calc(100vw - 40px)); }
+
+/* Header must cover the full viewport width to avoid content showing above it. */
+#s-units .screen-top {
+  width: calc(100% + 48px);
+  max-width: none;
+  margin-left: -24px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+@media (min-width: 700px) and (max-width: 1180px) {
+  #s-units .screen-top { width: calc(100% + 64px); margin-left: -32px; padding-left: 32px; padding-right: 32px; }
+}
+
+/* Phone split view: keep the mic bar readable in a single row. */
+@media (max-width: 599px) {
+  #s-speak.split-view .speak-bottom { order: -1; }
+  #s-speak.split-view .speak-bottom .mic-zone { display: block; text-align: center; padding: 12px; }
+  #s-speak.split-view .speak-bottom .mic-btn { margin: 0 auto 8px; }
+  #s-speak.split-view .speak-bottom .mic-hint,
+  #s-speak.split-view .speak-bottom .mic-sub { text-align: center; }
+  #s-speak.split-view .speak-bottom .mic-hint { font-size: 13px; }
+  #s-speak.split-view .speak-bottom .mic-sub { font-size: 10px; }
+}
+
+/* Split-view mic bar spans full width (the default 3-column grid leaves side gaps). */
+#s-speak.split-view .speak-bottom { display: block; width: 100%; }
+#s-speak.split-view .speak-bottom .mic-zone { width: 100%; }
+
+/* Desktop: force the mobile sheet fully off-screen to prevent any visual residue. */
+@media (min-width: 901px) {
+  #tbSheet { left: -9999px !important; visibility: hidden !important; }
+}
