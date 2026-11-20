@@ -5196,3 +5196,14 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   }
   #s-speak.split-view .mic-zone.inside-card { margin-top: auto; }
 }
+
+/* Landscape phones/tablets are wide enough for the split layout: keep both panes visible. */
+@media (max-width: 900px) and (orientation: landscape) and (min-width: 700px) {
+  #s-speak.split-view .speak-wrap {
+    grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+    align-items: stretch;
+  }
+  #s-speak.split-view .speak-side { position: static; height: auto; max-height: none; }
+  #s-speak.split-view .speak-main { height: auto; min-height: 0; }
+  #s-speak.split-view .speak-main .speak-card { height: auto; }
+}

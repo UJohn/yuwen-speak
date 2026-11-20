@@ -454,7 +454,7 @@
     audioPackLoading = true;
     if (!audioMapBeforePack) audioMapBeforePack = window.AUDIO_MAP || {};
     var s = document.createElement("script");
-    s.src = "audio-bundle.js?v=20261130-53";
+    s.src = "audio-bundle.js?v=20261201-54";
     s.onload = function () {
       audioPackLoading = false;
       window.AUDIO_PACK_READY = true;
@@ -2106,7 +2106,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261130-53";
+    s.src = "assets/spell-data.js?v=20261201-54";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2224,7 +2224,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261130-53");
+        var a = new Audio(entry.audio + "?v=20261201-54");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2371,10 +2371,11 @@
         unitOrder: meta.order, pageOrder: order || 0
       });
     }
-    function addSentence(text, zh, srcId, meta, order) {
+    function addSentence(text, zh, srcId, meta, order, keepDuplicate) {
       var key = String(text || "").toLowerCase().trim();
-      if (!key || seenSentence[key]) return;
-      seenSentence[key] = 1;
+      if (!key) return;
+      if (!keepDuplicate && seenSentence[key]) return;
+      if (!keepDuplicate) seenSentence[key] = 1;
       sentences.push({
         text: text, zh: zh, srcId: srcId,
         unitLabel: meta.label, unitBadge: meta.badge,
@@ -2388,7 +2389,9 @@
         var text = String(it.text || "").trim();
         var key = text.toLowerCase();
         var srcId = u.id + ":" + i;
-        if (isEnglishSentence(text)) addSentence(text, it.zh, srcId, meta, i);
+        if (isEnglishSentence(text)) {
+          addSentence(text, it.zh, srcId, meta, i, /^R\d+$/i.test(u.badge || ""));
+        }
         else {
           addWord(text, it.zh, it.ipa, srcId, meta, i);
         }
