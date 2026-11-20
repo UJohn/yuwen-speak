@@ -5110,3 +5110,26 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 @media (min-width: 901px) {
   #tbSheet { left: -9999px !important; visibility: hidden !important; }
 }
+
+/* Split view: microphone back below the card, no background frame. */
+#s-speak.split-view .speak-bottom { order: 0; }
+#s-speak.split-view .speak-bottom .mic-zone {
+  display: block;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 6px 0 0;
+  text-align: center;
+}
+#s-speak.split-view .speak-bottom .mic-btn {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 10px;
+}
+#s-speak.split-view .speak-bottom .mic-btn .icon { width: 30px; height: 30px; }
+#s-speak.split-view .speak-bottom .mic-hint,
+#s-speak.split-view .speak-bottom .mic-sub { text-align: center; }
+@media (max-width: 599px) {
+  #s-speak.split-view .speak-bottom { order: 0; }
+  #s-speak.split-view .speak-bottom .mic-zone { padding: 8px 0 0; }
+}
