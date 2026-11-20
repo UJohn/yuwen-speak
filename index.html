@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="一年级小书房">
 <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=20261119-42">
+  <link rel="manifest" href="manifest.webmanifest?v=20261120-43">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261119-42">
+  <link rel="stylesheet" href="styles.css?v=20261120-43">
 </head>
 <body>
 
@@ -75,7 +75,7 @@
           <span class="choice-doodle" aria-hidden="true">★</span>
           <span class="choice-kicker">ENGLISH · 英语</span>
           <strong>英语小课堂</strong>
-          <span class="choice-desc">课本跟读 · 字母 · 单词 · 句子 · 口语</span>
+          <span class="choice-desc">课本跟读 · 单词 · 句子 · 口语</span>
           <span class="choice-foot">进去读一读 <i class="icon icon-chevron"></i></span>
           <span class="choice-mark" aria-hidden="true">A</span>
         </button>
@@ -117,14 +117,6 @@
       </div>
       <div class="read-grid" id="readGrid"></div>
       <div class="read-stats" id="readStats"></div>
-    </section>
-
-    <section class="english-tools legacy-home" id="englishTools" hidden>
-      <div class="section-head">
-        <h3>英语工具</h3>
-        <p>字母表 · 听音练习</p>
-      </div>
-      <div class="tool-grid" id="englishToolGrid"></div>
     </section>
 
     <section class="week legacy-home" id="practiceSection" hidden>
@@ -307,52 +299,7 @@
   </div>
 </section>
 
-<!-- ============================================================ 英语字母表 -->
-<section class="screen" id="s-alphabet" hidden>
-  <div class="screen-top">
-    <button class="icon-btn back" type="button" data-back aria-label="返回">
-      <i class="icon icon-back"></i>
-    </button>
-    <div class="screen-title">
-      <h2>英语字母表</h2>
-      <p>点一个字母听读音，再玩听音选字母</p>
-    </div>
-  </div>
-  <div class="alpha-wrap">
-    <div class="alpha-grid" id="alphabetGrid"></div>
-    <button class="btn btn-primary alpha-quiz-btn" id="alphabetQuizStart" type="button">
-      开始听音选字母
-    </button>
-  </div>
-</section>
-
 <!-- ============================================================ 英语小测 -->
-<section class="screen" id="s-en-quiz" hidden>
-  <div class="screen-top">
-    <button class="icon-btn back" type="button" data-back aria-label="返回">
-      <i class="icon icon-back"></i>
-    </button>
-    <div class="screen-title">
-      <h2 id="eqTitle">听音选字母</h2>
-      <p id="eqSub">听清楚，再选出正确答案</p>
-    </div>
-    <div class="round-dots" id="eqDots"></div>
-  </div>
-  <div class="quiz-wrap">
-    <div class="quiz-card" id="eqCard">
-      <div class="quiz-meta"><span id="eqCounter">1 / 10</span><span class="quiz-timer">英语</span></div>
-      <button class="quiz-speaker" id="eqSpeaker" type="button">
-        <i class="icon icon-volume"></i>再听一遍
-      </button>
-      <p class="quiz-prompt" id="eqPrompt">听一听，它是哪个字母？</p>
-      <div class="quiz-options" id="eqOptions"></div>
-      <div class="quiz-feedback" id="eqFeedback" hidden></div>
-      <button class="btn btn-primary quiz-next" id="eqNext" type="button" hidden>下一个</button>
-    </div>
-    <div class="quiz-result" id="eqResult" hidden></div>
-  </div>
-</section>
-
 <!-- ============================================================ 跟读打分 -->
 <section class="screen" id="s-speak" hidden>
   <div class="screen-top">
@@ -710,6 +657,6 @@
   <div id="voiceFloatBtns"></div>
 </div>
 
-<script src="app-bundle.js?v=20261119-42"></script>
+<script src="app-bundle.js?v=20261120-43"></script>
 </body>
 </html>

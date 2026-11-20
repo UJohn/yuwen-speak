@@ -4743,3 +4743,28 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   .spell-display span { padding: 3px 8px; }
   .spell-actions .btn { min-width: 0; flex: 1; }
 }
+
+/* Grouped English picker lists */
+.pick-grid .pick-group {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 10px 0 2px;
+  padding: 0 2px;
+}
+.pick-grid .pick-group:first-child { margin-top: 0; }
+.pick-grid .pick-group b {
+  font-size: 14px;
+  color: var(--ink);
+  letter-spacing: .02em;
+}
+.pick-grid .pick-group span {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .72);
+  color: var(--ink-3);
+  font-size: 10px;
+}
