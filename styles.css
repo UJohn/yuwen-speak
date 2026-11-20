@@ -4284,13 +4284,6 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 }
 .subject-card-grid .tb-entry { grid-column: 1 / -1; }
 .subject-card-grid .pinyin-drill-card { grid-column: auto; }
-.subject-tools .alphabet-entry { grid-column: 1 / -1; }
-.subject-card-grid .alphabet-entry .unit-no {
-  font-family: var(--py);
-  font-size: 24px;
-  color: #357E70;
-  background: #E5F7F2;
-}
 .theme-zh .subject-section-head h3 { color: #B4586E; }
 .theme-en .subject-section-head h3 { color: #357E70; }
 .subject-games .subject-card-grid {
