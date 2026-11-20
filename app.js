@@ -454,7 +454,7 @@
     audioPackLoading = true;
     if (!audioMapBeforePack) audioMapBeforePack = window.AUDIO_MAP || {};
     var s = document.createElement("script");
-    s.src = "audio-bundle.js?v=20261124-47";
+    s.src = "audio-bundle.js?v=20261125-48";
     s.onload = function () {
       audioPackLoading = false;
       window.AUDIO_PACK_READY = true;
@@ -2106,7 +2106,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261124-47";
+    s.src = "assets/spell-data.js?v=20261125-48";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2224,7 +2224,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261124-47");
+        var a = new Audio(entry.audio + "?v=20261125-48");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2934,6 +2934,8 @@
   function startDeck(deck, startIdx, returnTo) {
     rememberSubjectScroll();
     speakReturn = returnTo || { screen: "home" };
+    var isEnglishDeck = /^en-(words|sentences)$/.test(deck.id) ||
+      (deck.extra && (deck.lang || "").indexOf("en") === 0);
     var entries = deck.items.map(function (it, i) {
       return {
         item: it,
@@ -2941,6 +2943,9 @@
         unit: deck.unitLabel ? { unit: deck.unitLabel } : null
       };
     });
+    $("#s-speak").classList.toggle("split-view", !!isEnglishDeck);
+    $("#speakSide").hidden = !isEnglishDeck;
+    if (isEnglishDeck) $("#speakSideCount").textContent = entries.length + " 个";
     var lang = deck.lang || "zh-CN";
     if (lang.indexOf("en") === 0) lang = "en-GB";
     speakState = { deck: deck, entries: entries, idx: startIdx || 0, lang: lang };
@@ -2951,6 +2956,7 @@
       ? "英语口语 · 听清楚再读"
       : "听一遍，再跟着读";
     renderSpeakDots();
+    if (isEnglishDeck) renderSpeakSideList();
     loadSpeakItem(speakState.idx);
     setTimeout(function () {
       if (openScreenId === "s-speak") ensureAudioPack();
@@ -3720,6 +3726,45 @@
     });
   }
 
+  function renderSpeakSideList() {
+    var box = $("#speakSideList");
+    if (!box || !speakState) return;
+    var lastGroup = "";
+    var html = "";
+    speakState.entries.forEach(function (e, i) {
+      var group = e.item.unitLabel || e.item.unitBadge || "";
+      if (group && group !== lastGroup) {
+        lastGroup = group;
+        html += '<div class="side-group">' + escapeHTML(group) + "</div>";
+      }
+      var done = state.read[e.id] || 0;
+      html += '<button type="button" class="side-item' + (i === speakState.idx ? " on" : "") +
+        '" data-side-idx="' + i + '"><b>' + escapeHTML(e.item.text) + "</b>" +
+        (e.item.zh ? "<span>" + escapeHTML(e.item.zh) + "</span>" : "") +
+        (done ? '<i class="side-star">★</i>' : "") + "</button>";
+    });
+    box.innerHTML = html;
+    ensureSideListVisible();
+  }
+
+  function bindSideList() {
+    var box = $("#speakSideList");
+    if (!box) return;
+    box.addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-side-idx]");
+      if (!b || !speakState) return;
+      sfx("tap");
+      loadSpeakItem(Number(b.dataset.sideIdx));
+    });
+  }
+
+  function ensureSideListVisible() {
+    var box = $("#speakSideList");
+    if (!box) return;
+    var on = box.querySelector(".side-item.on");
+    if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest" });
+  }
+
   function loadSpeakItem(idx) {
     if (!speakState) return;
     stopWordSequence();
@@ -3774,6 +3819,10 @@
     $("#speakTip").textContent = (!isEn && item.tip) ? item.tip : "";
     $("#cardPrev").disabled = idx === 0;
     $("#cardNext").disabled = false;
+    $$("#speakSideList .side-item").forEach(function (b) {
+      b.classList.toggle("on", Number(b.dataset.sideIdx) === idx);
+    });
+    ensureSideListVisible();
     $("#speakChip").textContent = (entry.unit ? entry.unit.unit + " · " : "") + (idx + 1) + " / " + speakState.entries.length;
     $("#resultPanel").hidden = true;
     $("#playbackBox").hidden = true;
@@ -4314,6 +4363,7 @@
       sfx("tap");
       say("zh:" + item.zh, item.zh, "zh-CN");
     });
+    bindSideList();
     $("#cardPrev").addEventListener("click", function () {
       if (!speakState || speakState.idx <= 0) return;
       sfx("tap");

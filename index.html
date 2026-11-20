@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="一年级小书房">
 <meta name="format-detection" content="telephone=no">
-  <link rel="manifest" href="manifest.webmanifest?v=20261124-47">
+  <link rel="manifest" href="manifest.webmanifest?v=20261125-48">
   <link rel="icon" href="assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="assets/img/icon-180.png">
-  <link rel="stylesheet" href="styles.css?v=20261124-47">
+  <link rel="stylesheet" href="styles.css?v=20261125-48">
 </head>
 <body>
 
@@ -314,6 +314,10 @@
   </div>
 
   <div class="speak-wrap">
+    <aside class="speak-side" id="speakSide" hidden aria-label="单词句子列表">
+      <div class="speak-side-title">本组列表 <span id="speakSideCount"></span></div>
+      <div class="speak-side-list" id="speakSideList"></div>
+    </aside>
     <div class="speak-card" id="speakCard">
       <div class="speak-topline">
         <span class="speak-chip" id="speakChip">1 / 20</span>
@@ -657,6 +661,6 @@
   <div id="voiceFloatBtns"></div>
 </div>
 
-<script src="app-bundle.js?v=20261124-47"></script>
+<script src="app-bundle.js?v=20261125-48"></script>
 </body>
 </html>

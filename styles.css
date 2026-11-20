@@ -4854,3 +4854,156 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 /* Ensure word bank bottom row is not clipped by the action bar. */
 .tb-rail-scroll { padding-bottom: 10px; }
 .tb-words { padding-bottom: 6px; }
+
+/* Fix game-card corner badge overlapping the category tag. */
+.game-card > .g-count,
+.game-card > .g-done { position: absolute; }
+
+/* Textbook page-nav: refined rounded arrows with a soft pill surface. */
+.tb-page-nav {
+  padding: 10px 2px 4px;
+  margin-top: 4px;
+}
+.tb-page-nav .tb-page-btn {
+  width: 46px;
+  height: 46px;
+  border: 2px solid #F3C9D5;
+  color: #D2647F;
+  font-size: 24px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #FFF6F8, #FFE9EF);
+  box-shadow: 0 4px 0 rgba(210, 100, 127, .12), 0 6px 14px -8px rgba(90, 68, 60, .35);
+}
+.tb-page-nav .tb-page-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: #E89BB0;
+  box-shadow: 0 6px 0 rgba(210, 100, 127, .12), 0 10px 16px -8px rgba(90, 68, 60, .4);
+}
+.tb-page-nav .tb-page-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(210, 100, 127, .12);
+}
+.tb-page-nav .tb-page-btn:disabled {
+  opacity: .35;
+  border-color: #E8D3C8;
+  color: #BCA79A;
+  background: #FFFDF8;
+  box-shadow: none;
+}
+
+/* English word/sentence practice: compact list on the left, speaking card on the right. */
+#s-speak.split-view .speak-wrap {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 10px 16px;
+  align-items: start;
+  max-width: 1180px;
+  width: min(1180px, 100%);
+}
+#s-speak.split-view .speak-side { grid-column: 1; grid-row: 1 / span 2; }
+#s-speak.split-view .speak-card { grid-column: 2; grid-row: 1; }
+#s-speak.split-view .speak-bottom { grid-column: 2; grid-row: 2; }
+.speak-side {
+  position: sticky;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 170px);
+  min-height: 320px;
+  padding: 12px 10px;
+  border: 1.5px solid #F0DED4;
+  border-radius: 22px;
+  background: rgba(255, 253, 248, .94);
+  box-shadow: 0 8px 20px -14px rgba(90, 68, 60, .4);
+  overflow: hidden;
+}
+.speak-side[hidden] { display: none; }
+.speak-side-title {
+  flex: none;
+  padding: 2px 6px 10px;
+  font-family: var(--kai);
+  font-size: 15px;
+  color: var(--ink);
+}
+.speak-side-title span {
+  margin-left: 4px;
+  font-family: var(--py);
+  font-size: 10px;
+  color: var(--ink-3);
+}
+.speak-side-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 2px 4px 4px 2px;
+  scrollbar-width: thin;
+}
+.side-group {
+  flex: none;
+  padding: 8px 8px 3px;
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: #B4586E;
+  font-weight: 700;
+}
+.side-item {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  width: 100%;
+  min-height: 46px;
+  padding: 6px 28px 6px 11px;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  background: #FFF9F3;
+  text-align: left;
+  cursor: pointer;
+}
+.side-item b {
+  font-family: var(--py);
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.side-item span { font-size: 10px; color: var(--ink-3); }
+.side-item:hover { background: #FFF1F4; border-color: #F6CBD6; }
+.side-item.on {
+  background: linear-gradient(135deg, #FFE1E9, #FFF3F6);
+  border-color: #F2A9BC;
+  box-shadow: 0 3px 8px -5px rgba(210, 100, 127, .6);
+}
+.side-star {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #F5B942;
+  font-size: 13px;
+  font-style: normal;
+}
+#s-speak.split-view .speak-card { width: 100%; }
+#s-speak.split-view .speak-bottom { width: 100%; margin-top: 16px; }
+
+@media (max-width: 900px) {
+  #s-speak.split-view .speak-wrap { grid-template-columns: 1fr; grid-template-rows: auto; gap: 12px; }
+  #s-speak.split-view .speak-side,
+  #s-speak.split-view .speak-card,
+  #s-speak.split-view .speak-bottom { grid-column: 1; grid-row: auto; }
+  .speak-side {
+    position: static;
+    max-height: 220px;
+    min-height: 0;
+  }
+}
+
+/* Split-view polish: keep voice switch clear of the card edge. */
+#s-speak.split-view ~ .voice-float,
+#s-speak.split-view .voice-float { right: max(2px, env(safe-area-inset-right)); }
