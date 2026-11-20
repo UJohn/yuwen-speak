@@ -5285,3 +5285,20 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   .screen-top-inner,
   #s-units .screen-top-inner { width: 100%; max-width: var(--content-max); padding: 10px 0 6px; }
 }
+
+/* Home lives in .app (with side padding), unlike the full-screen .screen pages.
+   Widen the shell on desktop so its inner content matches --content-max exactly. */
+@media (min-width: 901px) {
+  .app {
+    width: calc(var(--content-max) + 56px);
+    max-width: calc(100% - 48px);
+    margin: 0 auto;
+  }
+  .home-pick { width: 100%; max-width: var(--content-max); }
+}
+
+/* Align the home grid with sub-pages on the 700–1180px tablet range too. */
+@media (min-width: 700px) and (max-width: 1180px) {
+  .app { max-width: none; width: 100%; padding-left: 32px; padding-right: 32px; }
+  .home-pick { width: min(var(--content-max), 100%); max-width: var(--content-max); }
+}
