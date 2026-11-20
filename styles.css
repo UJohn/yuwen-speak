@@ -4781,9 +4781,30 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 .game-card > *,
 .tb-entry > *,
 .unit-card.tile-card > * { position: relative; z-index: 1; }
-.game-card .tile-bg,
-.tb-entry .tile-bg,
-.unit-card.tile-card .tile-bg { z-index: 0; }
+/* Override the generic "> *" rule so the illustration stays in the background. */
+.game-card > .tile-bg,
+.tb-entry > .tile-bg,
+#s-units .subject-card-grid .unit-card.tile-card > .tile-bg {
+  position: absolute;
+  right: -8px;
+  bottom: -12px;
+  width: 126px;
+  height: 126px;
+  z-index: 0;
+  opacity: .58;
+  pointer-events: none;
+  transform: rotate(-8deg);
+}
+.tb-entry-card.tile-card:nth-child(4n + 1) {
+  background: linear-gradient(150deg, #DCD2FA 0%, #BFAEF2 100%);
+}
 @media (max-width: 720px) {
-  .tile-bg { width: 104px; height: 104px; right: -6px; bottom: -8px; }
+  .game-card > .tile-bg,
+  .tb-entry > .tile-bg,
+  #s-units .subject-card-grid .unit-card.tile-card > .tile-bg {
+    width: 104px;
+    height: 104px;
+    right: -6px;
+    bottom: -8px;
+  }
 }
