@@ -5327,3 +5327,23 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 @media (min-width: 700px) and (max-width: 1180px) {
   #s-units .screen-top { margin-top: -18px; padding-top: 28px; }
 }
+
+/* Result panel renders in place of the mic area inside the speaking card. */
+.speak-card .result-panel {
+  margin-top: 18px;
+  padding: 14px 10px 4px;
+  border: 0;
+  border-top: 1px dashed #F0DCD4;
+  background: transparent;
+  box-shadow: none;
+}
+.speak-card .result-panel .playback {
+  padding: 10px 12px;
+  border-radius: 16px;
+}
+.speak-card .result-panel .result-stars img { width: 34px; height: 34px; }
+.speak-card .result-panel .result-actions { margin-top: 10px; }
+#s-speak.split-view .speak-card .result-panel { margin-top: auto; }
+
+/* Result replaces the mic in place: show it immediately, no entrance fade. */
+.speak-card .result-panel { animation: none !important; opacity: 1 !important; }
