@@ -454,7 +454,7 @@
     audioPackLoading = true;
     if (!audioMapBeforePack) audioMapBeforePack = window.AUDIO_MAP || {};
     var s = document.createElement("script");
-    s.src = "audio-bundle.js?v=20261120-43";
+    s.src = "audio-bundle.js?v=20261121-44";
     s.onload = function () {
       audioPackLoading = false;
       window.AUDIO_PACK_READY = true;
@@ -617,36 +617,47 @@
     "en-u5": "scooter", "en-u6": "animals",
     "en-r1": "review", "en-r2": "review", "en-names": "names",
     "pinyin": "pinyin", "words": "words", "sentences": "sentences",
-    "en-words": "words", "en-sentences": "sentences", "en-wordbook": "wordbook",
+    "en-words": "words", "en-sentences": "sentences"
   };
 
   function themeArt(theme, cls) {
-    var body = {
-      sky: '<circle cx="18" cy="13" r="6.5" fill="#FFD48A"/><path d="M6 27c2-4 5-6 9-6s7 2 9 6" stroke="#8FD3BE" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="11" cy="17" r="1.4" fill="#F26D8D"/>',
-      pinyin: '<text x="6" y="23" font-size="15" font-family="Andika, sans-serif" fill="#8E6FB4">a</text><text x="18" y="26" font-size="12" font-family="Andika, sans-serif" fill="#4FAF92">o</text><text x="25" y="18" font-size="10" font-family="Andika, sans-serif" fill="#F26D8D">e</text>',
-      pinyin1: '<text x="4" y="24" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">a</text><text x="14" y="24" font-size="14" font-family="Andika, sans-serif" fill="#4FAF92">o</text><text x="24" y="24" font-size="14" font-family="Andika, sans-serif" fill="#F26D8D">e</text>',
-      pinyin2: '<text x="4" y="24" font-size="14" font-family="Andika, sans-serif" fill="#7FB6E8">b</text><text x="13" y="24" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">p</text><text x="22" y="24" font-size="14" font-family="Andika, sans-serif" fill="#4FAF92">m</text>',
-      pinyin3: '<text x="5" y="23" font-size="12" font-family="Andika, sans-serif" fill="#FFB067">ai</text><text x="19" y="23" font-size="12" font-family="Andika, sans-serif" fill="#8E6FB4">ei</text><text x="12" y="31" font-size="9" font-family="Andika, sans-serif" fill="#4FAF92">ang</text>',
-      "pinyin-hub": '<circle cx="18" cy="18" r="11" fill="none" stroke="#C5B2E2" stroke-width="2.2"/><text x="10" y="23" font-size="12" font-family="Andika, sans-serif" fill="#8E6FB4">ā</text><path d="M23 12v12" stroke="#FFB067" stroke-width="2.2" stroke-linecap="round"/>',
-      autumn: '<path d="M24 8c-6 1-10 6-11 13" stroke="#B4586E" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="22" rx="6" ry="3.4" fill="#FFB067" transform="rotate(-24 14 22)"/><circle cx="26" cy="25" r="2.4" fill="#FFD48A"/>',
-      school: '<rect x="8" y="13" width="20" height="16" rx="4" fill="#FF93A8"/><rect x="12" y="17" width="12" height="8" rx="2" fill="#FFE6EB"/><path d="M14 13v-3a4 4 0 0 1 8 0v3" stroke="#B4586E" stroke-width="2" fill="none"/>',
-      moon: '<path d="M22 8a9 9 0 1 0 6 16 10 10 0 0 1-6-16z" fill="#FFD48A"/><circle cx="10" cy="10" r="1.6" fill="#C5B2E2"/><circle cx="12" cy="26" r="1.3" fill="#8FD3BE"/>',
-      crow: '<ellipse cx="17" cy="20" rx="7.5" ry="6" fill="#6E5194"/><circle cx="23" cy="15" r="3.2" fill="#6E5194"/><path d="M26 15l5 1.6-5 1.6z" fill="#FFB067"/><circle cx="23.6" cy="14.2" r="0.9" fill="#FFFDF8"/>',
-      hello: '<circle cx="14" cy="17" r="6" fill="#FFE3CF"/><path d="M8 15c1-4 3.6-6 6-6s5 2 6 6" stroke="#6B4A3A" stroke-width="2.4" fill="none"/><path d="M23 21c4 0 6 2 6 5" stroke="#F26D8D" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
-      bag: '<rect x="7" y="14" width="22" height="15" rx="5" fill="#8FD3BE"/><path d="M12 14v-2a6 6 0 0 1 12 0v2" stroke="#4FAF92" stroke-width="2.2" fill="none"/><rect x="14" y="19" width="8" height="5" rx="2" fill="#FFFDF8"/>',
-      count: '<text x="5" y="25" font-size="13" font-family="Andika, sans-serif" fill="#7FB6E8">1</text><text x="14" y="25" font-size="13" font-family="Andika, sans-serif" fill="#8FD3BE">2</text><text x="23" y="25" font-size="13" font-family="Andika, sans-serif" fill="#FFB067">3</text>',
-      rainbow: '<path d="M5 26c0-9 6-16 14-16s14 7 14 16" stroke="#FF93A8" stroke-width="3" fill="none"/><path d="M9 26c0-7 4.6-12 10-12s10 5 10 12" stroke="#FFD86B" stroke-width="3" fill="none"/><path d="M13 26c0-5 3-8 6-8s6 3 6 8" stroke="#8FD3BE" stroke-width="3" fill="none"/>',
-      scooter: '<circle cx="11" cy="26" r="4" fill="#5A443C"/><circle cx="26" cy="26" r="4" fill="#5A443C"/><path d="M13 25h9l4-11" stroke="#F26D8D" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M24 14h5" stroke="#8D746A" stroke-width="2.6" stroke-linecap="round"/>',
-      animals: '<circle cx="13" cy="19" r="5.4" fill="#B79A86"/><circle cx="26" cy="22" r="4.4" fill="#FFFDF8"/><path d="M24 18l-1-4 4 2zM29 18l1-4-4 2z" fill="#FFFDF8"/><circle cx="11.6" cy="18.4" r="0.9" fill="#5A443C"/><circle cx="14.6" cy="18.4" r="0.9" fill="#5A443C"/>',
-      review: '<path d="M24 10a9 9 0 1 0 3 7" stroke="#4FAF92" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M24 6v5h5" stroke="#4FAF92" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
-      names: '<text x="5" y="24" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">A</text><text x="15" y="24" font-size="14" font-family="Andika, sans-serif" fill="#F26D8D">B</text><text x="25" y="24" font-size="14" font-family="Andika, sans-serif" fill="#4FAF92">C</text>',
-      words: '<rect x="7" y="12" width="22" height="17" rx="3.5" fill="#FFFDF8" stroke="#FFD48A" stroke-width="2"/><path d="M11 18h14M11 22h9" stroke="#E0C7A8" stroke-width="1.8" stroke-linecap="round"/>',
-      sentences: '<rect x="6" y="11" width="24" height="9" rx="4.5" fill="#FFFDF8" stroke="#C5B2E2" stroke-width="2"/><path d="M10 15.5h12" stroke="#C5B2E2" stroke-width="1.8" stroke-linecap="round"/><path d="M20 20v6" stroke="#C5B2E2" stroke-width="2" stroke-linecap="round"/>',
-      wordbook: '<rect x="8" y="10" width="19" height="21" rx="3" fill="#FF93A8"/><rect x="11" y="10" width="16" height="21" rx="3" fill="#FFFDF8" stroke="#FFB067" stroke-width="1.8"/><path d="M16 17h6M16 21h6" stroke="#FFB067" stroke-width="1.8" stroke-linecap="round"/>',
+    var art = {
+      sky: '<circle cx="18" cy="11" r="6" fill="#FFD98A"/><path d="M5 27c3-6 8-9 13-9s10 3 13 9" fill="#BDE9DA"/><circle cx="11" cy="17" r="1.4" fill="#F47A9A"/><circle cx="25" cy="17" r="1.4" fill="#F47A9A"/><path d="M15 20c2 2 4 2 6 0" stroke="#8C6054" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+      pinyin: '<ellipse cx="18" cy="19" rx="13" ry="9" fill="#FFFDF8" stroke="#D7C7EE" stroke-width="2"/><text x="10" y="24" font-size="16" font-family="Andika, sans-serif" fill="#8E6FB4">a</text><text x="18" y="16" font-size="11" font-family="Andika, sans-serif" fill="#4FAF92">o</text><text x="25" y="24" font-size="11" font-family="Andika, sans-serif" fill="#F26D8D">e</text>',
+      pinyin1: '<path d="M5 25h26" stroke="#F7C98B" stroke-width="3" stroke-linecap="round"/><text x="6" y="22" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">a</text><text x="15" y="22" font-size="14" font-family="Andika, sans-serif" fill="#4FAF92">o</text><text x="24" y="22" font-size="14" font-family="Andika, sans-serif" fill="#F26D8D">e</text>',
+      pinyin2: '<rect x="5" y="9" width="26" height="18" rx="5" fill="#FFFDF8" stroke="#BCDDF8" stroke-width="2"/><text x="7" y="23" font-size="13" font-family="Andika, sans-serif" fill="#6FA8DE">b</text><text x="15" y="23" font-size="13" font-family="Andika, sans-serif" fill="#8E6FB4">p</text><text x="23" y="23" font-size="13" font-family="Andika, sans-serif" fill="#4FAF92">m</text>',
+      pinyin3: '<path d="M6 24c4-7 8-7 12 0s8 7 12 0" stroke="#F2A06D" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="7" y="17" font-size="10" font-family="Andika, sans-serif" fill="#8E6FB4">ai</text><text x="16" y="14" font-size="10" font-family="Andika, sans-serif" fill="#4FAF92">ei</text><text x="25" y="17" font-size="9" font-family="Andika, sans-serif" fill="#F26D8D">ang</text>',
+      "pinyin-hub": '<circle cx="18" cy="18" r="12" fill="#FFF8EE" stroke="#C7AEE7" stroke-width="2"/><text x="9" y="23" font-size="14" font-family="Andika, sans-serif" fill="#8E6FB4">ā</text><path d="M23 10l2 4 4 1-4 2-2 4-2-4-4-2 4-1z" fill="#FFB062"/>',
+      autumn: '<path d="M27 7c-9 2-14 8-15 17" stroke="#9B5D50" stroke-width="2.2" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="21" rx="7" ry="4" fill="#F4A261" transform="rotate(-22 14 21)"/><ellipse cx="23" cy="15" rx="6" ry="3.5" fill="#F7C95C" transform="rotate(24 23 15)"/><circle cx="9" cy="27" r="2" fill="#D987A0"/>',
+      school: '<rect x="6" y="10" width="24" height="18" rx="4" fill="#FFE8A9" stroke="#E8A56B" stroke-width="2"/><path d="M6 16h24" stroke="#E8A56B" stroke-width="2"/><rect x="15" y="19" width="6" height="9" rx="1" fill="#FF93A8"/><circle cx="18" cy="23.5" r="0.8" fill="#FFF"/>',
+      moon: '<path d="M22 7a10 10 0 1 0 7 17A11 11 0 0 1 22 7z" fill="#FFD77A"/><circle cx="9" cy="10" r="1.6" fill="#C6B4E8"/><circle cx="13" cy="25" r="1.2" fill="#8FD3BE"/><path d="M25 13l1 2 2 1-2 1-1 2-1-2-2-1 2-1z" fill="#FFF6D5"/>',
+      crow: '<ellipse cx="17" cy="21" rx="8" ry="6" fill="#6F5A93"/><circle cx="23" cy="15" r="4" fill="#6F5A93"/><path d="M26 15l6 2-6 2z" fill="#F3A85C"/><circle cx="24" cy="14" r="1" fill="#FFF"/><path d="M12 27l-3 4M21 27l3 4" stroke="#6F5A93" stroke-width="2" stroke-linecap="round"/>',
+      hello: '<circle cx="16" cy="16" r="7" fill="#FFE2C8"/><path d="M9 15c1-5 4-7 7-7s6 2 7 7" fill="#6E5146"/><circle cx="13" cy="16" r="1" fill="#5A443C"/><circle cx="19" cy="16" r="1" fill="#5A443C"/><path d="M13 20c2 2 4 2 6 0" stroke="#E4788D" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M25 8c2-2 4-1 4 1M8 8c-2-2-4-1-4 1" stroke="#F4A261" stroke-width="1.6" stroke-linecap="round"/>',
+      bag: '<rect x="7" y="13" width="22" height="16" rx="5" fill="#8FD3BE"/><path d="M12 14v-2a6 6 0 0 1 12 0v2" stroke="#4FAF92" stroke-width="2.2" fill="none"/><rect x="14" y="19" width="8" height="5" rx="2" fill="#FFFDF8"/><circle cx="18" cy="21.5" r="1" fill="#F3A85C"/>',
+      count: '<rect x="5" y="8" width="26" height="20" rx="5" fill="#FFFDF8" stroke="#BEDDF8" stroke-width="2"/><text x="8" y="23" font-size="12" font-family="Andika, sans-serif" fill="#6FA8DE">1</text><text x="16" y="23" font-size="12" font-family="Andika, sans-serif" fill="#4FAF92">2</text><text x="24" y="23" font-size="12" font-family="Andika, sans-serif" fill="#F3A85C">3</text>',
+      rainbow: '<path d="M5 27c0-10 6-17 13-17s13 7 13 17" stroke="#FF93A8" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M9 27c0-7 4-12 9-12s9 5 9 12" stroke="#FFD86B" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M13 27c0-4 2-7 5-7s5 3 5 7" stroke="#8FD3BE" stroke-width="3.2" fill="none" stroke-linecap="round"/><circle cx="7" cy="10" r="1.4" fill="#C6B4E8"/>',
+      scooter: '<circle cx="10" cy="27" r="4" fill="#5A443C"/><circle cx="27" cy="27" r="4" fill="#5A443C"/><path d="M12 26h9l5-12" stroke="#F27A9B" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M24 14h6" stroke="#8D746A" stroke-width="2.8" stroke-linecap="round"/><circle cx="11" cy="27" r="1.2" fill="#FFF"/><circle cx="28" cy="27" r="1.2" fill="#FFF"/>',
+      animals: '<ellipse cx="15" cy="20" rx="7" ry="6" fill="#B79A86"/><circle cx="25" cy="21" r="5" fill="#FFFDF8"/><path d="M22 17l-1-4 4 2zM28 17l1-4-4 2z" fill="#FFFDF8"/><circle cx="13" cy="19" r="1" fill="#5A443C"/><circle cx="17" cy="19" r="1" fill="#5A443C"/><circle cx="23" cy="20" r="0.9" fill="#5A443C"/><circle cx="27" cy="20" r="0.9" fill="#5A443C"/>',
+      review: '<circle cx="18" cy="18" r="10" fill="none" stroke="#7FC9B4" stroke-width="3"/><path d="M23 11a10 10 0 0 1 4 8" stroke="#F2A06D" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M23 7v5h5" stroke="#F2A06D" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="18" cy="18" r="2.4" fill="#FFFDF8"/>',
+      names: '<rect x="5" y="9" width="26" height="19" rx="5" fill="#FFFDF8" stroke="#D8C7EE" stroke-width="2"/><text x="8" y="23" font-size="13" font-family="Andika, sans-serif" fill="#8E6FB4">A</text><text x="16" y="23" font-size="13" font-family="Andika, sans-serif" fill="#F26D8D">B</text><text x="24" y="23" font-size="13" font-family="Andika, sans-serif" fill="#4FAF92">C</text>',
+      words: '<rect x="7" y="8" width="22" height="20" rx="4" fill="#FFFDF8" stroke="#F3C986" stroke-width="2"/><path d="M11 14h14M11 19h11M11 24h8" stroke="#E3CBA8" stroke-width="2" stroke-linecap="round"/><circle cx="26" cy="25" r="4" fill="#F4A261"/><path d="M25 23v4M23 25h4" stroke="#FFF" stroke-width="1.5" stroke-linecap="round"/>',
+      sentences: '<rect x="5" y="8" width="26" height="16" rx="6" fill="#FFFDF8" stroke="#C9B8EA" stroke-width="2"/><path d="M9 14h16M9 19h11" stroke="#C9B8EA" stroke-width="2" stroke-linecap="round"/><path d="M20 25c3 2 6 1 8-1" stroke="#F27A9B" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="28" cy="24" r="2" fill="#F27A9B"/>'
     }[theme];
-    if (!body) return "";
+    if (!art) return "";
     return '<span class="card-art ' + (cls || "") + '" aria-hidden="true">' +
-      '<svg viewBox="0 0 36 36">' + body + "</svg></span>";
+      '<svg viewBox="0 0 36 36">' + art + "</svg></span>";
+  }
+
+  function cardBackdrop(theme) {
+    return themeArt(theme || "words", "").replace('class="card-art "', 'class="tile-bg"');
+  }
+
+  function gameTheme(kind) {
+    var map = {
+      pinyin: "pinyin", stroke: "school", trace: "school",
+      pinyinQuiz: "pinyin2", toneQuiz: "pinyin3", blendQuiz: "pinyin"
+    };
+    return map[kind] || "school";
   }
 
   function gameCount(kind, day) {
@@ -662,7 +673,7 @@
     card.type = "button";
     card.className = "game-card" + (extra ? " extra-game" : "");
     card.dataset.game = kind;
-    card.innerHTML =
+    card.innerHTML = cardBackdrop(gameTheme(kind)) +
       (ds[kind]
         ? '<span class="g-done">今天已练</span>'
         : '<span class="g-count">' + (extra ? "10 题" : gameCount(kind, day)) + "</span>") +
@@ -2063,12 +2074,11 @@
     var b = document.createElement("button");
     b.type = "button";
     b.className = "unit-card tile-card deck-card pinyin-drill-card";
-    b.innerHTML =
+    b.innerHTML = cardBackdrop("pinyin-hub") +
       '<span class="tile-top"><span class="tile-tag">拼音</span>' +
         '<span class="tile-count">63</span></span>' +
       "<h4>拼音综合认读</h4>" +
-      '<p class="tile-sub">点读 + 拼读工坊</p>' +
-      '<span class="tile-art">' + themeArt("pinyin-hub", "is-tile") + "</span>";
+      '<p class="tile-sub">点读 + 拼读工坊</p>';
     b.addEventListener("click", function () {
       sfx("tap");
       openPinyinDrill();
@@ -2091,7 +2101,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261120-43";
+    s.src = "assets/spell-data.js?v=20261121-44";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2209,7 +2219,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261120-43");
+        var a = new Audio(entry.audio + "?v=20261121-44");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2343,8 +2353,8 @@
   function buildEnglishExtras() {
     var english = DECKS.filter(function (d) { return d.id === "english"; })[0];
     if (!english || english._extrasBuilt) return;
-    var words = [], sentences = [], newWords = [];
-    var seenWord = {}, seenSentence = {}, seenNew = {}, unitWord = {};
+    var words = [], sentences = [];
+    var seenWord = {}, seenSentence = {};
 
     function addWord(text, zh, ipa, srcId, meta, order) {
       var key = String(text || "").toLowerCase().trim();
@@ -2375,7 +2385,6 @@
         var srcId = u.id + ":" + i;
         if (isEnglishSentence(text)) addSentence(text, it.zh, srcId, meta, i);
         else {
-          unitWord[key] = 1;
           addWord(text, it.zh, it.ipa, srcId, meta, i);
         }
       });
@@ -2393,22 +2402,6 @@
       });
     });
 
-    TB.forEach(function (u) {
-      var meta = extraUnitMeta(u);
-      u.pages.forEach(function (p, pi) {
-        p.words.forEach(function (w, i) {
-          var key = String(w.w || "").toLowerCase().trim();
-          if (!key || unitWord[key] || seenNew[key]) return;
-          seenNew[key] = 1;
-          newWords.push({
-            text: w.w, zh: w.zh, ipa: w.ipa, srcId: tbWordKey(w.w),
-            unitLabel: meta.label, unitBadge: meta.badge,
-            unitOrder: meta.order, pageOrder: pi * 100 + i
-          });
-        });
-      });
-    });
-
     function byUnit(a, b) {
       return (a.unitOrder - b.unitOrder) ||
         (a.pageOrder - b.pageOrder) ||
@@ -2416,7 +2409,6 @@
     }
     words.sort(byUnit);
     sentences.sort(byUnit);
-    newWords.sort(byUnit);
 
     DECKS.push({
       id: "en-words", subject: "en", extra: true, tag: "WORDS",
@@ -2428,13 +2420,6 @@
       title: "英语句子", sub: "按课本单元整理 · 课文句子跟读", lang: "en-GB", color: "lilac",
       items: sentences, grouped: true
     });
-    if (newWords.length) {
-      DECKS.push({
-        id: "en-wordbook", subject: "en", extra: true, tag: "NEW",
-        title: "陌生单词本", sub: "按课本单元整理 · 课文里的生词", lang: "en-GB", color: "butter",
-        items: newWords, grouped: true
-      });
-    }
     english._extrasBuilt = true;
   }
 
@@ -2764,24 +2749,23 @@
     }
     var unitGrid = addSection(
       isEn ? "课本单元" : "按课本单元",
-      isEn ? "6 个单元 · 2 个复习 · 英文名 · 读课文" : "8 个单元，点开就能读",
+      isEn ? "6 个单元 · 2 个复习 · 英文名" : "8 个单元，点开就能读",
       "subject-units"
     );
     decks.forEach(function (deck) {
       if (!deck.units) return;
       deck.units.forEach(function (u) { unitGrid.appendChild(unitCard(u, subject.id)); });
     });
-    if (isEn && TB.length) unitGrid.appendChild(textbookEntryCard());
-
     var drillIds = { "zh-tones": 1, "zh-initials": 1, "zh-finals": 1, "zh-whole": 1 };
     var extras = decks.filter(function (d) { return !d.units && !drillIds[d.id]; });
     if (extras.length || isEn) {
       var practiceGrid = addSection(
         isEn ? "专项练习" : "拼音与字词",
-        isEn ? "单词 · 句子 · 陌生单词本" : "拼音认读、拼读工坊、词语和句子，随时加练",
+        isEn ? "读课文 · 单词 · 句子" : "拼音认读、拼读工坊、词语和句子，随时加练",
         "subject-practice"
       );
       if (!isEn) practiceGrid.appendChild(pinyinDrillCard());
+      if (isEn && TB.length) practiceGrid.appendChild(textbookEntryCard());
       extras.forEach(function (d) { practiceGrid.appendChild(deckCard(d)); });
     }
     if (!isEn) {
@@ -2819,7 +2803,7 @@
     var b = document.createElement("button");
     b.type = "button";
     b.className = "tb-entry";
-    b.innerHTML =
+    b.innerHTML = cardBackdrop("hello") +
       '<span class="tb-entry-art">' + textbookArt("animals", "small") + "</span>" +
       '<span class="tb-entry-copy"><em>READ ALONG</em><b>读课文</b>' +
       "<span>点句子听英语，点小喇叭听中文 · 已读 " + done + " / " + pages.length + " 页</span>" +
@@ -2844,16 +2828,12 @@
     var b = document.createElement("button");
     b.type = "button";
     b.className = "unit-card tile-card" + (u.lang === "en-US" ? " is-en" : "");
-    b.innerHTML =
+    b.innerHTML = cardBackdrop(ART_THEMES[u.id] || "sky") +
       '<span class="tile-top"><span class="tile-tag">' +
         escapeHTML(u.badge || u.unit.replace("Unit ", "U")) + "</span>" +
         '<span class="tile-count">' + done + "/" + u.items.length + "</span></span>" +
       "<h4>" + escapeHTML(u.title) + "</h4>" +
-      '<p class="tile-sub">' + escapeHTML(u.zh) + "</p>" +
-      '<span class="tile-art">' +
-        (themeArt(ART_THEMES[u.id], "is-tile") ||
-          '<span class="unit-no">' + escapeHTML(u.badge || "·") + "</span>") +
-      "</span>";
+      '<p class="tile-sub">' + escapeHTML(u.zh) + "</p>";
     b.addEventListener("click", function () {
       sfx("tap");
       startUnit(u, { screen: "s-units", subject: subjectId });
@@ -2866,22 +2846,18 @@
     var done = entries.filter(function (e) { return state.read[e.id]; }).length;
     var marks = {
       pinyin: "读", words: "词", sentences: "句",
-      "en-words": "词", "en-sentences": "句", "en-wordbook": "新",
+      "en-words": "词", "en-sentences": "句",
       "zh-tones": "调", "zh-initials": "母", "zh-finals": "韵", "zh-whole": "整"
     };
     var b = document.createElement("button");
     b.type = "button";
     b.className = "unit-card tile-card deck-card";
-    b.innerHTML =
+    b.innerHTML = cardBackdrop(ART_THEMES[deck.id] || "words") +
       '<span class="tile-top"><span class="tile-tag">' +
         escapeHTML(marks[deck.id] || deck.tag.slice(0, 2)) + "</span>" +
         '<span class="tile-count">' + done + "/" + entries.length + "</span></span>" +
       "<h4>" + escapeHTML(deck.title) + "</h4>" +
-      '<p class="tile-sub">' + escapeHTML(deck.sub) + "</p>" +
-      '<span class="tile-art">' +
-        (themeArt(ART_THEMES[deck.id], "is-tile") ||
-          '<span class="unit-no">' + (marks[deck.id] || "·") + "</span>") +
-      "</span>";
+      '<p class="tile-sub">' + escapeHTML(deck.sub) + "</p>";
     b.addEventListener("click", function () {
       sfx("tap");
       if (deck.extra || deck.pickable) openPicker(deck);
