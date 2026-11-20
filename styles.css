@@ -3407,14 +3407,6 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
     linear-gradient(160deg, #FFFDF8, #FFF8F0);
   box-shadow: 0 10px 0 rgba(90, 68, 60, .04);
 }
-.tb-stage-head {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 2px 8px;
-}
 .tb-stage-head h3 {
   margin: 3px 0 0;
   font-family: var(--kai);
@@ -3488,11 +3480,6 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   box-shadow: 0 4px 0 rgba(90, 68, 60, .07);
   cursor: pointer;
   transition: transform .14s, box-shadow .14s;
-}
-.tb-stage-head .tb-page-btn {
-  flex: none;
-  background: rgba(255, 253, 248, .96);
-  box-shadow: 0 4px 12px rgba(90, 68, 60, .14);
 }
 .tb-page-btn:active:not(:disabled) {
   transform: translateY(2px);
@@ -3774,9 +3761,10 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   #s-textbook.sheet-open { padding-bottom: 16px; }
   #s-textbook { padding-bottom: 10px; }
   .voice-float.on-textbook {
-    top: 240px;
-    right: max(8px, env(safe-area-inset-right));
-    transform: none;
+    top: 50%;
+    right: auto;
+    left: max(16px, calc((100vw - 1440px) / 2 + 16px));
+    transform: translateY(-50%);
   }
 }
 
@@ -4829,3 +4817,40 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   .tb-stage-head .tb-dots { display: none; }
   .tb-rail-title { font-size: 19px; }
 }
+
+/* Textbook reader v3: page navigation sits at the bottom of the right rail. */
+.tb-stage { padding: 6px; }
+.tb-book-wrap { padding: 0; }
+.tb-page-nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 4px 2px;
+  margin-top: 2px;
+  border-top: 1px solid #F2E2D8;
+}
+.tb-page-nav .tb-page-btn {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  background: rgba(255, 253, 248, .96);
+  box-shadow: 0 4px 12px rgba(90, 68, 60, .14);
+}
+.tb-page-nav .tb-page-info { gap: 8px; }
+.tb-rail-title-row { margin-bottom: 4px; }
+@media (max-width: 900px) {
+  .tb-page-nav { padding: 8px 2px 12px; }
+  .tb-page-nav .tb-page-btn { width: 38px; height: 38px; font-size: 20px; }
+  .tb-page-nav .tb-dots { display: none; }
+}
+
+/* Right-rail polish: action bar should not veil the word bank. */
+.tb-rail-actions { box-shadow: 0 -8px 16px -14px rgba(90, 68, 60, .18); }
+.tb-rail-actions::before { display: none; }
+.tb-rail-scroll { padding-bottom: 2px; }
+
+/* Ensure word bank bottom row is not clipped by the action bar. */
+.tb-rail-scroll { padding-bottom: 10px; }
+.tb-words { padding-bottom: 6px; }

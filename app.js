@@ -454,7 +454,7 @@
     audioPackLoading = true;
     if (!audioMapBeforePack) audioMapBeforePack = window.AUDIO_MAP || {};
     var s = document.createElement("script");
-    s.src = "audio-bundle.js?v=20261123-46";
+    s.src = "audio-bundle.js?v=20261124-47";
     s.onload = function () {
       audioPackLoading = false;
       window.AUDIO_PACK_READY = true;
@@ -2106,7 +2106,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261123-46";
+    s.src = "assets/spell-data.js?v=20261124-47";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2224,7 +2224,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261123-46");
+        var a = new Audio(entry.audio + "?v=20261124-47");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -3057,17 +3057,6 @@
     $("#tbPage").innerHTML =
       '<div class="tb-reader-shell">' +
         '<section class="tb-stage" id="tbStage" aria-label="课本图">' +
-          '<div class="tb-stage-head">' +
-            '<button type="button" class="tb-page-btn is-prev" data-tb-nav="prev" aria-label="' +
-              escapeHTML(prevLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryStart ? " disabled" : "") + ">‹</button>" +
-            '<div class="tb-page-info">' +
-              '<span class="tb-dots">' + dots + "</span>" +
-              '<span class="tb-page-pos">第 ' + (idx + 1) + " / " + u.pages.length +
-                ' 页<span class="tb-swipe-hint"> · 左右滑动翻页</span></span>' +
-            "</div>" +
-            '<button type="button" class="tb-page-btn is-next" data-tb-nav="next" aria-label="' +
-              escapeHTML(nextLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryEnd ? " disabled" : "") + ">›</button>" +
-          "</div>" +
           '<div class="tb-book-wrap">' +
             '<div class="tb-visual tb-reader-book' + (hasBook ? " is-book" : "") + '">' +
               tbVisualHTML(page, u) +
@@ -3116,6 +3105,17 @@
             '<button class="btn btn-primary" type="button" data-tb-playall="1"><i class="icon icon-play"></i>整页听一遍</button>' +
             '<button class="btn ' + (done ? "btn-ghost" : "btn-primary") + '" type="button" data-tb-done="1">' +
               (done ? "再读一遍" : "我读完了 +1 ★") + "</button>" +
+          "</div>" +
+          '<div class="tb-page-nav">' +
+            '<button type="button" class="tb-page-btn is-prev" data-tb-nav="prev" aria-label="' +
+              escapeHTML(prevLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryStart ? " disabled" : "") + ">‹</button>" +
+            '<div class="tb-page-info">' +
+              '<span class="tb-dots">' + dots + "</span>" +
+              '<span class="tb-page-pos">第 ' + (idx + 1) + " / " + u.pages.length +
+                ' 页<span class="tb-swipe-hint"> · 左右滑动翻页</span></span>' +
+            "</div>" +
+            '<button type="button" class="tb-page-btn is-next" data-tb-nav="next" aria-label="' +
+              escapeHTML(nextLabel.replace(/[←→\s]/g, "")) + '"' + (atVeryEnd ? " disabled" : "") + ">›</button>" +
           "</div>" +
         "</aside>" +
       "</div>";
