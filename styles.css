@@ -3384,24 +3384,24 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 /* ---------------------------------------------------------------- English reader v2 */
 /* Keep the textbook visible while the sentence controls stay next to it. */
 .tb-reader-shell {
-  width: min(1180px, 100%);
-  height: calc(100dvh - 210px);
+  width: min(1440px, 100%);
+  height: calc(100dvh - 160px);
   min-height: 500px;
   margin: 0 auto;
-  padding: 0 82px 8px 0;
+  padding: 0 8px 8px 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, .75fr);
+  gap: 14px;
   align-items: stretch;
 }
 .tb-stage {
   min-width: 0;
   min-height: 0;
-  padding: 12px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   border: 1.5px solid #F0DED4;
-  border-radius: 26px;
+  border-radius: 22px;
   background:
     radial-gradient(circle at 12% 0%, rgba(255, 212, 138, .22), transparent 30%),
     linear-gradient(160deg, #FFFDF8, #FFF8F0);
@@ -3410,10 +3410,10 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 .tb-stage-head {
   flex: none;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 2px 3px 8px;
+  padding: 0 2px 8px;
 }
 .tb-stage-head h3 {
   margin: 3px 0 0;
@@ -3438,7 +3438,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   min-height: 0;
   display: grid;
   place-items: center;
-  padding: 2px 46px;
+  padding: 0;
   overflow: hidden;
 }
 #tbPage .tb-reader-book {
@@ -3489,20 +3489,10 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   cursor: pointer;
   transition: transform .14s, box-shadow .14s;
 }
-.tb-book-wrap .tb-page-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
-  width: 46px;
-  height: 46px;
+.tb-stage-head .tb-page-btn {
+  flex: none;
   background: rgba(255, 253, 248, .96);
   box-shadow: 0 4px 12px rgba(90, 68, 60, .14);
-}
-.tb-book-wrap .tb-page-btn.is-prev { left: 0; }
-.tb-book-wrap .tb-page-btn.is-next { right: 0; }
-.tb-book-wrap .tb-page-btn:active:not(:disabled) {
-  transform: translateY(calc(-50% + 2px));
 }
 .tb-page-btn:active:not(:disabled) {
   transform: translateY(2px);
@@ -3513,15 +3503,16 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   min-width: 0;
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 10px;
 }
 .tb-page-info .tb-dots { flex: none; }
 .tb-page-pos {
   color: #A98B78;
   font-family: var(--py);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: .02em;
   white-space: nowrap;
 }
@@ -3544,6 +3535,21 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 .tb-rail-head {
   flex: none;
   padding: 0 4px;
+}
+.tb-rail-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.tb-rail-title-copy { min-width: 0; }
+.tb-rail-title {
+  margin: 3px 0 0;
+  font-family: var(--kai);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
 }
 .tb-rail-kicker {
   display: block;
@@ -3768,7 +3774,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   #s-textbook.sheet-open { padding-bottom: 16px; }
   #s-textbook { padding-bottom: 10px; }
   .voice-float.on-textbook {
-    top: 170px;
+    top: 240px;
     right: max(8px, env(safe-area-inset-right));
     transform: none;
   }
@@ -4807,4 +4813,19 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
     right: -6px;
     bottom: -8px;
   }
+}
+
+/* Textbook reader: page nav and dots live above the book; title lives in the right rail. */
+.tb-stage-head .tb-page-info .tb-dots { display: flex; }
+@media (max-width: 900px) {
+  .tb-stage-head { padding: 0 2px 8px; }
+  .tb-stage-head .tb-page-btn { width: 38px; height: 38px; font-size: 20px; }
+  .tb-stage-head .tb-page-pos { font-size: 10.5px; }
+  .tb-rail-title { font-size: 21px; }
+}
+@media (max-width: 599px) {
+  .tb-stage-head .tb-page-btn { width: 34px; height: 34px; font-size: 18px; }
+  .tb-stage-head .tb-page-info { gap: 6px; }
+  .tb-stage-head .tb-dots { display: none; }
+  .tb-rail-title { font-size: 19px; }
 }
