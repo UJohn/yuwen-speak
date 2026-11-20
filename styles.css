@@ -4944,7 +4944,6 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   top: 10px;
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 190px);
   min-height: 360px;
   padding: 12px 10px;
   border: 1.5px solid #F0DED4;
@@ -5033,7 +5032,7 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   font-size: 13px;
   font-style: normal;
 }
-#s-speak.split-view .speak-card { width: 100%; flex: 1; }
+#s-speak.split-view .speak-card { width: 100%; }
 
 @media (max-width: 900px) {
   #s-speak.split-view .speak-wrap { grid-template-columns: 1fr; gap: 12px; }
@@ -5132,4 +5131,45 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
 @media (max-width: 599px) {
   #s-speak.split-view .speak-bottom { order: 0; }
   #s-speak.split-view .speak-bottom .mic-zone { padding: 8px 0 0; }
+}
+
+/* Split view: mic lives inside the card; both columns size to their content. */
+#s-speak.split-view .speak-wrap { align-items: stretch; }
+#s-speak.split-view .speak-main { justify-content: flex-start; }
+#s-speak.split-view .speak-bottom:empty { display: none; }
+#s-speak.split-view .mic-zone.inside-card {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px dashed #F0DCD4;
+  text-align: center;
+}
+#s-speak.split-view .mic-zone.inside-card .mic-btn { margin: 0 auto 10px; }
+#s-speak.split-view .mic-zone.inside-card .mic-hint,
+#s-speak.split-view .mic-zone.inside-card .mic-sub { text-align: center; }
+/* Neutralize earlier bottom-bar rules now that the mic is inside the card. */
+#s-speak.split-view .speak-bottom .mic-zone { border: 0; background: transparent; }
+@media (max-width: 900px) {
+  #s-speak.split-view .speak-wrap { align-items: stretch; }
+}
+
+/* Split view: fixed viewport-height columns so both sides match and scroll internally. */
+#s-speak.split-view .speak-wrap { align-items: stretch; }
+#s-speak.split-view .speak-side { height: calc(100dvh - 200px); max-height: none; min-height: 420px; }
+#s-speak.split-view .speak-main { height: calc(100dvh - 200px); min-height: 420px; }
+#s-speak.split-view .speak-main .speak-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+#s-speak.split-view .speak-main .mic-zone.inside-card { margin-top: auto; }
+@media (max-width: 900px) {
+  #s-speak.split-view .speak-side,
+  #s-speak.split-view .speak-main { height: auto; min-height: 0; }
+  #s-speak.split-view .speak-main .speak-card { height: auto; }
+}
+
+@media (max-width: 900px) {
+  #s-speak.split-view .speak-side { height: 280px; max-height: 280px; min-height: 0; }
+  #s-speak.split-view .speak-main { height: auto; min-height: 0; }
+  #s-speak.split-view .speak-main .speak-card { height: auto; }
 }

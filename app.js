@@ -454,7 +454,7 @@
     audioPackLoading = true;
     if (!audioMapBeforePack) audioMapBeforePack = window.AUDIO_MAP || {};
     var s = document.createElement("script");
-    s.src = "audio-bundle.js?v=20261127-50";
+    s.src = "audio-bundle.js?v=20261128-51";
     s.onload = function () {
       audioPackLoading = false;
       window.AUDIO_PACK_READY = true;
@@ -2106,7 +2106,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261127-50";
+    s.src = "assets/spell-data.js?v=20261128-51";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2224,7 +2224,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261127-50");
+        var a = new Audio(entry.audio + "?v=20261128-51");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -2946,6 +2946,7 @@
       };
     });
     $("#s-speak").classList.toggle("split-view", !!isEnglishDeck);
+    placeMicZone(!!isEnglishDeck);
     $("#speakSide").hidden = !isEnglishDeck;
     if (isEnglishDeck) {
       $("#speakSideCount").textContent = entries.length + " 个";
@@ -3710,6 +3711,20 @@
       '<g transform="translate(152 30)"><rect width="120" height="42" rx="18" fill="#FFFDF8"/><path d="M24 42l-8 14 20-12z" fill="#FFFDF8"/><text x="15" y="27" font-size="17" font-family="Andika, sans-serif" fill="#B4586E">Hello!</text></g>' +
       '<text x="26" y="204" font-size="17" font-family="Andika, sans-serif" fill="#8D746A">What\'s your name?</text>' +
       "</svg>";
+  }
+
+  function placeMicZone(split) {
+    var mic = $("#micZone");
+    var card = $("#speakCard");
+    var bottom = $("#speakBottom");
+    if (!mic || !card || !bottom) return;
+    if (split) {
+      if (mic.parentNode !== card) card.appendChild(mic);
+      mic.classList.add("inside-card");
+    } else {
+      if (mic.parentNode !== bottom) bottom.insertBefore(mic, $("#cardNext"));
+      mic.classList.remove("inside-card");
+    }
   }
 
   function renderSpeakDots() {
