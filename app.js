@@ -454,7 +454,7 @@
     audioPackLoading = true;
     if (!audioMapBeforePack) audioMapBeforePack = window.AUDIO_MAP || {};
     var s = document.createElement("script");
-    s.src = "audio-bundle.js?v=20261201-54";
+    s.src = "audio-bundle.js?v=20261202-55";
     s.onload = function () {
       audioPackLoading = false;
       window.AUDIO_PACK_READY = true;
@@ -2106,7 +2106,7 @@
     if (spellLoading) return;
     spellLoading = true;
     var s = document.createElement("script");
-    s.src = "assets/spell-data.js?v=20261201-54";
+    s.src = "assets/spell-data.js?v=20261202-55";
     s.onload = function () {
       spellLoading = false;
       var list = spellCallbacks.splice(0);
@@ -2224,7 +2224,7 @@
       var fi = spellFinalIndex(spellState.final);
       var keys = ["dr:initials:" + ii + ":1", "dr:finals:" + fi + ":" + spellState.tone];
       playSequence(keys, function () {
-        var a = new Audio(entry.audio + "?v=20261201-54");
+        var a = new Audio(entry.audio + "?v=20261202-55");
         a.volume = state.volume;
         a.playbackRate = 1;
         try { a.preservesPitch = true; a.webkitPreservesPitch = true; } catch (err) {}
@@ -4211,7 +4211,18 @@
 
   /* ------------------------------------------------------------ wiring */
 
+  function wrapScreenTops() {
+    $$(".screen-top").forEach(function (top) {
+      if (top.querySelector(":scope > .screen-top-inner")) return;
+      var inner = document.createElement("div");
+      inner.className = "screen-top-inner";
+      while (top.firstChild) inner.appendChild(top.firstChild);
+      top.appendChild(inner);
+    });
+  }
+
   function init() {
+    wrapScreenTops();
     document.addEventListener("click", function (ev) {
       var b = ev.target.closest ? ev.target.closest("[data-back]") : null;
       if (!b) return;

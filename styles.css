@@ -35,6 +35,7 @@
   --line: #F1DCD1;
   --shadow: 0 10px 0 rgba(90, 68, 60, .05);
   --radius: 26px;
+  --content-max: 1160px;
   --macaron-pink: #FFB7C9;
   --macaron-mint: #9BE3C7;
   --macaron-butter: #FFE09A;
@@ -5206,4 +5207,81 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   #s-speak.split-view .speak-side { position: static; height: auto; max-height: none; }
   #s-speak.split-view .speak-main { height: auto; min-height: 0; }
   #s-speak.split-view .speak-main .speak-card { height: auto; }
+}
+
+/* === Unified content width across every screen === */
+:root { --content-max: 1160px; }
+
+/* Shared sticky header surface stays full-bleed; its inner content aligns to the grid. */
+.screen-top {
+  width: min(var(--content-max), 100%);
+  max-width: var(--content-max);
+}
+#s-units .screen-top { width: min(var(--content-max), 100%); max-width: var(--content-max); }
+
+.home-pick,
+.subject-hero,
+#s-units .unit-list,
+#s-pick .pick-grid,
+.tb-tabs,
+.tb-page,
+#s-speak.split-view .speak-wrap {
+  width: min(var(--content-max), 100%);
+  max-width: var(--content-max);
+}
+
+.tb-reader-shell { width: min(var(--content-max), 100%); }
+
+/* Full-bleed header background with aligned inner content. */
+@media (min-width: 901px) {
+  #s-units .screen-top {
+    width: calc(100% + 48px);
+    max-width: none;
+    margin-left: -24px;
+    padding-left: max(24px, calc((100vw - var(--content-max)) / 2));
+    padding-right: max(24px, calc((100vw - var(--content-max)) / 2));
+  }
+}
+
+/* Header content aligns to the same grid as the page body. */
+@media (min-width: 901px) {
+  .topbar,
+  .screen .screen-top {
+    width: var(--content-max);
+    max-width: var(--content-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  #s-units .screen-top {
+    width: calc(100% + 48px);
+    max-width: none;
+    margin-left: -24px;
+    padding-left: max(24px, calc((100vw - var(--content-max)) / 2));
+    padding-right: max(24px, calc((100vw - var(--content-max)) / 2));
+  }
+  #s-units .screen-top .screen-title,
+  #s-units .screen-top .icon-btn {
+    max-width: var(--content-max);
+  }
+}
+
+/* Header content wrapper: full-bleed background, content aligned to --content-max. */
+.screen-top { display: block; width: 100%; max-width: none; margin: 0 0 22px; padding: 0; background: transparent; }
+.screen-top-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(var(--content-max), 100%);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 10px 0 6px;
+}
+#s-units .screen-top-inner { width: min(var(--content-max), 100%); max-width: var(--content-max); }
+@media (min-width: 901px) {
+  .screen-top { width: calc(100% + 48px); max-width: none; margin-left: -24px; padding: 0 max(24px, calc((100vw - var(--content-max)) / 2 - 24px)); }
+  #s-units .screen-top { width: calc(100% + 48px); max-width: none; margin-left: -24px; padding: 0 max(24px, calc((100vw - var(--content-max)) / 2 - 24px)); }
+  .screen-top-inner,
+  #s-units .screen-top-inner { width: 100%; max-width: var(--content-max); padding: 10px 0 6px; }
 }
