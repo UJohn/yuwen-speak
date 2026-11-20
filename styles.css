@@ -5302,3 +5302,28 @@ button, .read-card, .game-card, .day-chip, .stamp, .py-chip, .char-tile {
   .app { max-width: none; width: 100%; padding-left: 32px; padding-right: 32px; }
   .home-pick { width: min(var(--content-max), 100%); max-width: var(--content-max); }
 }
+
+/* Opaque sticky header background (restored after the width-unification refactor). */
+.screen-top {
+  background: var(--cream);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding-top: 10px;
+  padding-bottom: 6px;
+}
+#s-units.theme-zh .screen-top { background: #FFF8F0; }
+#s-units.theme-en .screen-top { background: #F4FBF8; }
+.screen-top::before { display: none; }
+
+/* Sticky headers must sit flush at the top of their scrolling screen. */
+.screen-top {
+  position: sticky;
+  top: 0;
+}
+#s-units .screen-top {
+  margin-top: -16px;
+  padding-top: 26px;
+}
+@media (min-width: 700px) and (max-width: 1180px) {
+  #s-units .screen-top { margin-top: -18px; padding-top: 28px; }
+}
